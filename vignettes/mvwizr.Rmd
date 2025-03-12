@@ -1,0 +1,89 @@
+---
+title: "mvwizr"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mvwizr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(mvwizr)
+```
+
+# Beispielgrafiken
+
+Im Folgenden werden einige Beispielgrafiken, die mit mvwizr produziert wurden, gezeigt. Es handelt sich dabei nur um eine Auswahl.
+
+## Verlaufsgrafiken für Mischproben
+
+Wir können den Verlauf für einzelne Substanzen für einzelne Stationen inklusive der minimalen und maximalen Bestimmungsgrenzen (falls vorhanden) plotten. Dafür gibt es verschiedene Darstellungsarten; z.B. mittels Barplot:
+
+```{r fig.width=8, fig.height=5}
+plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, stationscode = "URT010", plot_typ = "barplot", id_substanz = 71)
+```
+
+Andererseits ist auch die Darstellung von Summen möglich (z.B. aller Pestizide hier). Falls dafür der "Treppen"-Plot ausgewählt wird, muss sichergestellt werden, dass es keine überlappenden Intervalle gibt, da eine Visualisierung mit Linien sonst nicht möglich ist:
+
+```{r fig.width=8, fig.height=5}
+plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, stationscode = "URT010", plot_typ = "treppen", zulassungstyp = "[BP]")
+```
+
+Bei der Summendarstellung mit Barplots kann schliesslich auch die Verteilung pro (arbiträrer) Kategorie gezeigt werden, wobei der Name der Variable für die Kategorie angegeben werden muss (hier "PARAMETERGRUPPE"):
+
+```{r fig.width=8, fig.height=5}
+plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, "URT010", plot_typ = "barplot_gruppen",
+                   zulassungstyp = "Alle", plot_parametergruppe = "PARAMETERGRUPPE")
+```
+
+## Überschreitungsgrafiken
+
+mvwizr bietet auch verschiedene Grafiken an, um (kurzzeitige oder andauernde) Überschreitungen der GSchV-Grenzwerte zu visualisieren. Im folgenden Beispiel werden andauernde Überschreitungen pro Substanz (d.h. Probendauer >= 10 Tage) für die Station "URT010" in den Jahren 2019 bis 2020 ausgewertet.
+
+```{r fig.width=7, fig.height=7}
+plot_misch_ue(rq_ue_beispiel_mvwizr, stationscode = "URT010", plot_typ = "andauernd", jahr = c(2019, 2020))
+```
+
+Auch summierte Grafiken (ohne Aufschlüsselung nach Substanz) sind möglich; im Folgenden eine Zeitreihe für die Überschreitung von akuten Qualitätskriterien:
+
+```{r fig.width=7, fig.height=5}
+plot_misch_ue_qk(rq_ue_beispiel_mvwizr, qk = "akut", detailliert = FALSE)
+```
+
+
+## Ökotoxgrafiken
+
+Die Ökotoxgrafiken zeigen Einzel- und Mischungstoxizitäten auf und werden für die Beurteilung gemäss MSK benötigt. Im folgenden Beispiel ist die Stationsübersicht Ökotoxikologie für andauernde Belastungen abgebildet.
+
+```{r fig.width=8, fig.height=9}
+plot_misch_oekotox_uebersicht(rq_ue_beispiel_mvwizr, stationscode = "URT010", jahr = 2020)
+```
+
+Der Verlauf von Mischungstoxizitäten kann auch einzeln visualisiert werden:
+
+```{r fig.width=10, fig.height=5}
+plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd")
+```
+
+Schliesslich sind auch Zeitreihen der Häufigkeitsverteilung der verschiedenen Ökotox-Bewertungen möglich (folgend für kurzzeitige Verunreinigungen für die Station URT010):
+
+```{r fig.width=7, fig.height=5}
+plot_misch_mixtox_haeufigkeit(rq_ue_beispiel_mvwizr, stationscode = "URT010", modus = "kurzzeitig")
+```
+
+## Stichproben
+
+Stichproben können mittels Raster-Darstellung pro Station dargestellt werden, um rasch explorativ wichtige Substanzen zu identifizieren:
+
+```{r fig.width=10, fig.height=6}
+plot_stich_uebersicht(mvdaten_beispiel_mvwizr, stationscode = "SA51")
+```
+
+Einige Plotfunktionen, die für Mischproben konzipiert sind, akzeptieren auch Stichproben (siehe Hilfetexte der Funktionen).
