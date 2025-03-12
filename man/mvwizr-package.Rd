@@ -8,6 +8,13 @@
 \description{
 Tools um Mikroverunreinigungsdaten aus Schweizer Gewässern gemäss den Bestimmungen der Gewässerschutzverordnung (GSchV) darzustellen.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://ror-at-ebp.github.io/mvwizr/}
+}
+
+}
 \author{
 \strong{Maintainer}: Remo Röthlin \email{remo.roethlin@ebp.ch}
 
