@@ -20,8 +20,7 @@ library(mvwizr)
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/ror-at-ebp/mvtool_gbl/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ror-at-ebp/mvtool_gbl/actions/workflows/R-CMD-check.yaml)
-
+[![R-CMD-check](https://github.com/ror-at-ebp/mvwizr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ror-at-ebp/mvwizr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## Übersicht
@@ -75,7 +74,7 @@ Das Paket enthält verschiedene eingebaute Möglichkeiten, Hilfe zu erhalten:
 -   `vignette("name-der-vignette")`: Zeigt den Inhalt einer Vignette (Hilfedatei) an. Die Vignette `datei-spezifikationen` gibt z.B. Auskunft über die Formate der Dateien, die von den Einlesefunktionen erwartet werden. Die Vignette `mvwizr` gibt eine Übersicht über die Funktionen des Pakets anhand von Beispielgrafiken.
 -   `??mvwizr`: Zeigt die Hilfeseiten zu den gebundelten Beispieldaten an.
 
-Daneben sind für die meisten Funktionen auch Beispiele in den Hilfeseiten enthalten, die die Verwendung der Funktionen demonstrieren.
+Daneben sind für die meisten Funktionen auch Beispiele in den Hilfeseiten enthalten, die die Verwendung der Funktionen demonstrieren. Vignetten sind als Artikel auch auf der Paketwebseite verfügbar: <https://ror-at-ebp.github.io/mvwizr/>.
 
 Folgende Funktionen werden vom Paket exportiert und können direkt verwendet werden:
 
