@@ -53,7 +53,7 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="mvwizr-">mvwizr <img src="reference/figures/mvwizr_logo.png" align="right" height="138"><a class="anchor" aria-label="anchor" href="#mvwizr-"></a>
+<div class="page-header"><h1 id="mvwizr-">mvwizr <img src="reference/figures/mvwizr_logo.png" align="right" width="120"><a class="anchor" aria-label="anchor" href="#mvwizr-"></a>
 </h1></div>
 <!-- badges: start -->
 
@@ -66,10 +66,10 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>mvwizr ist nicht auf CRAN veröffentlicht und kann daher am Einfachsten aus einer Datei installiert werden. Dazu unter <a href="https://github.com/ror-at-ebp/mvwizr/releases" class="external-link">Releases</a> das Paket als zip-Archiv herunterladen und mit nachfolgenden Kommandos (Pfad anpassen) installieren:</p>
+<p>mvwizr ist nicht auf CRAN veröffentlicht und kann daher am Einfachsten direkt von github installiert werden. Das Paket benötigt mindestens R 4.1. Alternativ kann das Paket z.B. auch auf <a href="https://posit.cloud/" class="external-link">Posit Cloud</a> installiert und getestet werden. Für die Installation auf einem lokalen Rechner (Windows/macOS/Linux) folgende Kommandos ausführen:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_local</span><span class="op">(</span><span class="st">"/pfad/zum/paket/mvwizr-0.2.0.zip"</span>, build <span class="op">=</span> <span class="cn">TRUE</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ror-at-ebp/mvwizr"</span>, build <span class="op">=</span> <span class="cn">TRUE</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="struktur-des-pakets">Struktur des Pakets<a class="anchor" aria-label="anchor" href="#struktur-des-pakets"></a>
