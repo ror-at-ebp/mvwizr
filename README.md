@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# mvwizr <img src="man/figures/mvwizr_logo.png" align="right" height="138"/>
+# mvwizr <img src="man/figures/mvwizr_logo.png" align="right" width="120" />
 
 <!-- badges: start -->
 
@@ -22,14 +22,15 @@ MV-Daten anderer Kantone funktionieren können.
 ## Installation
 
 mvwizr ist nicht auf CRAN veröffentlicht und kann daher am Einfachsten
-aus einer Datei installiert werden. Dazu unter
-[Releases](https://github.com/ror-at-ebp/mvwizr/releases) das Paket als
-zip-Archiv herunterladen und mit nachfolgenden Kommandos (Pfad anpassen)
-installieren:
+direkt von github installiert werden. Das Paket benötigt mindestens R
+4.1. Alternativ kann das Paket z.B. auch auf [Posit
+Cloud](https://posit.cloud/) installiert und getestet werden. Für die
+Installation auf einem lokalen Rechner (Windows/macOS/Linux) folgende
+Kommandos ausführen:
 
 ``` r
 install.packages("remotes")
-remotes::install_local("/pfad/zum/paket/mvwizr-0.2.0.zip", build = TRUE, build_vignettes = TRUE, dependencies = TRUE)
+remotes::install_github("ror-at-ebp/mvwizr", build = TRUE, build_vignettes = TRUE, dependencies = TRUE)
 ```
 
 ## Struktur des Pakets

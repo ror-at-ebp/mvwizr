@@ -16,7 +16,7 @@ library(tidyverse)
 library(mvwizr)
 ```
 
-# mvwizr <img src="man/figures/mvwizr_logo.png" align="right" height="138"/>
+# mvwizr <img src="man/figures/mvwizr_logo.png" align="right" width="120" />
 
 <!-- badges: start -->
 
