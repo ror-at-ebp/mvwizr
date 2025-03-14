@@ -21,6 +21,7 @@ Useful links:
 Other contributors:
 \itemize{
   \item Veronica Bozzini \email{veronica.bozzini@ebp.ch} [contributor]
+  \item Irene Wittmer \email{irene.wittmer@be.ch} [contributor]
   \item Kanton Bern, AWA [copyright holder, funder]
 }
 

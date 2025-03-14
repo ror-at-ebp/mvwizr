@@ -804,14 +804,14 @@ plot_misch_ue_qk <- function(rq_ue_daten,
 
   farben_qk <- c("Anz_gschv" = "#e51f20", "Anz_qk" = "#fbbf09")
 
-  jahre_daten <- unique(lubridate::year(rq_ue_daten$BEGINNPROBENAHME))
-
-  if (is.null(jahr)) {
-    jahr <- jahre_daten
+  if (!is.null(jahr)) {
+    rq_ue_daten <- dplyr::filter(rq_ue_daten, .data$Jahr %in% .env$jahr)
   }
 
-  if (is.null(stationscode)) {
-    stationscode <- unique(rq_ue_daten$CODE)
+  jahre_daten <- unique(rq_ue_daten$Jahr)
+
+  if (!is.null(stationscode)) {
+    rq_ue_daten <- dplyr::filter(rq_ue_daten, .data$CODE %in% .env$stationscode)
   }
 
   switch(qk,
@@ -836,7 +836,7 @@ plot_misch_ue_qk <- function(rq_ue_daten,
     rq_ue_summary <- dplyr::group_by(rq_ue_daten, .data$CODE, .data$Jahr) %>%
       dplyr::summarise(
         Anz_gschv = sum({{ Ue_GSchV }}, na.rm = TRUE),
-        Anz_qk = sum({{ Ue_QK }}, na.rm = TRUE)
+        Anz_qk = sum({{ Ue_QK }}, na.rm = TRUE) - .data$Anz_gschv # Damit Überschreitungen nicht doppelt gezählt werden
       ) %>%
       tidyr::pivot_longer(c("Anz_gschv", "Anz_qk"),
         names_to = "Art_Ue",
@@ -1317,8 +1317,8 @@ plot_misch_mixtox_verlauf <- function(rq_ue_daten,
 #'
 #' # Häufigkeitsverteilung für andauernde Belastungen
 #' plot_misch_mixtox_haeufigkeit(rq_ue_beispiel_mvwizr,
-#'   stationscode = "URT010",
-#'   modus = "andauernd"
+#'  stationscode = "URT010",
+#'  modus = "andauernd"
 #' )
 #'
 #' # Häufigkeitsverteilung für kurzzeitige Belastungen
@@ -1360,6 +1360,7 @@ plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
   pobj <- ggplot2::ggplot(mixtox_data, ggplot2::aes(x = .data$Jahr, fill = .data$Beurteilung)) +
     # geom_bar berechnet automatisch die Anteile der Beurteilungen. Mit position = fill werden relative Anteile auf 100% geplottet
     ggplot2::geom_bar(position = "fill") +
+    ggplot2::facet_wrap(~ Ziel, scales = "free_y") +
     ggplot2::scale_x_continuous(
       "",
       breaks = unique(mixtox_data$Jahr),

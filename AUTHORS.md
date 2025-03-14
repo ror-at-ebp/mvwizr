@@ -4,7 +4,7 @@
 
 - Remo Röthlin, Projektleiter, EBP Schweiz AG, [remo.roethlin\@ebp.ch](mailto:remo.roethlin@ebp.ch)
 - Veronica Bozzini, Stv. Projektleiterin, EBP Schweiz AG, [veronica.bozzini\@ebp.ch](mailto:veronica.bozzini@ebp.ch)
-- Irene Widmer, GBL, Kanton Bern, Projektleiterin
+- Irene Wittmer, Abteilungsleiterin GBL, Kanton Bern, Projektleiterin, [irene.wittmer\@be.ch](mailto:irene.wittmer@be.ch)
 
 ## Entwicklung
 

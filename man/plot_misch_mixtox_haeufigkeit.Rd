@@ -26,8 +26,8 @@ Zeitreihe Häufigkeitsverteilung Mischungstoxizität
 
 # Häufigkeitsverteilung für andauernde Belastungen
 plot_misch_mixtox_haeufigkeit(rq_ue_beispiel_mvwizr,
-  stationscode = "URT010",
-  modus = "andauernd"
+ stationscode = "URT010",
+ modus = "andauernd"
 )
 
 # Häufigkeitsverteilung für kurzzeitige Belastungen

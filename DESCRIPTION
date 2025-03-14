@@ -1,13 +1,14 @@
 Package: mvwizr
 Type: Package
 Title: Mikroverunreinigungen in Schweizer Gewässern darstellen
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: c(
     person("Remo", "Röthlin", email = "remo.roethlin@ebp.ch", role = "cre"),
     person("Veronica", "Bozzini", email = "veronica.bozzini@ebp.ch", role = "ctb"),
+    person("Irene", "Wittmer", email = "irene.wittmer@be.ch", role = "ctb"),
     person("Kanton Bern, AWA", role = c("cph", "fnd")))
 Description: Tools um Mikroverunreinigungsdaten aus Schweizer Gewässern gemäss den Bestimmungen der Gewässerschutzverordnung (GSchV) darzustellen.
-License: MIT
+License: MIT + file LICENSE.md
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.2
