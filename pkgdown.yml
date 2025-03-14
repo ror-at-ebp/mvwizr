@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   datei-spezifikationen: datei-spezifikationen.html
   mvwizr: mvwizr.html
-last_built: 2025-03-14T15:30Z
+last_built: 2025-03-14T15:35Z
 urls:
   reference: https://ror-at-ebp.github.io/mvwizr/reference
   article: https://ror-at-ebp.github.io/mvwizr/articles
