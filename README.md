@@ -5,8 +5,7 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/ror-at-ebp/mvtool_gbl/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ror-at-ebp/mvtool_gbl/actions/workflows/R-CMD-check.yaml)
-
+[![R-CMD-check](https://github.com/ror-at-ebp/mvwizr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ror-at-ebp/mvwizr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## Übersicht
@@ -29,58 +28,16 @@ Installation auf einem lokalen Rechner (Windows/macOS/Linux) folgende
 Kommandos ausführen:
 
 ``` r
-install.packages("remotes")
+install.packages("remotes") # falls noch nicht installiert
 remotes::install_github("ror-at-ebp/mvwizr", build = TRUE, build_vignettes = TRUE, dependencies = TRUE)
 ```
 
-## Struktur des Pakets
+Nach der Installation kann mvwizr in Scripts oder in der Konsole
+verwendet werden, indem das Paket geladen wird:
 
-Das Paket ist in verschiedene Verzeichnisse unterteilt:
-
-- `R/`: Enthält die R-Skripte, die die Funktionen des Pakets definieren.
-  Die Funktionen sind in zwei Dateien unterteilt: `parsing.R` für
-  Einlese- und Berechnungsfunktionen und `plotting.R` für Plotfunktionen
-  (und noch Hilfsdateien wie `utils-pipe.R`).
-- `data/`: Enthält die Beispieldaten, die mit dem Paket verteilt werden.
-  Diese Daten sind in R-Objekten gespeichert und können direkt verwendet
-  werden. Nicht manuell anpassen.
-- `data-raw/`: Enthält die Skripte, die die Beispieldaten für das Paket
-  erstellen. Die Beispieldaten sind im Verzeichnis `data/` gespeichert.
-- `inst/extdata`: Enthält zusätzliche Dateien, die mit dem Paket
-  verteilt werden, z.B. die Kopien der MV-Dateien des GBL, die mit dem
-  Paket eingelesen werden können.
-- `man/`: Enthält die aus Roxygen-Tags automatisch erstellte
-  Dokumentation des Pakets. Nicht manuell anpassen.
-- `tests/`: Enthält die Tests für das Paket, die mit dem Paket
-  `testthat` geschrieben werden.
-- `vignettes/`: Enthält die Vignetten des Pakets, die die Verwendung des
-  Pakets demonstrieren. Die Vignetten sind in RMarkdown geschrieben und
-  können mit `vignette("name-der-vignette")` aufgerufen werden.
-- `AUTHORS.md`: Enthält die Autoren des Pakets
-- `CHANGELOG.md`: Kann Angaben zu Änderungen in den verschiedenen
-  Versionen des Pakets enthalten.
-- `DESCRIPTION`: Enthält die Metadaten des Pakets, wie Name, Version,
-  Autoren, Abhängigkeiten, etc.
-- `LICENSE`: Enthält die Lizenz des Pakets.
-- `mvwizr.Rproj`: Das RStudio-Projekt des Pakets.
-- `NAMESPACE`: Enthält die Definition der Funktionen, die exportiert
-  werden sollen, und der Abhängigkeiten des Pakets. Nicht manuell
-  anpassen.
-- `NEWS.md`: Enthält Neuigkeiten zum Paket, die in den verschiedenen
-  Versionen hinzugefügt wurden.
-- `README.md`: Enthält die automatisch erstellte README-Datei des Pakets
-  für Github. Nicht manuell anpassen.
-- `README.Rmd`: Enthält die README-Datei des Pakets, die in eine
-  README.md-Datei umgewandelt wird.
-- `scratchpad.R`: Enthält Code-Schnipsel, die für das Austesten des
-  Pakets nützlich sind (nicht in installierter Version des Pakets
-  enthalten).
-
-Die Funktionen im Paket hängen wie in der nachfolgenden Abbildung
-dargestellt zusammen (mit den jeweiligen Input-Dateien und
-Output-Objekten):
-
-![](man/figures/mvwizr_struktur_funktionen_interfaces.jpg)
+``` r
+library(mvwizr)
+```
 
 ## Verwendung
 
@@ -106,6 +63,8 @@ erhalten:
 
 Daneben sind für die meisten Funktionen auch Beispiele in den
 Hilfeseiten enthalten, die die Verwendung der Funktionen demonstrieren.
+Vignetten sind als Artikel auch auf der Paketwebseite verfügbar:
+<https://ror-at-ebp.github.io/mvwizr/>.
 
 Folgende Funktionen werden vom Paket exportiert und können direkt
 verwendet werden:
@@ -198,6 +157,55 @@ Die Rückgaben der Plot-Funktionen sind `ggplot2`- oder
 plot1 <- plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, stationscode = "URT010", plot_typ = "barplot", id_substanz = 71,plot_bg = FALSE)
 plot1 + ylim(0,0.02)
 ```
+
+## Struktur des github-Repository
+
+Das Paket ist in verschiedene Verzeichnisse unterteilt:
+
+- `R/`: Enthält die R-Skripte, die die Funktionen des Pakets definieren.
+  Die Funktionen sind in zwei Dateien unterteilt: `parsing.R` für
+  Einlese- und Berechnungsfunktionen und `plotting.R` für Plotfunktionen
+  (und noch Hilfsdateien wie `utils-pipe.R`).
+- `data/`: Enthält die Beispieldaten, die mit dem Paket verteilt werden.
+  Diese Daten sind in R-Objekten gespeichert und können direkt verwendet
+  werden. Nicht manuell anpassen.
+- `data-raw/`: Enthält die Skripte, die die Beispieldaten für das Paket
+  erstellen. Die Beispieldaten sind im Verzeichnis `data/` gespeichert.
+- `inst/extdata`: Enthält zusätzliche Dateien, die mit dem Paket
+  verteilt werden, z.B. die Kopien der MV-Dateien des GBL, die mit dem
+  Paket eingelesen werden können.
+- `man/`: Enthält die aus Roxygen-Tags automatisch erstellte
+  Dokumentation des Pakets. Nicht manuell anpassen.
+- `tests/`: Enthält die Tests für das Paket, die mit dem Paket
+  `testthat` geschrieben werden.
+- `vignettes/`: Enthält die Vignetten des Pakets, die die Verwendung des
+  Pakets demonstrieren. Die Vignetten sind in RMarkdown geschrieben und
+  können mit `vignette("name-der-vignette")` aufgerufen werden.
+- `AUTHORS.md`: Enthält die Autoren des Pakets
+- `CHANGELOG.md`: Kann Angaben zu Änderungen in den verschiedenen
+  Versionen des Pakets enthalten.
+- `DESCRIPTION`: Enthält die Metadaten des Pakets, wie Name, Version,
+  Autoren, Abhängigkeiten, etc.
+- `LICENSE`: Enthält die Lizenz des Pakets.
+- `mvwizr.Rproj`: Das RStudio-Projekt des Pakets.
+- `NAMESPACE`: Enthält die Definition der Funktionen, die exportiert
+  werden sollen, und der Abhängigkeiten des Pakets. Nicht manuell
+  anpassen.
+- `NEWS.md`: Enthält Neuigkeiten zum Paket, die in den verschiedenen
+  Versionen hinzugefügt wurden.
+- `README.md`: Enthält die automatisch erstellte README-Datei des Pakets
+  für Github. Nicht manuell anpassen.
+- `README.Rmd`: Enthält die README-Datei des Pakets, die in eine
+  README.md-Datei umgewandelt wird.
+- `scratchpad.R`: Enthält Code-Schnipsel, die für das Austesten des
+  Pakets nützlich sind (nicht in installierter Version des Pakets
+  enthalten).
+
+Die Funktionen im Paket hängen wie in der nachfolgenden Abbildung
+dargestellt zusammen (mit den jeweiligen Input-Dateien und
+Output-Objekten):
+
+![](man/figures/mvwizr_struktur_funktionen_interfaces.jpg)
 
 ## Das Paket erweitern
 
