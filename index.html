@@ -57,7 +57,6 @@
 </h1></div>
 <!-- badges: start -->
 
-<!-- badges: end -->
 <div class="section level2">
 <h2 id="übersicht">Übersicht<a class="anchor" aria-label="anchor" href="#%C3%BCbersicht"></a>
 </h2>
@@ -68,51 +67,11 @@
 </h2>
 <p>mvwizr ist nicht auf CRAN veröffentlicht und kann daher am Einfachsten direkt von github installiert werden. Das Paket benötigt mindestens R 4.1. Alternativ kann das Paket z.B. auch auf <a href="https://posit.cloud/" class="external-link">Posit Cloud</a> installiert und getestet werden. Für die Installation auf einem lokalen Rechner (Windows/macOS/Linux) folgende Kommandos ausführen:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span> <span class="co"># falls noch nicht installiert</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ror-at-ebp/mvwizr"</span>, build <span class="op">=</span> <span class="cn">TRUE</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="struktur-des-pakets">Struktur des Pakets<a class="anchor" aria-label="anchor" href="#struktur-des-pakets"></a>
-</h2>
-<p>Das Paket ist in verschiedene Verzeichnisse unterteilt:</p>
-<ul>
-<li>
-<code>R/</code>: Enthält die R-Skripte, die die Funktionen des Pakets definieren. Die Funktionen sind in zwei Dateien unterteilt: <code>parsing.R</code> für Einlese- und Berechnungsfunktionen und <code>plotting.R</code> für Plotfunktionen (und noch Hilfsdateien wie <code>utils-pipe.R</code>).</li>
-<li>
-<code>data/</code>: Enthält die Beispieldaten, die mit dem Paket verteilt werden. Diese Daten sind in R-Objekten gespeichert und können direkt verwendet werden. Nicht manuell anpassen.</li>
-<li>
-<code>data-raw/</code>: Enthält die Skripte, die die Beispieldaten für das Paket erstellen. Die Beispieldaten sind im Verzeichnis <code>data/</code> gespeichert.</li>
-<li>
-<code>inst/extdata</code>: Enthält zusätzliche Dateien, die mit dem Paket verteilt werden, z.B. die Kopien der MV-Dateien des GBL, die mit dem Paket eingelesen werden können.</li>
-<li>
-<code>man/</code>: Enthält die aus Roxygen-Tags automatisch erstellte Dokumentation des Pakets. Nicht manuell anpassen.</li>
-<li>
-<code>tests/</code>: Enthält die Tests für das Paket, die mit dem Paket <code>testthat</code> geschrieben werden.</li>
-<li>
-<code>vignettes/</code>: Enthält die Vignetten des Pakets, die die Verwendung des Pakets demonstrieren. Die Vignetten sind in RMarkdown geschrieben und können mit <code>vignette("name-der-vignette")</code> aufgerufen werden.</li>
-<li>
-<code>AUTHORS.md</code>: Enthält die Autoren des Pakets</li>
-<li>
-<code>CHANGELOG.md</code>: Kann Angaben zu Änderungen in den verschiedenen Versionen des Pakets enthalten.</li>
-<li>
-<code>DESCRIPTION</code>: Enthält die Metadaten des Pakets, wie Name, Version, Autoren, Abhängigkeiten, etc.</li>
-<li>
-<code>LICENSE</code>: Enthält die Lizenz des Pakets.</li>
-<li>
-<code>mvwizr.Rproj</code>: Das RStudio-Projekt des Pakets.</li>
-<li>
-<code>NAMESPACE</code>: Enthält die Definition der Funktionen, die exportiert werden sollen, und der Abhängigkeiten des Pakets. Nicht manuell anpassen.</li>
-<li>
-<code>NEWS.md</code>: Enthält Neuigkeiten zum Paket, die in den verschiedenen Versionen hinzugefügt wurden.</li>
-<li>
-<code>README.md</code>: Enthält die automatisch erstellte README-Datei des Pakets für Github. Nicht manuell anpassen.</li>
-<li>
-<code>README.Rmd</code>: Enthält die README-Datei des Pakets, die in eine README.md-Datei umgewandelt wird.</li>
-<li>
-<code>scratchpad.R</code>: Enthält Code-Schnipsel, die für das Austesten des Pakets nützlich sind (nicht in installierter Version des Pakets enthalten).</li>
-</ul>
-<p>Die Funktionen im Paket hängen wie in der nachfolgenden Abbildung dargestellt zusammen (mit den jeweiligen Input-Dateien und Output-Objekten):</p>
-<p><img src="reference/figures/mvwizr_struktur_funktionen_interfaces.jpg"></p>
+<p>Nach der Installation kann mvwizr in Scripts oder in der Konsole verwendet werden, indem das Paket geladen wird:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ror-at-ebp.github.io/mvwizr/">mvwizr</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="verwendung">Verwendung<a class="anchor" aria-label="anchor" href="#verwendung"></a>
@@ -130,7 +89,7 @@
 <li>
 <code>??mvwizr</code>: Zeigt die Hilfeseiten zu den gebundelten Beispieldaten an.</li>
 </ul>
-<p>Daneben sind für die meisten Funktionen auch Beispiele in den Hilfeseiten enthalten, die die Verwendung der Funktionen demonstrieren.</p>
+<p>Daneben sind für die meisten Funktionen auch Beispiele in den Hilfeseiten enthalten, die die Verwendung der Funktionen demonstrieren. Vignetten sind als Artikel auch auf der Paketwebseite verfügbar: <a href="https://ror-at-ebp.github.io/mvwizr/" class="uri">https://ror-at-ebp.github.io/mvwizr/</a>.</p>
 <p>Folgende Funktionen werden vom Paket exportiert und können direkt verwendet werden:</p>
 </div>
 <div class="section level3">
@@ -189,10 +148,53 @@
 <code><a href="reference/plot_stich_verlauf.html">plot_stich_verlauf()</a></code>: Konzentrationsverlauf für Stichproben für mehrere Substanzen und Stationen. Gut geeignet für eine interaktive Analyse mit Plotly.</li>
 </ul>
 <p>Die Rückgaben der Plot-Funktionen sind <code>ggplot2</code>- oder <code>patchwork</code>-Objekte, die weiter bearbeitet werden können, z.B.:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, <span class="va">regulierungen_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, plot_typ <span class="op">=</span> <span class="st">"barplot"</span>, id_substanz <span class="op">=</span> <span class="fl">71</span>,plot_bg <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">plot1</span> <span class="op">+</span> <span class="fu">ylim</span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.02</span><span class="op">)</span></span></code></pre></div>
 </div>
+</div>
+<div class="section level2">
+<h2 id="struktur-des-github-repository">Struktur des github-Repository<a class="anchor" aria-label="anchor" href="#struktur-des-github-repository"></a>
+</h2>
+<p>Das Paket ist in verschiedene Verzeichnisse unterteilt:</p>
+<ul>
+<li>
+<code>R/</code>: Enthält die R-Skripte, die die Funktionen des Pakets definieren. Die Funktionen sind in zwei Dateien unterteilt: <code>parsing.R</code> für Einlese- und Berechnungsfunktionen und <code>plotting.R</code> für Plotfunktionen (und noch Hilfsdateien wie <code>utils-pipe.R</code>).</li>
+<li>
+<code>data/</code>: Enthält die Beispieldaten, die mit dem Paket verteilt werden. Diese Daten sind in R-Objekten gespeichert und können direkt verwendet werden. Nicht manuell anpassen.</li>
+<li>
+<code>data-raw/</code>: Enthält die Skripte, die die Beispieldaten für das Paket erstellen. Die Beispieldaten sind im Verzeichnis <code>data/</code> gespeichert.</li>
+<li>
+<code>inst/extdata</code>: Enthält zusätzliche Dateien, die mit dem Paket verteilt werden, z.B. die Kopien der MV-Dateien des GBL, die mit dem Paket eingelesen werden können.</li>
+<li>
+<code>man/</code>: Enthält die aus Roxygen-Tags automatisch erstellte Dokumentation des Pakets. Nicht manuell anpassen.</li>
+<li>
+<code>tests/</code>: Enthält die Tests für das Paket, die mit dem Paket <code>testthat</code> geschrieben werden.</li>
+<li>
+<code>vignettes/</code>: Enthält die Vignetten des Pakets, die die Verwendung des Pakets demonstrieren. Die Vignetten sind in RMarkdown geschrieben und können mit <code>vignette("name-der-vignette")</code> aufgerufen werden.</li>
+<li>
+<code>AUTHORS.md</code>: Enthält die Autoren des Pakets</li>
+<li>
+<code>CHANGELOG.md</code>: Kann Angaben zu Änderungen in den verschiedenen Versionen des Pakets enthalten.</li>
+<li>
+<code>DESCRIPTION</code>: Enthält die Metadaten des Pakets, wie Name, Version, Autoren, Abhängigkeiten, etc.</li>
+<li>
+<code>LICENSE</code>: Enthält die Lizenz des Pakets.</li>
+<li>
+<code>mvwizr.Rproj</code>: Das RStudio-Projekt des Pakets.</li>
+<li>
+<code>NAMESPACE</code>: Enthält die Definition der Funktionen, die exportiert werden sollen, und der Abhängigkeiten des Pakets. Nicht manuell anpassen.</li>
+<li>
+<code>NEWS.md</code>: Enthält Neuigkeiten zum Paket, die in den verschiedenen Versionen hinzugefügt wurden.</li>
+<li>
+<code>README.md</code>: Enthält die automatisch erstellte README-Datei des Pakets für Github. Nicht manuell anpassen.</li>
+<li>
+<code>README.Rmd</code>: Enthält die README-Datei des Pakets, die in eine README.md-Datei umgewandelt wird.</li>
+<li>
+<code>scratchpad.R</code>: Enthält Code-Schnipsel, die für das Austesten des Pakets nützlich sind (nicht in installierter Version des Pakets enthalten).</li>
+</ul>
+<p>Die Funktionen im Paket hängen wie in der nachfolgenden Abbildung dargestellt zusammen (mit den jeweiligen Input-Dateien und Output-Objekten):</p>
+<p><img src="reference/figures/mvwizr_struktur_funktionen_interfaces.jpg"></p>
 </div>
 <div class="section level2">
 <h2 id="das-paket-erweitern">Das Paket erweitern<a class="anchor" aria-label="anchor" href="#das-paket-erweitern"></a>
@@ -246,7 +248,7 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/ror-at-ebp/mvtool_gbl/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/ror-at-ebp/mvtool_gbl/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/ror-at-ebp/mvwizr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/ror-at-ebp/mvwizr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 </ul>
 </div>
 
