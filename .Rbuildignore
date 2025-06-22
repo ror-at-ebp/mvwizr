@@ -2,10 +2,10 @@
 ^\.Rproj\.user$
 ^README\.Rmd$
 ^Dockerfile$
-^AUTHORS.md$
-^CHANGELOG.md$
+^AUTHORS\.md$
+^CHANGELOG\.md$
 ^daten$
-^scratchpad.R$
+^scratchpad.*\.R$
 ^output$
 ^cran-comments\.md$
 ^data-raw$
@@ -16,3 +16,4 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^_DONOTCOMMIT_$
