@@ -79,7 +79,7 @@ Für die Anzeige der Bestimmungsgrenze ist BG_min und BG_max erforderlich.
 
 ## Regulierungen und Zulassungen
 
-Hierbei handelt es sich um die Tabelle `anf_Substanz_recht_2024.xlsx` des VSA, welche Informationen zum Regulierungs- und Zulassungsstatus verschiedener Mikroverunreinigungen auflistet (zum Zeitpunkt/Jahr der Erstellung der Tabelle - in diesem Fall 2024). 
+Hierbei handelt es sich um die Tabelle `anf_Substanz_recht.xlsx` des VSA, welche Informationen zum Regulierungs- und Zulassungsstatus verschiedener Mikroverunreinigungen auflistet (zum Zeitpunkt/Jahr der Erstellung der Tabelle - in diesem Fall 2024).
 
 Die folgenden Spalten müssen (mindestens) in der Tabelle enthalten sein:
 
@@ -115,7 +115,7 @@ Legende zu den `Informationen Recht`:
 Eine Kopie dieser Tabelle befindet sich im Paket:
 
 ``` r
-system.file("extdata", "anf_Substanz_recht_2024.xlsx", package = "mvwizr")
+system.file("extdata", "anf_Substanz_recht.xlsx", package = "mvwizr")
 
 ```
 

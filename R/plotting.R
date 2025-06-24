@@ -155,11 +155,11 @@ plot_misch_verlauf <- function(mv_daten,
   # 3. Neue eindeutige ID (UID) für jede Probe -> Wichtig für Treppenplots
   if (is.null(id_substanz)) {
     if (!zulassungstyp == "Alle") {
-    mv_daten <- mv_daten %>%
+    mv_daten <- mv_daten |>
         dplyr::filter(stringr::str_detect(.data[["Informationen Recht"]], .env$zulassungstyp))
     }
 
-    mv_daten <- mv_daten %>%
+    mv_daten <- mv_daten |>
       dplyr::group_by(
         .data$CODE,
         .data$STANDORT,
@@ -170,30 +170,30 @@ plot_misch_verlauf <- function(mv_daten,
         .data$ENDEPROBENAHME,
         {{ plot_parametergruppe }
         } # rlang indirection, siehe https://dplyr.tidyverse.org/articles/programming.html
-      ) %>%
-      dplyr::summarise(WERT_NUM = sum(.data$WERT_NUM)) %>%
-      dplyr::mutate(gruppe_ymax = cumsum(.data$WERT_NUM), gruppe_ymin = .data$gruppe_ymax - .data$WERT_NUM) %>%
-      dplyr::ungroup() %>%
-      dplyr::arrange(.data$BEGINNPROBENAHME) %>%
+      ) |>
+      dplyr::summarise(WERT_NUM = sum(.data$WERT_NUM)) |>
+      dplyr::mutate(gruppe_ymax = cumsum(.data$WERT_NUM), gruppe_ymin = .data$gruppe_ymax - .data$WERT_NUM) |>
+      dplyr::ungroup() |>
+      dplyr::arrange(.data$BEGINNPROBENAHME) |>
       dplyr::mutate(UID = dplyr::row_number(), .before = 1)
   }
 
   # Für Treppenplots müssen wir Beginn- und Enddatum der Probe als einzelne Punkte abbilden (daher Treppenplot). Dazu müssen wir die Differenz des Startdatums der nächsten Probe zum Enddatum der aktuellen Probe bilden. Damit dann im Plot die Reihenfolge stimmt, addieren wir bei BEGINNPROBENAHME jeweils 1 Sekunde.
   # Ausserdem entfernen wir alle kurzen Messungen (<10 Tage). Dies ist nicht dringend notwendig, reduziert aber die Wahrscheinlichkeit von überlappenden Intervallen.
   if (plot_typ == "treppen" || plot_typ == "kombiniert") {
-    mv_daten_treppen <- mv_daten %>%
+    mv_daten_treppen <- mv_daten |>
       tidyr::pivot_longer(
         c("BEGINNPROBENAHME", "ENDEPROBENAHME"),
         names_to = "Datum_Typ",
         values_to = "Datum"
-      ) %>%
+      ) |>
       dplyr::mutate(
         Datum = dplyr::if_else(
           .data$Datum_Typ == "BEGINNPROBENAHME",
           .data$Datum + 1,
           .data$Datum
         )
-      ) %>%
+      ) |>
       dplyr::filter(.data$Tage >= 10)
 
     # Bei summenplots müssen wir für den nächsten Schritt nur nach UID und Datum sortieren, sonst auch zuerst noch nach Substanz
@@ -211,12 +211,12 @@ plot_misch_verlauf <- function(mv_daten,
         .data$UID,
         .data$Datum,
         .data$Datum_Typ
-      ) %>%
+      ) |>
         dplyr::group_by(.data$ID_Substanz)
     }
 
     # Im geordneten Dataframe können wir nun die Datumsdifferenz zwischen Proben berechnen. Für die Treppenplots identifizieren wir nun Proben, bei denen eine Lücke besteht, d.h. bei denen die nächste Probe nicht unmittelbar anknüpft. Dort müssen wir NA-Werte einfügen, damit die Treppe unterbricht (und nicht Punkte über einen Messunterbruch verbindet).
-    mv_daten_treppen <- mv_daten_treppen %>%
+    mv_daten_treppen <- mv_daten_treppen |>
       dplyr::mutate(
         Datum_diff = dplyr::lead(.data$Datum) - .data$Datum,
         Add_NA = dplyr::if_else(
@@ -225,7 +225,7 @@ plot_misch_verlauf <- function(mv_daten,
           .data$Datum + 86400,
           lubridate::NA_POSIXct_
         )
-      ) %>%
+      ) |>
       dplyr::ungroup()
 
     # Bei den Summenplots können wir die NA-Werte direkt einsetzen, sonst müssen wir dies pro Substanz tun.
@@ -235,9 +235,9 @@ plot_misch_verlauf <- function(mv_daten,
         WERT_NUM = NA_real_
       )
     } else {
-      NA_daten <- mv_daten_treppen %>%
-        dplyr::distinct(.data$BEZEICHNUNG_BAFU, .data$Add_NA) %>%
-        dplyr::filter(!is.na(.data$Add_NA)) %>%
+      NA_daten <- mv_daten_treppen |>
+        dplyr::distinct(.data$BEZEICHNUNG_BAFU, .data$Add_NA) |>
+        dplyr::filter(!is.na(.data$Add_NA)) |>
         dplyr::mutate(Datum = .data$Add_NA, WERT_NUM = NA_real_)
     }
 
@@ -495,8 +495,8 @@ plot_misch_ue <- function(rq_ue_daten,
   withr::local_locale(setze_chde_locale())
 
   # Für Ue-Plots sind nur Stoffe relevant, die in GSchV Anh.2 geregelt sind (organische Pestizide)
-  rq_ue_daten <- rq_ue_daten %>%
-    dplyr::filter(.data$CODE %in% .env$stationscode, .data$GSCHV %in% c(1, 2), !is.na(.data$ENDEPROBENAHME)) %>%
+  rq_ue_daten <- rq_ue_daten |>
+    dplyr::filter(.data$CODE %in% .env$stationscode, .data$GSCHV %in% c(1, 2), !is.na(.data$ENDEPROBENAHME)) |>
     dplyr::select(dplyr::all_of(c("CODE", "BEGINNPROBENAHME", "ENDEPROBENAHME", "ID_Substanz", "BEZEICHNUNG_BAFU", "Jahr", "Tage", "GSCHV", "AQK", "CQK")), dplyr::any_of("BG_max"), dplyr::starts_with("Ue"))
 
   # Falls kein Jahr angegeben wird, werden alle Daten geplottet
@@ -513,17 +513,17 @@ plot_misch_ue <- function(rq_ue_daten,
     switch_cap <- ggplot2::waiver()
   }
 
-  rq_ue_daten_station <- rq_ue_daten %>%
+  rq_ue_daten_station <- rq_ue_daten |>
     dplyr::filter(.data$Jahr %in% .env$jahr)
 
   # Für die Beschriftung resp. Zusammenfassung pro Substanz Aggregation der Überschreitungen nach Substanz
-  Ue_pro_Substanz <- rq_ue_daten_station %>%
-    dplyr::group_by(.data$BEZEICHNUNG_BAFU) %>%
+  Ue_pro_Substanz <- rq_ue_daten_station |>
+    dplyr::group_by(.data$BEZEICHNUNG_BAFU) |>
     dplyr::summarise(
       AnyUe_anh = any(.data$Ue_anhaltend),
       AnyUe_kurz = any(.data$Ue_kurzzeitig),
       AnyUe_allg = any(.data$Ue_generisch)
-    ) %>%
+    ) |>
     dplyr::ungroup()
 
   # Je nach plot_typ sollen unterschiedliche Daten verwendet werden. Daher sind im switch statement pro plot_typ die Symbole hinterlegt, nach denen später z.B. gefiltert wird.
@@ -532,7 +532,7 @@ plot_misch_ue <- function(rq_ue_daten,
       AnyUe <- dplyr::sym("AnyUe_anh")
       Ue_GSchV_fill <- dplyr::sym("Ue_anhaltend")
       # Für andauernde Überschreitungen berücksichtigen wir nur Proben >= 10 Tage
-      mv_daten_Ue <- rq_ue_daten_station %>% dplyr::filter(
+      mv_daten_Ue <- rq_ue_daten_station |> dplyr::filter(
         .data$Tage >= 10,
         .data$GSCHV == 1,
         !is.na(.data$Ue_anhaltend)
@@ -542,23 +542,23 @@ plot_misch_ue <- function(rq_ue_daten,
     "kurzzeitig" = {
       AnyUe <- dplyr::sym("AnyUe_kurz")
       Ue_GSchV_fill <- dplyr::sym("Ue_kurzzeitig")
-      mv_daten_Ue <- rq_ue_daten_station %>% dplyr::filter(.data$GSCHV == 1, !is.na(.data$Ue_kurzzeitig))
+      mv_daten_Ue <- rq_ue_daten_station |> dplyr::filter(.data$GSCHV == 1, !is.na(.data$Ue_kurzzeitig))
       titel_plot <- "Kurzzeitige Verunreinigungen gem\u00e4ss GSchV"
     },
     "allgemein" = {
       # Betrifft nur Substanzen ohne einen spezifischen Grenzwert in der GSchV
       AnyUe <- dplyr::sym("AnyUe_allg")
       Ue_GSchV_fill <- dplyr::sym("Ue_allgemein")
-      mv_daten_Ue <- rq_ue_daten_station %>% dplyr::filter(.data$GSCHV == 2)
+      mv_daten_Ue <- rq_ue_daten_station |> dplyr::filter(.data$GSCHV == 2)
       titel_plot <- "Allgemeine Verunreinigungen gem\u00e4ss GSchV"
     }
   )
 
   # Mit den Informationen zur Überschreitung pro Substanz können die Substanznamen im Plot als HTML/Markdown formatiert werden (rot/fett).
   # Zudem wird eine Warnung hinzugefügt, falls die BG höher ist als der Grenzwert
-  mv_daten_plot <- mv_daten_Ue %>%
-    dplyr::left_join(Ue_pro_Substanz, by = "BEZEICHNUNG_BAFU") %>%
-    dplyr::arrange(.data$BEZEICHNUNG_BAFU) %>%
+  mv_daten_plot <- mv_daten_Ue |>
+    dplyr::left_join(Ue_pro_Substanz, by = "BEZEICHNUNG_BAFU") |>
+    dplyr::arrange(.data$BEZEICHNUNG_BAFU) |>
     dplyr::mutate(
       BG_warnung = dplyr::if_else(
         !is.na(.data$BG_max) &
@@ -645,12 +645,12 @@ plot_misch_ue <- function(rq_ue_daten,
     )
 
   # Für summary strip: Nur Überschreitungen pro Probe (ohne Aufschlüsselung nach Substanz) behalten
-  summary_data <- mv_daten_plot %>%
+  summary_data <- mv_daten_plot |>
     dplyr::distinct(.data$BEGINNPROBENAHME,
       .data$ENDEPROBENAHME,
       !!Ue_GSchV_fill,
       .keep_all = TRUE
-    ) %>%
+    ) |>
     dplyr::filter({{ Ue_GSchV_fill }})
 
   # Nur ein Eintrag auf y-Achse: break manuell auf 1 gesetzt und Label manuell gesetzt.
@@ -744,10 +744,10 @@ plot_misch_ue_summe <- function(rq_ue_daten,
   }
 
   # Nach Überschreitungen filtern, danach Anz. Ue pro gruppe zählen; gemäss Besprechung mit Irene Wittmer hier nur anhaltende Ue
-  plot_data <- rq_ue_daten %>%
-    dplyr::filter(.data$CODE %in% .env$stationscode, .data$Jahr %in% .env$jahr, (.data$Ue_anhaltend | .data$Ue_generisch), .data$Tage >= 10) %>%
-    dplyr::group_by(.data$CODE, .data$Jahr) %>%
-    dplyr::summarise(Anz_spez = sum(.data$Ue_anhaltend, na.rm = TRUE), Anz_gen = sum(.data$Ue_generisch, na.rm = TRUE)) %>%
+  plot_data <- rq_ue_daten |>
+    dplyr::filter(.data$CODE %in% .env$stationscode, .data$Jahr %in% .env$jahr, (.data$Ue_anhaltend | .data$Ue_generisch), .data$Tage >= 10) |>
+    dplyr::group_by(.data$CODE, .data$Jahr) |>
+    dplyr::summarise(Anz_spez = sum(.data$Ue_anhaltend, na.rm = TRUE), Anz_gen = sum(.data$Ue_generisch, na.rm = TRUE)) |>
     tidyr::pivot_longer(c("Anz_spez", "Anz_gen"), names_to = "Art_Ue", values_to = "Anzahl")
 
   pobj <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$Jahr, y = .data$Anzahl, fill = .data$Art_Ue)) +
@@ -833,11 +833,11 @@ plot_misch_ue_qk <- function(rq_ue_daten,
   # Es handelt sich um zwei verschiedene Datenverarbeitungen und Plots, daher ab hier getrennte Logik
   if (!detailliert) {
     # Aufsummierte Darstellung ohne Details. Entweder für AQK oder CQK
-    rq_ue_summary <- dplyr::group_by(rq_ue_daten, .data$CODE, .data$Jahr) %>%
+    rq_ue_summary <- dplyr::group_by(rq_ue_daten, .data$CODE, .data$Jahr) |>
       dplyr::summarise(
         Anz_gschv = sum({{ Ue_GSchV }}, na.rm = TRUE),
         Anz_qk = sum({{ Ue_QK }}, na.rm = TRUE) - .data$Anz_gschv # Damit Überschreitungen nicht doppelt gezählt werden
-      ) %>%
+      ) |>
       tidyr::pivot_longer(c("Anz_gschv", "Anz_qk"),
         names_to = "Art_Ue",
         values_to = "Anzahl"
@@ -870,19 +870,19 @@ plot_misch_ue_qk <- function(rq_ue_daten,
 
   if (detailliert) {
     # Hier Gruppierung zusätzlich nach Substanz
-    rq_ue_summary <- dplyr::group_by(rq_ue_daten, .data$CODE, .data$Jahr, .data$ID_Substanz, .data$BEZEICHNUNG_BAFU) %>%
+    rq_ue_summary <- dplyr::group_by(rq_ue_daten, .data$CODE, .data$Jahr, .data$ID_Substanz, .data$BEZEICHNUNG_BAFU) |>
       dplyr::summarise(
         gschv = sum({{ Ue_GSchV }}, na.rm = TRUE),
         qk = sum({{ Ue_QK }}, na.rm = TRUE),
         # Damit Überschreitungen nicht doppelt gezählt werden
         qk = dplyr::if_else(.data$gschv == 0, qk, 0)
-      ) %>%
+      ) |>
       tidyr::pivot_longer(c("gschv", "qk"),
         names_to = "Ue",
         values_to = "Anzahl"
-      ) %>%
-      dplyr::filter(.data$Anzahl > 0) %>%
-      dplyr::ungroup() %>%
+      ) |>
+      dplyr::filter(.data$Anzahl > 0) |>
+      dplyr::ungroup() |>
       # Verwendung von Faktoren zum Sortieren, aber auch weil ggpattern Probleme hatte mit den Sonderzeichen in der BEZEICHNUNG_BAFU
       dplyr::mutate(BEZEICHNUNG_BAFU_fct = forcats::fct(.data$BEZEICHNUNG_BAFU, levels = sort(unique(.data$BEZEICHNUNG_BAFU))))
 
@@ -897,8 +897,8 @@ plot_misch_ue_qk <- function(rq_ue_daten,
     names(farben_substanzen) <- NULL
 
     # Nur Substanzen, die in der GSchV einen Wert haben, sollen schraffiert werden.
-    substanzen <- rq_ue_summary %>%
-      dplyr::distinct(.data$ID_Substanz, .data$BEZEICHNUNG_BAFU, .data$BEZEICHNUNG_BAFU_fct, .data$Ue) %>%
+    substanzen <- rq_ue_summary |>
+      dplyr::distinct(.data$ID_Substanz, .data$BEZEICHNUNG_BAFU, .data$BEZEICHNUNG_BAFU_fct, .data$Ue) |>
       dplyr::mutate(Farbe = .env$farben_substanzen, Muster = dplyr::if_else(.data$Ue == "gschv", "stripe", NA_character_))
 
     muster <- substanzen$Muster
@@ -951,6 +951,7 @@ plot_misch_ue_qk <- function(rq_ue_daten,
 #'  \item{"andauernd"}{Verwendung des CQK für die Beurteilung & Proben mit Dauer >= 10 Tage}
 #'  \item{"kurzzeitig"}{Verwendung des AQK für die Beurteilung}
 #' }
+#' @param optin_mischtox_S Logisch (Vorgabe: `FALSE`). Ab v1.2 unterstützt mvwizr auch die Anzeige der Fischtoxizität (`S_chron`). Falls `TRUE`, wird eine vierte Zeile bei den Mischtoxizitäten angezeigt, falls sie in den Daten vorhanden ist. Falls `FALSE`, wird sie nicht angezeigt.
 #'
 #' @return ggplot2 Plot-Objekt
 #' @export
@@ -965,7 +966,8 @@ plot_misch_ue_qk <- function(rq_ue_daten,
 plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
                                           stationscode,
                                           jahr,
-                                          modus = "andauernd") {
+                                          modus = "andauernd",
+                                          optin_mischtox_S = FALSE) {
   # Korrekte locale setzen (nur innerhalb dieser Funktion) für Monatsnamen
   withr::local_locale(setze_chde_locale())
 
@@ -988,35 +990,35 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
   )
 
   # Der Plot ist immer nur für eine Station und ein bestimmtes Jahr gedacht
-  rq_data <- rq_ue_daten %>%
+  rq_data <- rq_ue_daten |>
     dplyr::filter(.data$CODE %in% .env$stationscode, .data$Jahr %in% .env$jahr, !is.na(.data$ENDEPROBENAHME))
 
   # Farbskala gemäss Modul-Stufen-Konzept als globale Funktion hinterlegt
   farbskala_tox <- farbskala_bewertung_ecotox()
 
   # Substanz-Bezeichnung als Faktor um entlang kontinuierlicher y-Skala anordnen zu können. RQ und Beurteilung wird je nach Modus unterschiedlich gesetzt (Verweis auf Symbole oben). Zur Notation siehe: https://dplyr.tidyverse.org/articles/programming.html
-  rq_data_fct <- rq_data %>%
+  rq_data_fct <- rq_data |>
     dplyr::mutate(
       BEZEICHNUNG_BAFU = forcats::fct(.data$BEZEICHNUNG_BAFU, levels = sort(unique(.data$BEZEICHNUNG_BAFU), decreasing = TRUE)),
       BEZ_NUM = as.integer(.data$BEZEICHNUNG_BAFU),
       RQ = {{ switchRQ }},
       Beurteilung = {{ switchBeurteilung }}
-    ) %>%
+    ) |>
     # Wir entfernen Einträge ohne Risikoquotienten (= mit fehlenden QK), da diese nicht geplottet werden können
     dplyr::filter(!is.na(.data$RQ))
 
   # Maximale RQ je Substanz (ohne Ties!). Gerundet auf 1 Dezimalstelle für Anzeige.
-  rq_summary <- rq_data_fct %>%
-    dplyr::select(dplyr::all_of(c("BEZEICHNUNG_BAFU", "BEZ_NUM", "RQ", "Beurteilung"))) %>%
-    dplyr::group_by(.data$BEZEICHNUNG_BAFU) %>%
-    dplyr::slice_max(order_by = .data$RQ, n = 1, with_ties = FALSE) %>%
+  rq_summary <- rq_data_fct |>
+    dplyr::select(dplyr::all_of(c("BEZEICHNUNG_BAFU", "BEZ_NUM", "RQ", "Beurteilung"))) |>
+    dplyr::group_by(.data$BEZEICHNUNG_BAFU) |>
+    dplyr::slice_max(order_by = .data$RQ, n = 1, with_ties = FALSE) |>
     dplyr::mutate(RQ = round(.data$RQ, 1))
 
   # Anzahl Stellen der RQ-Werte für Padding mit Leerzeichen
   rq_width <- max(nchar(as.character(rq_summary$RQ)))
 
   # Padding mit Leerzeichen, damit Zahlen alle an Dezimalzeichen ausgerichtet werden können (mit monospaced Schrift)
-  rq_summary <- rq_summary %>%
+  rq_summary <- rq_summary |>
     # sprintf-Notation mit Stern für Padding
     dplyr::mutate(RQ_text = sprintf("%*.1f", !!rq_width, .data$RQ))
 
@@ -1054,7 +1056,7 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
     )
 
   # Mischtoxizitätdaten - gefiltert nach aktuellem QK
-  mixtox_data <- berechne_mixtox(rq_data) %>%
+  mixtox_data <- berechne_mixtox(rq_data, optin_mischtox_S = optin_mischtox_S) |>
     dplyr::filter(.data$Kriterium %in% .env$switchKriterium)
 
   # Mischtoxizitätsplot analog oben
@@ -1076,10 +1078,10 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
     )
 
   # Mischtoxizitäts-Summary analog oben
-  mixtox_summary <- mixtox_data %>%
-    dplyr::select(dplyr::all_of(c("CODE", "Ziel", "Ziel_num", "Beurteilung", "RQ"))) %>%
-    dplyr::group_by(.data$CODE, .data$Ziel, .data$Ziel_num) %>%
-    dplyr::slice_max(.data$RQ, n = 1, with_ties = FALSE) %>%
+  mixtox_summary <- mixtox_data |>
+    dplyr::select(dplyr::all_of(c("CODE", "Ziel", "Ziel_num", "Beurteilung", "RQ"))) |>
+    dplyr::group_by(.data$CODE, .data$Ziel, .data$Ziel_num) |>
+    dplyr::slice_max(.data$RQ, n = 1, with_ties = FALSE) |>
     dplyr::mutate(RQ = round(.data$RQ, 1))
 
   mixtox_rq_width <- max(nchar(as.character(mixtox_summary$RQ)))
@@ -1200,7 +1202,7 @@ plot_misch_mixtox_verlauf <- function(rq_ue_daten,
     stationscode <- unique(rq_ue_daten$CODE)
   }
 
-  rq_data <- rq_ue_daten %>%
+  rq_data <- rq_ue_daten |>
     dplyr::filter(.data$CODE %in% .env$stationscode, .data$Jahr %in% .env$jahr)
 
   switch(modus,
@@ -1212,7 +1214,7 @@ plot_misch_mixtox_verlauf <- function(rq_ue_daten,
     }
   )
 
-  mixtox_data <- berechne_mixtox(rq_data) %>%
+  mixtox_data <- berechne_mixtox(rq_data) |>
     dplyr::filter(.data$Kriterium %in% .env$switchKriterium)
 
   if (modus == "andauernd") {
@@ -1258,9 +1260,9 @@ plot_misch_mixtox_verlauf <- function(rq_ue_daten,
   }
 
   if (plot_zusammenfassung != "keine") {
-    mixtox_summary <- mixtox_data %>%
-      dplyr::group_by(.data$CODE, .data$Jahr, .data$Ziel, .data$Ziel_num) %>%
-      dplyr::slice_max(order_by = .data$RQ, n = 1, with_ties = FALSE, na_rm = TRUE) %>%
+    mixtox_summary <- mixtox_data |>
+      dplyr::group_by(.data$CODE, .data$Jahr, .data$Ziel, .data$Ziel_num) |>
+      dplyr::slice_max(order_by = .data$RQ, n = 1, with_ties = FALSE, na_rm = TRUE) |>
       dplyr::ungroup()
 
     mixtox_pobj <- ggplot2::ggplot(mixtox_summary) +
@@ -1332,7 +1334,7 @@ plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
   # Korrekte locale setzen (nur innerhalb dieser Funktion) für Monatsnamen
   withr::local_locale(setze_chde_locale())
 
-  rq_data <- rq_ue_daten %>%
+  rq_data <- rq_ue_daten |>
     dplyr::filter(.data$CODE %in% .env$stationscode, !is.na(.data$ENDEPROBENAHME))
 
   if (nrow(rq_data) == 0) {
@@ -1348,7 +1350,7 @@ plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
     }
   )
 
-  mixtox_data <- berechne_mixtox(rq_data) %>%
+  mixtox_data <- berechne_mixtox(rq_data) |>
     dplyr::filter(.data$Kriterium %in% .env$switchKriterium)
 
   if (modus == "andauernd") {
@@ -1410,7 +1412,7 @@ plot_stich_uebersicht <- function(mv_daten,
     jahr <- unique(lubridate::year(mv_daten$BEGINNPROBENAHME))
   }
 
-  stichproben <- mv_daten %>%
+  stichproben <- mv_daten |>
     dplyr::filter(is.na(.data$ENDEPROBENAHME), !is.na(.data$ID_Substanz), .data$PROBEARTID == "S", .data$CODE %in% .env$stationscode, .data$WERT_NUM > 0, lubridate::year(.data$BEGINNPROBENAHME) %in% jahr)
 
   if (nrow(stichproben) == 0) {
@@ -1487,14 +1489,14 @@ plot_stich_verlauf <- function(mv_daten,
   stichproben <- dplyr::filter(mv_daten, is.na(.data$ENDEPROBENAHME), !is.na(.data$ID_Substanz), .data$PROBEARTID == "S")
 
   # Substanzen auswählen, bei denen mindestens einmal etwas gemessen wurde
-  substanzen_ueber0 <- stichproben %>%
-    dplyr::group_by(.data$CODE, .data$ID_Substanz) %>%
-    dplyr::summarise(ueber0 = sum(.data$WERT_NUM)) %>%
-    dplyr::filter(.data$ueber0 > 0) %>%
+  substanzen_ueber0 <- stichproben |>
+    dplyr::group_by(.data$CODE, .data$ID_Substanz) |>
+    dplyr::summarise(ueber0 = sum(.data$WERT_NUM)) |>
+    dplyr::filter(.data$ueber0 > 0) |>
     dplyr::mutate(ueber0 = TRUE)
 
-  stichproben <- stichproben %>%
-    dplyr::left_join(substanzen_ueber0, by = c("CODE", "ID_Substanz")) %>%
+  stichproben <- stichproben |>
+    dplyr::left_join(substanzen_ueber0, by = c("CODE", "ID_Substanz")) |>
     dplyr::filter(.data$ueber0)
 
   if (nrow(stichproben) == 0) {

@@ -8,7 +8,8 @@ plot_misch_oekotox_uebersicht(
   rq_ue_daten,
   stationscode,
   jahr,
-  modus = "andauernd"
+  modus = "andauernd",
+  optin_mischtox_S = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ plot_misch_oekotox_uebersicht(
 \item{"andauernd"}{Verwendung des CQK für die Beurteilung & Proben mit Dauer >= 10 Tage}
 \item{"kurzzeitig"}{Verwendung des AQK für die Beurteilung}
 }}
+
+\item{optin_mischtox_S}{Logisch (Vorgabe: \code{FALSE}). Ab v1.2 unterstützt mvwizr auch die Anzeige der Fischtoxizität (\code{S_chron}). Falls \code{TRUE}, wird eine vierte Zeile bei den Mischtoxizitäten angezeigt, falls sie in den Daten vorhanden ist. Falls \code{FALSE}, wird sie nicht angezeigt.}
 }
 \value{
 ggplot2 Plot-Objekt

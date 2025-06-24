@@ -4,7 +4,7 @@
 \alias{berechne_mixtox}
 \title{Mischtoxizitäten berechnen}
 \usage{
-berechne_mixtox(rq_data)
+berechne_mixtox(rq_data, optin_mischtox_S = FALSE)
 }
 \arguments{
 \item{rq_data}{Tibble mit Daten der Funktion berechne_rq_ue()}

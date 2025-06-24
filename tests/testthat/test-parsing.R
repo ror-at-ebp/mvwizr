@@ -31,10 +31,10 @@ test_that("einlesen_mv_gbl produziert tibble mit korrekten variablen", {
 
 ## Teste Struktur der Rückgabe ####
 
-test_that("einheiten_normalisieren funktioniert", {
+test_that("normalise_units funktioniert", {
   mv <- mvwizr::mvdaten_beispiel_mvwizr
 
-  out <- einheiten_normalisieren(mv, wert = "WERT_NUM", einheit = "EINHEIT")
+  out <- normalise_units(mv, wert = "WERT_NUM", einheit = "EINHEIT")
   out_names <- names(out)
 
   var_identisch_bool <- all(out_names == names(mv))
@@ -53,7 +53,7 @@ test_that("einheiten_normalisieren funktioniert", {
 ## Teste Struktur der Rückgabe ####
 
 test_that("einlesen_regulierungen produziert tibble", {
-  reg_pfad <- system.file("extdata", "anf_Substanz_recht_2024.xlsx", package = "mvwizr")
+  reg_pfad <- system.file("extdata", "anf_Substanz_recht.xlsx", package = "mvwizr")
   out <- einlesen_regulierungen(reg_pfad)
   out_names <- names(out)
 
@@ -198,7 +198,7 @@ test_that("entferne_berech_gbl produziert tibble", {
   fixe_var <- c("UID", "CODE", "STANDORT", "NAME", "PROBEARTID", "BEGINNPROBENAHME",
                 "ENDEPROBENAHME", "ID_Substanz", "PARAMETERID_BAFU", "OPERATOR",
                 "WERT_NUM", "Konz_inkl_BG", "EINHEIT", "MSTLTYP", "PARAMETERGRUPPEID",
-                "PARAMETERGRUPPE", "PARAMETER", "BEZEICHNUNG_BAFU", "BAFU_Bez_DE",
+                "PARAMETERGRUPPE", "PARAMETER_GBL", "BEZEICHNUNG_BAFU", "BAFU_Bez_DE",
                 "BAFU_Bez_FR", "BG_max", "BG_min")
 
   var_enthalten_bool <- all(fixe_var %in% out_names)
