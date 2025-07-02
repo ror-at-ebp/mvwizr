@@ -431,14 +431,17 @@ einlesen_nawa <- function(nawa_mv,
   mv_data <- mv_data |>
     dplyr::mutate(
       PROBEARTID = dplyr::case_when(
-        stringr::str_detect(PROBEARTID, "Sammelprobe") ~ "SaP",
-        stringr::str_detect(PROBEARTID, "Echantillon composite") ~ "SaP",
+        stringr::str_detect(PROBEARTID, "(?i)sammelprobe") ~ "SaP",
+        stringr::str_detect(PROBEARTID, "(?i)composite") ~ "SaP",
+        stringr::str_detect(PROBEARTID, "(?i)ponctuel") ~ "S",
+        stringr::str_detect(PROBEARTID, "(?i)stichprobe") ~ "S",
         # Hier gibt es momentan nur diese Probenahme-Art; ggf. sollten hier bSaP und SaP unterschieden werden.
         TRUE ~ NA_character_
       ),
       WERT_NUM = dplyr::if_else(stringr::str_detect(.data$Messwert, "<"), "0", .data$Messwert),
       WERT_NUM = as.numeric(.data$WERT_NUM),
       # Type-casting nicht direkt in if_else(), da sonst eine Warnung erzeugt wird (da if_else die RHS immer evaluiert)
+      WERT_NUM = dplyr::if_else((!is.na(Bestimmungsgrenze) & WERT_NUM < Bestimmungsgrenze), 0, WERT_NUM),
       CODE = as.character(.data$CODE),
       # Stationscode als Character
     )
