@@ -81,30 +81,14 @@ inklusive der minimalen und maximalen Bestimmungsgrenzen (falls
 vorhanden) plotten. Dafür gibt es verschiedene Darstellungsarten; z.B.
 mittels Barplot:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, <span class="va">regulierungen_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, plot_typ <span class="op">=</span> <span class="st">"barplot"</span>, id_substanz <span class="op">=</span> <span class="fl">71</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, <span class="va">regulierungen_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, plot_typ <span class="op">=</span> <span class="st">"barplot"</span>, id_substanz <span class="op">=</span> <span class="fl">71</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mvwizr_files/figure-html/unnamed-chunk-2-1.png" width="768"></p>
 <p>Andererseits ist auch die Darstellung von Summen möglich (z.B. aller
 Pestizide hier). Falls dafür der “Treppen”-Plot ausgewählt wird, muss
 sichergestellt werden, dass es keine überlappenden Intervalle gibt, da
 eine Visualisierung mit Linien sonst nicht möglich ist:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, <span class="va">regulierungen_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, plot_typ <span class="op">=</span> <span class="st">"treppen"</span>, zulassungstyp <span class="op">=</span> <span class="st">"[BP]"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, <span class="va">regulierungen_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, plot_typ <span class="op">=</span> <span class="st">"treppen"</span>, zulassungstyp <span class="op">=</span> <span class="st">"[BP]"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mvwizr_files/figure-html/unnamed-chunk-3-1.png" width="768"></p>
 <p>Bei der Summendarstellung mit Barplots kann schliesslich auch die
 Verteilung pro (arbiträrer) Kategorie gezeigt werden, wobei der Name der
@@ -112,15 +96,7 @@ Variable für die Kategorie angegeben werden muss (hier
 “PARAMETERGRUPPE”):</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, <span class="va">regulierungen_mvwizr</span>, <span class="st">"URT010"</span>, plot_typ <span class="op">=</span> <span class="st">"barplot_gruppen"</span>,</span>
-<span>                   zulassungstyp <span class="op">=</span> <span class="st">"Alle"</span>, plot_parametergruppe <span class="op">=</span> <span class="st">"PARAMETERGRUPPE"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span></code></pre></div>
+<span>                   zulassungstyp <span class="op">=</span> <span class="st">"Alle"</span>, plot_parametergruppe <span class="op">=</span> <span class="st">"PARAMETERGRUPPE"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mvwizr_files/figure-html/unnamed-chunk-4-1.png" width="768"></p>
 </div>
 <div class="section level3">
@@ -132,29 +108,13 @@ folgenden Beispiel werden andauernde Überschreitungen pro Substanz (d.h.
 Probendauer &gt;= 10 Tage) für die Station “URT010” in den Jahren 2019
 bis 2020 ausgewertet.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_ue.html">plot_misch_ue</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, plot_typ <span class="op">=</span> <span class="st">"andauernd"</span>, jahr <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2019</span>, <span class="fl">2020</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_ue.html">plot_misch_ue</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, plot_typ <span class="op">=</span> <span class="st">"andauernd"</span>, jahr <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2019</span>, <span class="fl">2020</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mvwizr_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
 <p>Auch summierte Grafiken (ohne Aufschlüsselung nach Substanz) sind
 möglich; im Folgenden eine Zeitreihe für die Überschreitung von akuten
 Qualitätskriterien:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_ue_qk.html">plot_misch_ue_qk</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, qk <span class="op">=</span> <span class="st">"akut"</span>, detailliert <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_ue_qk.html">plot_misch_ue_qk</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, qk <span class="op">=</span> <span class="st">"akut"</span>, detailliert <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mvwizr_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
 </div>
 <div class="section level3">
@@ -165,42 +125,18 @@ werden für die Beurteilung gemäss MSK benötigt. Im folgenden Beispiel
 ist die Stationsübersicht Ökotoxikologie für andauernde Belastungen
 abgebildet.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_oekotox_uebersicht.html">plot_misch_oekotox_uebersicht</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, jahr <span class="op">=</span> <span class="fl">2020</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_oekotox_uebersicht.html">plot_misch_oekotox_uebersicht</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, jahr <span class="op">=</span> <span class="fl">2020</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mvwizr_files/figure-html/unnamed-chunk-7-1.png" width="768"></p>
 <p>Der Verlauf von Mischungstoxizitäten kann auch einzeln visualisiert
 werden:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_mixtox_verlauf.html">plot_misch_mixtox_verlauf</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, modus <span class="op">=</span> <span class="st">"andauernd"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_mixtox_verlauf.html">plot_misch_mixtox_verlauf</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, modus <span class="op">=</span> <span class="st">"andauernd"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mvwizr_files/figure-html/unnamed-chunk-8-1.png" width="960"></p>
 <p>Schliesslich sind auch Zeitreihen der Häufigkeitsverteilung der
 verschiedenen Ökotox-Bewertungen möglich (folgend für kurzzeitige
 Verunreinigungen für die Station URT010):</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_mixtox_haeufigkeit.html">plot_misch_mixtox_haeufigkeit</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, modus <span class="op">=</span> <span class="st">"kurzzeitig"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_mixtox_haeufigkeit.html">plot_misch_mixtox_haeufigkeit</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, modus <span class="op">=</span> <span class="st">"kurzzeitig"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mvwizr_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
 </div>
 <div class="section level3">
@@ -209,15 +145,7 @@ Verunreinigungen für die Station URT010):</p>
 <p>Stichproben können mittels Raster-Darstellung pro Station dargestellt
 werden, um rasch explorativ wichtige Substanzen zu identifizieren:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_stich_uebersicht.html">plot_stich_uebersicht</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"SA51"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span>
-<span><span class="co">#&gt; Warning in (function (category = "LC_ALL", locale = "") : OS reports request to</span></span>
-<span><span class="co">#&gt; set locale to "de_CH.utf8" cannot be honored</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_stich_uebersicht.html">plot_stich_uebersicht</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"SA51"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mvwizr_files/figure-html/unnamed-chunk-10-1.png" width="960"></p>
 <p>Einige Plotfunktionen, die für Mischproben konzipiert sind,
 akzeptieren auch Stichproben (siehe Hilfetexte der Funktionen).</p>
@@ -234,7 +162,7 @@ akzeptieren auch Stichproben (siehe Hilfetexte der Funktionen).</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>
