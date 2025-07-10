@@ -23,6 +23,12 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Install locale
+        run: |
+          sudo apt update
+          sudo apt install -y locales
+          sudo locale-gen de_CH.utf8
+
       - uses: actions/checkout@v4
 
       - uses: r-lib/actions/setup-pandoc@v2
