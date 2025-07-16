@@ -10,11 +10,13 @@ test_that("einlesen_mv_gbl produziert tibble mit korrekten variablen", {
 
   out <- suppressWarnings(einlesen_mv_gbl(mv_daten_pfad, vsa_lookup_pfad, bafu_code_pfad))
 
-  fixe_var <- c("UID", "CODE", "STANDORT", "NAME", "PROBEARTID", "BEGINNPROBENAHME",
-                "ENDEPROBENAHME", "ID_Substanz", "PARAMETERID_BAFU", "OPERATOR",
-                "WERT_NUM", "Konz_inkl_BG", "EINHEIT", "MSTLTYP", "PARAMETERGRUPPEID",
-                "PARAMETERGRUPPE", "BEZEICHNUNG_BAFU", "BAFU_Bez_DE",
-                "BAFU_Bez_FR", "BG_max", "BG_min")
+  fixe_var <- c(
+    "UID", "CODE", "STANDORT", "NAME", "PROBEARTID", "BEGINNPROBENAHME",
+    "ENDEPROBENAHME", "ID_Substanz", "PARAMETERID_BAFU", "OPERATOR",
+    "WERT_NUM", "Konz_inkl_BG", "EINHEIT", "MSTLTYP", "PARAMETERGRUPPEID",
+    "PARAMETERGRUPPE", "BEZEICHNUNG_BAFU", "BAFU_Bez_DE",
+    "BAFU_Bez_FR", "BG_max", "BG_min"
+  )
 
   out_names <- names(out)
   var_vorhanden_bool <- all(fixe_var %in% out_names)
@@ -75,8 +77,10 @@ test_that("einlesen_regulierungen produziert tibble", {
   out <- suppressWarnings(einlesen_kriterien(krit_pfad))
   out_names <- names(out)
 
-  fixe_var <- c("ID_Substanz", "P_chron", "I_chron", "V_chron", "P_akut", "I_akut",
-                "V_akut", "Robustheit QK", "CQK", "AQK")
+  fixe_var <- c(
+    "ID_Substanz", "P_chron", "I_chron", "V_chron", "P_akut", "I_akut",
+    "V_akut", "Robustheit QK", "CQK", "AQK"
+  )
 
   var_vorhanden_bool <- all(fixe_var %in% out_names)
 
@@ -133,22 +137,27 @@ test_that("einlesen_bafu_lookup produziert tibble", {
 ## Teste Struktur der Rückgabe ####
 
 test_that("berechne_rq_ue produziert tibble", {
-
   out <- berechne_rq_ue(mvwizr::mvdaten_beispiel_mvwizr,
-                                  mvwizr::regulierungen_mvwizr,
-                                  mvwizr::kriterien_mvwizr,
-                                  robust3 = FALSE)
+    mvwizr::regulierungen_mvwizr,
+    mvwizr::kriterien_mvwizr,
+    robust3 = FALSE
+  )
 
   out_names <- names(out)
 
-  fixe_var <- c("RQ_CQK",
-                "RQ_AQK", "RQ_CQK_P", "RQ_CQK_I", "RQ_CQK_V", "RQ_AQK_P", "RQ_AQK_I",
-                "RQ_AQK_V", "Beurteilung_CQK", "Beurteilung_AQK", "Ue_anhaltend",
-                "Ue_kurzzeitig", "Ue_spezifisch", "Ue_generisch", "Ue_AQK", "Ue_CQK")
+  fixe_var <- c(
+    "RQ_CQK",
+    "RQ_AQK", "RQ_CQK_P", "RQ_CQK_I", "RQ_CQK_V", "RQ_AQK_P", "RQ_AQK_I",
+    "RQ_AQK_V", "Beurteilung_CQK", "Beurteilung_AQK", "Ue_anhaltend",
+    "Ue_kurzzeitig", "Ue_spezifisch", "Ue_generisch", "Ue_AQK", "Ue_CQK"
+  )
 
-  typen_korrekt <- all({out |> dplyr::summarise(is_num = dplyr::across(dplyr::starts_with("RQ_"), is.numeric),
-                  is_logi = dplyr::across(dplyr::starts_with("Ue_"), rlang::is_logical),
-                  is_fct = dplyr::across(dplyr::starts_with("Beurteilung_"), is.factor))
+  typen_korrekt <- all({
+    out |> dplyr::summarise(
+      is_num = dplyr::across(dplyr::starts_with("RQ_"), is.numeric),
+      is_logi = dplyr::across(dplyr::starts_with("Ue_"), rlang::is_logical),
+      is_fct = dplyr::across(dplyr::starts_with("Beurteilung_"), is.factor)
+    )
   })
 
   var_vorhanden_bool <- all(fixe_var %in% out_names)
@@ -169,12 +178,13 @@ test_that("berechne_rq_ue produziert tibble", {
 ## Teste Struktur der Rückgabe ####
 
 test_that("berechne_mixtox produziert tibble", {
-
   out <- berechne_mixtox(mvwizr::rq_ue_beispiel_mvwizr)
   out_names <- names(out)
 
-  fixe_var <- c("CODE", "BEGINNPROBENAHME", "ENDEPROBENAHME", "Jahr", "Tage",
-                "Ziel", "Kriterium", "RQ", "Ziel_num", "Beurteilung")
+  fixe_var <- c(
+    "CODE", "BEGINNPROBENAHME", "ENDEPROBENAHME", "Jahr", "Tage",
+    "Ziel", "Kriterium", "RQ", "Ziel_num", "Beurteilung"
+  )
 
   var_vorhanden_bool <- all(fixe_var %in% out_names)
 
@@ -195,11 +205,13 @@ test_that("entferne_berech_gbl produziert tibble", {
   out <- mvwizr:::entferne_berech_gbl(mv)
   out_names <- names(out)
 
-  fixe_var <- c("UID", "CODE", "STANDORT", "NAME", "PROBEARTID", "BEGINNPROBENAHME",
-                "ENDEPROBENAHME", "ID_Substanz", "PARAMETERID_BAFU", "OPERATOR",
-                "WERT_NUM", "Konz_inkl_BG", "EINHEIT", "MSTLTYP", "PARAMETERGRUPPEID",
-                "PARAMETERGRUPPE", "PARAMETER_GBL", "BEZEICHNUNG_BAFU", "BAFU_Bez_DE",
-                "BAFU_Bez_FR", "BG_max", "BG_min")
+  fixe_var <- c(
+    "UID", "CODE", "STANDORT", "NAME", "PROBEARTID", "BEGINNPROBENAHME",
+    "ENDEPROBENAHME", "ID_Substanz", "PARAMETERID_BAFU", "OPERATOR",
+    "WERT_NUM", "Konz_inkl_BG", "EINHEIT", "MSTLTYP", "PARAMETERGRUPPEID",
+    "PARAMETERGRUPPE", "PARAMETER_GBL", "BEZEICHNUNG_BAFU", "BAFU_Bez_DE",
+    "BAFU_Bez_FR", "BG_max", "BG_min"
+  )
 
   var_enthalten_bool <- all(fixe_var %in% out_names)
 

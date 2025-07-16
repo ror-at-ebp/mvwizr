@@ -38,13 +38,20 @@ pak::pkg_install("ror-at-ebp/mvwizr")
 
 ## Updates
 
-Das Paket wird sporadisch aktualisiert zwecks Fehlerbehebung, Erweiterung der Funktionen und Aktualisierung der Daten (BAFU-ID-Lookup, Qualitätskriterien des Ökotoxzentrums, VSA-ID-Lookup, Rechtliche Anforderungen). Um das Paket zu aktualisieren, kann der gleiche Befehl wie bei der Installation verwendet werden.`Dabei sollte eine Meldung wie die folgende erscheinen:
+Das Paket wird sporadisch aktualisiert zwecks Fehlerbehebung, Erweiterung der Funktionen und Aktualisierung der Daten (BAFU-ID-Lookup, Qualitätskriterien des Ökotoxzentrums, VSA-ID-Lookup, Rechtliche Anforderungen). Um das Paket zu aktualisieren, kann der gleiche Befehl wie bei der Installation verwendet werden. Dabei sollte eine Meldung wie die folgende erscheinen:
 
 ```
 → Will update 1 package.
 → The package (0 B) is cached.
 + mvwizr 1.0.0 → 1.1.0 [bld][cmp] (GitHub: 35d7e78)
 ```
+
+### Übersicht über aktuell gebundelte Daten
+
+* BAFU-ID-Lookup ("BAFU_Liste_Parameter_Bezeichnungen_Datenaustausch"): Version 12.2024
+* Dat Qualitätskriterien des Ökotoxzentrums: Version Juni 2025 (Auszug vom VSA)
+* Tab Substanzen des VSA: Auszug aus Datenbank Juli 2025
+* Tab Anforderungen Recht des VSA: Version Juni 2025
 
 ## Verwendung
 
