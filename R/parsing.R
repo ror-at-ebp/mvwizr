@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' mv_daten_pfad <- system.file("extdata", "Daten_MV_GBL_2019_2020.txt", package = "mvwizr")
-#' vsa_lookup_pfad <- system.file("extdata", "Tab_Substanzen.xlsx", package = "mvwizr")
+#' vsa_lookup_pfad <- system.file("extdata", "Tab_Substanzen.txt", package = "mvwizr")
 #' bafu_filename <- "BAFU_Liste_Parameter_Bezeichnungen_Datenaustausch.xlsx"
 #' bafu_code_pfad <- system.file("extdata", bafu_filename, package = "mvwizr")
 #'
@@ -169,7 +169,7 @@ einlesen_mv_gbl <- function(mv_daten_pfad, vsa_lookup_pfad, bafu_lookup_pfad, bS
   }
 }
 
-#' Import Manifest Vorlage für NAWA-MV-Daten schreiben
+#' Schreibe Import Manifest Vorlage für NAWA-MV-Daten
 #'
 #' @param import_manifest_file Pfad zur Import-Manifest-Datei, die geschrieben werden soll. Diese Datei wird im Excel-Format (.xlsx) geschrieben.
 #' @param mv_data_pfad Pfad zu den MV-Daten, die im NAWA-Format vorliegen. Falls angegeben, werden alle Dateien im Verzeichnis, die dem NAWA-Format entsprechen, in das Manifest aufgenommen. Falls `NULL`, wird ein leeres Manifest geschrieben.
@@ -199,7 +199,7 @@ schreibe_nawa_import_manifest_template <- function(import_manifest_file, mv_data
 
     if (length(input_files) == 0) {
       cli::cli_abort(
-        "Keine Dateien im NAWA-Format im Verzeichnis {mv_data_pfad} gefunden."
+        "Keine Dateien im NAWA-Format im Verzeichnis {mv_data_pfad} gefunden oder Pfad inexistent."
       )
     } else {
       cli::cli_alert_info(
@@ -216,6 +216,19 @@ schreibe_nawa_import_manifest_template <- function(import_manifest_file, mv_data
     delimiter = NA_character_,
     lang      = NA_character_
   )
+
+  if (!dir.exists(dirname(import_manifest_file))) {
+    cli::cli_abort("Verzeichnis {dirname(import_manifest_file)} existiert nicht.")
+  }
+
+  if (!grepl("\\.xlsx$", import_manifest_file, ignore.case = TRUE)) {
+    cli::cli_abort("Die Zieldatei muss mit .xlsx enden: {import_manifest_file}")
+  }
+
+  if (file.exists(import_manifest_file)) {
+    cli::cli_abort("Die Datei {import_manifest_file} existiert bereits.")
+  }
+
 
   writexl::write_xlsx(manifest_template, import_manifest_file)
 
@@ -441,17 +454,16 @@ einlesen_nawa <- function(nawa_mv,
       WERT_NUM = dplyr::if_else(stringr::str_detect(.data$Messwert, "<"), "0", .data$Messwert),
       WERT_NUM = as.numeric(.data$WERT_NUM),
       # Type-casting nicht direkt in if_else(), da sonst eine Warnung erzeugt wird (da if_else die RHS immer evaluiert)
-      WERT_NUM = dplyr::if_else((!is.na(Bestimmungsgrenze) & WERT_NUM < Bestimmungsgrenze), 0, WERT_NUM),
+      WERT_NUM = dplyr::if_else((!is.na(.data$Bestimmungsgrenze) & .data$WERT_NUM < .data$Bestimmungsgrenze), 0, .data$WERT_NUM),
       CODE = as.character(.data$CODE),
       # Stationscode als Character
     )
 
   # Alle weiteren Funktionen gehen davon aus, dass 1. die Einheiten normalisiert/alle gleich sind und 2. dass es sich um µg/l handelt.
-
   cli::cli_alert_info("Normalisiere Einheiten der MV-Daten auf \u00b5g/l.")
   mv_data <- normalise_units(
     mv_data,
-    wert = "WERT_NUM",
+    wert = c("WERT_NUM", "Bestimmungsgrenze"),
     einheit = "EINHEIT",
     zieleinheit = "\u00b5g/l"
   )
@@ -706,7 +718,7 @@ einlesen_kriterien <- function(kriterien_pfad) {
   kriterien_df <- readxl::read_excel(kriterien_pfad) |>
     # Umbenennen der CQK- und AQK-Spalten, damit kein Sonderzeichen (µ) im Namen enthalten ist => sonst schwierig für Verarbeitung
     dplyr::select(c(
-      "ID_Substanz", "P_chron", "I_chron", "V_chron",
+      "ID_Substanz", "P_chron", "I_chron", "V_chron", "S_chron",
       "P_akut", "I_akut", "V_akut", "Robustheit QK", "Name"
     ), CQK = dplyr::starts_with("CQK"), AQK = dplyr::starts_with("AQK")) |>
     dplyr::mutate(
@@ -734,7 +746,7 @@ einlesen_kriterien <- function(kriterien_pfad) {
   kriterien_df <- kriterien_df |>
     dplyr::filter(!is.na(.data$ID_Substanz))
 
-  # Die VSA-IDs sind leider nicht eindeutig in der Qualitätskriterienliste, d.h. es gibt mehrere QK-Zeilen für einige VSA-IDs
+  # Die VSA-IDs sind möglicherweise nicht eindeutig in der Qualitätskriterienliste, d.h. es gibt mehrere QK-Zeilen für einige VSA-IDs
   duplikate <- unlist(kriterien_df[duplicated(kriterien_df$ID_Substanz), "ID_Substanz"])
   anz_duplikate <- length(duplikate)
   dup_character <- paste(duplikate, collapse = ", ")
@@ -778,18 +790,18 @@ einlesen_kriterien <- function(kriterien_pfad) {
 #' @return Dataframe mit Lookups
 #' @export
 einlesen_vsa_lookup <- function(vsa_lookup_pfad, alle_felder = FALSE) {
-  vsa_colspec <- cols(
-    ID_Substanz = col_integer(),
-    Name = col_character(),
-    `Parameter-ID` = col_character(),
-    `CASNr - Gemisch` = col_character(),
-    Kommentar = col_character(),
-    Chem_ID_OZ = col_character(),
-    Micropol_ID = col_character(),
-    AnalytikDB_ID = col_character(),
-    PPDB_ID = col_character(),
-    `relevante Isomere` = col_character(),
-    InChIKey = col_character()
+  vsa_colspec <- readr::cols(
+    ID_Substanz = readr::col_integer(),
+    Name = readr::col_character(),
+    `Parameter-ID` = readr::col_character(),
+    `CASNr - Gemisch` = readr::col_character(),
+    Kommentar = readr::col_character(),
+    Chem_ID_OZ = readr::col_character(),
+    Micropol_ID = readr::col_character(),
+    AnalytikDB_ID = readr::col_character(),
+    PPDB_ID = readr::col_character(),
+    `relevante Isomere` = readr::col_character(),
+    InChIKey = readr::col_character()
   )
 
   vsa_lookup_df <- readr::read_delim(vsa_lookup_pfad, delim = ";", quote = '"', col_types = vsa_colspec, locale = readr::locale(encoding = "UTF-8"))
@@ -857,6 +869,22 @@ einlesen_bafu_lookup <- function(bafu_lookup_pfad, alle_felder = FALSE) {
 #' @return Dataframe mit MV-Daten, ergänzt mit Risikoquotienten
 #' @export
 berechne_rq_ue <- function(mv_daten, regulierungen, kriterien, robust3 = TRUE) {
+  # Ergänzt, damit klare Fehlermeldung ausgegeben wird
+  if (!is.data.frame(regulierungen)) {
+    cli::cli_abort(c(
+      "x" = "'regulierungen' muss ein data.frame oder tibble sein.",
+      "i" = "Argument ist ein Objekt der Klasse {.cls {class(regulierungen)}}."
+    ))
+  }
+
+  # Sicherstellen, dass kriterien ein data.frame ist
+  if (!is.data.frame(kriterien)) {
+    cli::cli_abort(c(
+      "x" = "'kriterien' muss ein data.frame oder tibble sein.",
+      "i" = "Argument ist ein Objekt der Klasse {.cls {class(kriterien)}}."
+    ))
+  }
+
   # Die Funktion geht davon aus, dass alle Substanzen eine VSA ID_Substanz haben
   joined_data <- mv_daten |>
     dplyr::mutate(
@@ -874,6 +902,7 @@ berechne_rq_ue <- function(mv_daten, regulierungen, kriterien, robust3 = TRUE) {
       RQ_CQK_P = .data$RQ_CQK * .data$P_chron,
       RQ_CQK_I = .data$RQ_CQK * .data$I_chron,
       RQ_CQK_V = .data$RQ_CQK * .data$V_chron,
+      RQ_CQK_S = .data$RQ_CQK * .data$S_chron,
       RQ_AQK_P = .data$RQ_AQK * .data$P_akut,
       RQ_AQK_I = .data$RQ_AQK * .data$I_akut,
       RQ_AQK_V = .data$RQ_AQK * .data$V_akut,
@@ -906,7 +935,7 @@ berechne_rq_ue <- function(mv_daten, regulierungen, kriterien, robust3 = TRUE) {
   # Prüfen, ob es Überschreitungen bei Substanzen mit QK Robustheit 3 (unzuverlässiger Wert) gibt => als Warnung, dass diese Werte nicht in den Resultaten enthalten sind.
   Ue_robust_3 <- rq_ue_data |>
     dplyr::filter(.data$`Robustheit QK` == 3, .data$Ue_AQK | .data$Ue_CQK) |>
-    dplyr::select(dplyr::all_of(c("CODE", "BEGINNPROBENAHME", "ENDEPROBENAHME", "BEZEICHNUNG_BAFU", "WERT_NUM", "Ue_AQK", "Ue_CQK")))
+    dplyr::select(dplyr::all_of(c("CODE", "BEGINNPROBENAHME", "ENDEPROBENAHME", "PARAMETERID_BAFU", "WERT_NUM", "Ue_AQK", "Ue_CQK")))
 
   if (nrow(Ue_robust_3) > 0 && robust3) {
     cli::cli_alert_info("Achtung: Folgende Proben \u00fcberschreiten QK mit Robustheit == 3 (nicht in Daten enthalten):")
@@ -922,20 +951,21 @@ berechne_rq_ue <- function(mv_daten, regulierungen, kriterien, robust3 = TRUE) {
 #'
 #' @return Tibble mit Mischtoxizitäten
 #' @export
-berechne_mixtox <- function(rq_data, optin_mischtox_S = FALSE) {
+berechne_mixtox <- function(rq_data) {
   mixtox_data <- rq_data |>
-    dplyr::group_by(.data$CODE, .data$BEGINNPROBENAHME, .data$ENDEPROBENAHME, .data$Jahr, .data$Tage) |>
+    dplyr::group_by(.data$CODE, .data$STANDORT, .data$BEGINNPROBENAHME, .data$ENDEPROBENAHME, .data$Jahr, .data$Tage) |>
     dplyr::summarise(
-      Mix_Pflanzen_CQK = sum(.data$RQ_CQK_P, na.rm = TRUE),
-      Mix_Invertebraten_CQK = sum(.data$RQ_CQK_I, na.rm = TRUE),
-      Mix_Vertebraten_CQK = sum(.data$RQ_CQK_V, na.rm = TRUE),
-      Mix_Pflanzen_AQK = sum(.data$RQ_AQK_P, na.rm = TRUE),
-      Mix_Invertebraten_AQK = sum(.data$RQ_AQK_I, na.rm = TRUE),
-      Mix_Vertebraten_AQK = sum(.data$RQ_AQK_V, na.rm = TRUE),
+      Mix_Pflanzen_CQK     = dplyr::if_else(any(!is.na(.data$RQ_CQK_P)), sum(.data$RQ_CQK_P, na.rm = TRUE), NA_real_),
+      Mix_Invertebraten_CQK = dplyr::if_else(any(!is.na(.data$RQ_CQK_I)), sum(.data$RQ_CQK_I, na.rm = TRUE), NA_real_),
+      Mix_Vertebraten_CQK  = dplyr::if_else(any(!is.na(.data$RQ_CQK_V)), sum(.data$RQ_CQK_V, na.rm = TRUE), NA_real_),
+      Mix_Secondary_CQK    = dplyr::if_else(any(!is.na(.data$RQ_CQK_S)), sum(.data$RQ_CQK_S, na.rm = TRUE), NA_real_),
+      Mix_Pflanzen_AQK     = dplyr::if_else(any(!is.na(.data$RQ_AQK_P)), sum(.data$RQ_AQK_P, na.rm = TRUE), NA_real_),
+      Mix_Invertebraten_AQK = dplyr::if_else(any(!is.na(.data$RQ_AQK_I)), sum(.data$RQ_AQK_I, na.rm = TRUE), NA_real_),
+      Mix_Vertebraten_AQK  = dplyr::if_else(any(!is.na(.data$RQ_AQK_V)), sum(.data$RQ_AQK_V, na.rm = TRUE), NA_real_)
     ) |>
     tidyr::pivot_longer(dplyr::starts_with("Mix"), names_prefix = "Mix_", names_sep = "_", names_to = c("Ziel", "Kriterium"), values_to = "RQ") |>
     dplyr::mutate(
-      Ziel = forcats::fct(.data$Ziel, levels = c("Vertebraten", "Invertebraten", "Pflanzen")),
+      Ziel = forcats::fct(.data$Ziel, levels = c("Vertebraten", "Invertebraten", "Pflanzen", "Secondary")),
       Ziel_num = as.integer(.data$Ziel),
       Beurteilung = dplyr::case_when(
         .data$RQ >= 0 & .data$RQ < 0.1 ~ "sehr gut",
@@ -943,8 +973,9 @@ berechne_mixtox <- function(rq_data, optin_mischtox_S = FALSE) {
         .data$RQ >= 1 & .data$RQ < 2 ~ "m\u00e4ssig",
         .data$RQ >= 2 & .data$RQ < 10 ~ "unbefriedigend",
         .data$RQ > 10 ~ "schlecht",
-        .data$RQ < 0 ~ "fehler!"
-      ), Beurteilung = forcats::fct(.data$Beurteilung, levels = c("sehr gut", "gut", "m\u00e4ssig", "unbefriedigend", "schlecht"))
+        .data$RQ < 0 ~ "fehler!",
+        is.na(.data$RQ) ~ "nicht bewertet"
+      ), Beurteilung = forcats::fct(.data$Beurteilung, levels = c("sehr gut", "gut", "m\u00e4ssig", "unbefriedigend", "schlecht", "nicht bewertet"))
     ) |>
     dplyr::ungroup()
 
@@ -998,8 +1029,8 @@ berechne_stichproben_gbl_aggregiert <- function(mv_daten, perzentil = 90) {
 #' @param zieleinheit Zieleinheit: Eine von g/l, mg/l, µ/l, ng/l, pg/l (Vorgabe: µg/l). Achtung: Einheit in Qualitätskriterien-Tabelle beachten.
 #'
 #' @return Dataframe mit den normalisierten MV-Daten
+#' @noRd
 normalise_units <- function(mvdata, wert, einheit, zieleinheit = "\u00b5g/l") {
-  wert <- rlang::sym(wert)
   einheit <- rlang::sym(einheit)
 
   faktoren_ziele <- c(
@@ -1010,22 +1041,32 @@ normalise_units <- function(mvdata, wert, einheit, zieleinheit = "\u00b5g/l") {
     "pg/l" = 1e6
   )
 
-  stopifnot(faktoren_ziele[zieleinheit] > 0 && !is.na(faktoren_ziele[zieleinheit]))
+  stopifnot(zieleinheit %in% names(faktoren_ziele))
   zielfaktor <- faktoren_ziele[zieleinheit]
 
   # Die Funktion ist so geschrieben, dass die Bezeichnung der Spalten angegeben werden kann/variabel ist.
-  mvdata_normalisiert <- dplyr::mutate(
-    mvdata,
+  mvdata |>  dplyr::mutate(
     # Bei dynamischen Variablennamen in mutate() muss := zur Zuweisung verwendet werden.
-    {{ wert }} := dplyr::case_when(
-      {{ einheit }} == "pg/l" ~ {{ wert }} / 1e6,
-      {{ einheit }} == "ng/l" ~ {{ wert }} / 1e3,
-      {{ einheit }} == "mg/l" ~ {{ wert }} * 1e3,
-      {{ einheit }} == "\u00b5g/l" ~ {{ wert }},
-      {{ einheit }} == "ug/l" ~ {{ wert }}
+    {{ einheit }} := tolower({{ einheit }}),
+    dplyr::across(
+      .cols = all_of(wert),
+      .fns = ~ dplyr::case_when(
+        {{ einheit }} == "pg/l"       ~ .x / 1e6,
+        {{ einheit }} == "ng/l"       ~ .x / 1e3,
+        {{ einheit }} == "mg/l"       ~ .x * 1e3,
+        {{ einheit }} %in% c("ug/l", "\u00b5g/l") ~ .x,
+        TRUE                          ~ .x
+      )
     ),
-    {{ wert }} := {{ wert }} * .env$zielfaktor,
-    {{ einheit }} := .env$zieleinheit
+    dplyr::across(
+      .cols = all_of(wert),
+      .fns = ~ dplyr::if_else(
+        {{ einheit }} %in% names(faktoren_ziele),
+        .x * zielfaktor,
+        .x
+      )
+    ),
+    {{ einheit }} := dplyr::if_else({{ einheit }} %in% names(faktoren_ziele), zieleinheit, {{ einheit }})
   )
 }
 

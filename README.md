@@ -16,7 +16,12 @@ Schweizer Gewässern gemäss dem
 Das Paket basiert auf einem Auftrag des Gewässer- und Bodenschutzlabor
 des Kantons Bern (GBL) an EBP Schweiz. Die Auswertungs- und
 Plotfunktionen sind aber bewusst so konzipiert, dass sie auch mit
-MV-Daten anderer Kantone funktionieren können.
+MV-Daten anderer Kantone funktionieren können. Insbesondere unterstützt
+mvwizr auch das NAWA (Nationale Beobachtung
+Oberflächengewässeruqalität)-Datenformat, das von verschiedenen Kantonen
+verwendet wird. Das Paket ist modular aufgebaut und kann daher leicht
+erweitert werden, um weitere Funktionen oder Datenformate zu
+unterstützen.
 
 ## Installation
 
@@ -28,16 +33,22 @@ Installation auf einem lokalen Rechner (Windows/macOS/Linux) folgende
 Kommandos ausführen:
 
 ``` r
-install.packages("remotes") # falls noch nicht installiert
-remotes::install_github("ror-at-ebp/mvwizr", build = TRUE, build_vignettes = TRUE, dependencies = TRUE)
+install.packages("pak") # falls noch nicht installiert
+pak::pkg_install("ror-at-ebp/mvwizr")
 ```
 
-Nach der Installation kann mvwizr in Scripts oder in der Konsole
-verwendet werden, indem das Paket geladen wird:
+## Updates
 
-``` r
-library(mvwizr)
-```
+Das Paket wird sporadisch aktualisiert zwecks Fehlerbehebung,
+Erweiterung der Funktionen und Aktualisierung der Daten (BAFU-ID-Lookup,
+Qualitätskriterien des Ökotoxzentrums, VSA-ID-Lookup, Rechtliche
+Anforderungen). Um das Paket zu aktualisieren, kann der gleiche Befehl
+wie bei der Installation verwendet werden.\`Dabei sollte eine Meldung
+wie die folgende erscheinen:
+
+    → Will update 1 package.
+    → The package (0 B) is cached.
+    + mvwizr 1.0.0 → 1.1.0 [bld][cmp] (GitHub: 35d7e78)
 
 ## Verwendung
 
@@ -47,6 +58,27 @@ Visualisieren. Viele Funktionen sind für Mischproben gedacht und
 unterstützen sowohl eine Auswertung für kurzzeitige Verunreinungen als
 auch für andauernde Verunreinigungen.
 
+### Erste Schritte
+
+Nach der Installation kann mvwizr in Scripts oder in der Konsole
+verwendet werden, indem das Paket geladen wird:
+
+``` r
+library(mvwizr)
+```
+
+Die mit mvwizr erstellten Grafiken verwenden für die Monatsnamen auf der
+X-Achse die Sprache, unter welcher R läuft - die sogenannte **locale**.
+Diese lässt sich mit folgender Funktion entweder auf Deutsch (“de”) oder
+Französisch (“fr”) setzen:
+
+``` r
+set_ch_locale(lang = "fr") # Setzt locale auf Französisch-Schweiz
+```
+
+Das Setzen der **locale** ändert (zur Zeit) die Sprache auf den Plots
+allerdings nicht.
+
 ### Hilfe erhalten
 
 Das Paket enthält verschiedene eingebaute Möglichkeiten, Hilfe zu
@@ -54,17 +86,12 @@ erhalten:
 
 - `?funktion`: Zeigt die Hilfe für eine bestimmte Funktion an, also z.B.
   `?einlesen_mv_gbl`.
-- `vignette("name-der-vignette")`: Zeigt den Inhalt einer Vignette
-  (Hilfedatei) an. Die Vignette `datei-spezifikationen` gibt z.B.
-  Auskunft über die Formate der Dateien, die von den Einlesefunktionen
-  erwartet werden. Die Vignette `mvwizr` gibt eine Übersicht über die
-  Funktionen des Pakets anhand von Beispielgrafiken.
 - `??mvwizr`: Zeigt die Hilfeseiten zu den gebundelten Beispieldaten an.
 
 Daneben sind für die meisten Funktionen auch Beispiele in den
 Hilfeseiten enthalten, die die Verwendung der Funktionen demonstrieren.
-Vignetten sind als Artikel auch auf der Paketwebseite verfügbar:
-<https://ror-at-ebp.github.io/mvwizr/>.
+Auf der Paketwebseite sind zudem Artikel mit spezifischen Hilfethemen
+veröffentlicht: <https://ror-at-ebp.github.io/mvwizr/>.
 
 Folgende Funktionen werden vom Paket exportiert und können direkt
 verwendet werden:
@@ -74,6 +101,23 @@ verwendet werden:
 Alle Funktionen zum Einlesen und Berechnen sind in der Datei
 `R/parsing.R` enthalten.
 
+- `einlesen_nawa()`: Liest einzelne MV-Dateien (oder Dataframes) im
+  NAWA-Format ein, normalisiert Einheiten, entfernt Duplikate, bestimmt
+  Bestimmungsgrenzen aus Daten und verknüpft Daten mit der VSA
+  Substanz_ID. Für das Einlesen notwendige Parameter können der Funktion
+  als Argumente übergeben werden. Test-Daten werden mitgeliefert (siehe
+  Beispiele im Hilfetext der Funktion).
+- `batch_einlesen_nawa()`: Liest mehrere NAWA-MV-Daten-Dateien ein,
+  entweder über ein Import-Manifest oder eine Liste von Dateipfaden. Die
+  Funktion kann auch die Parameter wie Encoding, Header, Delimiter und
+  Sprache erraten, wenn diese nicht angegeben sind in Form eines
+  Import-Manifests (oder nur teilweise).
+- `schreibe_schreibe_nawa_import_manifest_template()`: Erstellt ein
+  Excel-Template für ein Import-Manifest, das für die Funktion
+  `batch_einlesen_nawa()` verwendet werden kann. Der Pfad zu den
+  MV-Dateien kann angegeben werden um diese in das Template zu
+  schreiben. Das Manifest kann dann angepasst werden, um die Parameter
+  für das Einlesen der NAWA-Daten zu definieren.
 - `einlesen_mv_gbl()`: Liest die MV-Daten des GBL ein, normalisiert
   Einheiten, entfernt Duplikate, bestimmt Bestimmungsgrenzen aus Daten
   und verknüpft Daten mit der VSA Substanz_ID. Test-Daten werden
@@ -172,8 +216,8 @@ Das Paket ist in verschiedene Verzeichnisse unterteilt:
 - `data-raw/`: Enthält die Skripte, die die Beispieldaten für das Paket
   erstellen. Die Beispieldaten sind im Verzeichnis `data/` gespeichert.
 - `inst/extdata`: Enthält zusätzliche Dateien, die mit dem Paket
-  verteilt werden, z.B. die Kopien der MV-Dateien des GBL, die mit dem
-  Paket eingelesen werden können.
+  verteilt werden, z.B. die Kopien der MV-Dateien des GBL oder
+  NAWA-MV-Beispieldateien, die mit dem Paket eingelesen werden können.
 - `man/`: Enthält die aus Roxygen-Tags automatisch erstellte
   Dokumentation des Pakets. Nicht manuell anpassen.
 - `tests/`: Enthält die Tests für das Paket, die mit dem Paket

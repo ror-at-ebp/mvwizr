@@ -4,7 +4,7 @@
 
 test_that("einlesen_mv_gbl produziert tibble mit korrekten variablen", {
   mv_daten_pfad <- system.file("extdata", "Daten_MV_GBL_2019_2020.txt", package = "mvwizr")
-  vsa_lookup_pfad <- system.file("extdata", "Tab_Substanzen.xlsx", package = "mvwizr")
+  vsa_lookup_pfad <- system.file("extdata", "Tab_Substanzen.txt", package = "mvwizr")
   bafu_filename <- "BAFU_Liste_Parameter_Bezeichnungen_Datenaustausch.xlsx"
   bafu_code_pfad <- system.file("extdata", bafu_filename, package = "mvwizr")
 
@@ -92,7 +92,7 @@ test_that("einlesen_regulierungen produziert tibble", {
 ## Teste Struktur der Rückgabe ####
 
 test_that("einlesen_vsa_lookup produziert tibble", {
-  vsa_lookup_pfad <- system.file("extdata", "Tab_Substanzen.xlsx", package = "mvwizr")
+  vsa_lookup_pfad <- system.file("extdata", "Tab_Substanzen.txt", package = "mvwizr")
   out <- suppressWarnings(einlesen_vsa_lookup(vsa_lookup_pfad))
   out_names <- names(out)
 

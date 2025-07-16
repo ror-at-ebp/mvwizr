@@ -9,9 +9,9 @@ plot_misch_ue_summe(rq_ue_daten, stationscode = NULL, jahr = NULL)
 \arguments{
 \item{rq_ue_daten}{Dataframe mit Output der Funktion \code{berechne_rq_ue()}}
 
-\item{stationscode}{Station, für welche der Plot erstellt werden soll}
+\item{stationscode}{Station, für welche der Plot erstellt werden soll.}
 
-\item{jahr}{Jahr, für welches der Überschreitungsplot erstellt werden soll}
+\item{jahr}{Jahr, für welches der Überschreitungsplot erstellt werden soll.}
 }
 \value{
 ggplot2 Plot-Objekt
@@ -20,6 +20,7 @@ ggplot2 Plot-Objekt
 Aufsummierte GSchV-Überschreitungen plotten
 }
 \examples{
+set_ch_locale(lang = "de")
 
 plot_misch_ue_summe(rq_ue_beispiel_mvwizr)
 

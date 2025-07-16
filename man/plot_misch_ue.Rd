@@ -9,9 +9,9 @@ plot_misch_ue(rq_ue_daten, stationscode, jahr = NULL, plot_typ = "andauernd")
 \arguments{
 \item{rq_ue_daten}{Dataframe mit Output der Funktion \code{berechne_rq_ue()}}
 
-\item{stationscode}{Station, für welche der Plot erstellt werden soll}
+\item{stationscode}{Station, für welche der Plot erstellt werden soll.}
 
-\item{jahr}{Jahr, für welches der Überschreitungsplot erstellt werden soll}
+\item{jahr}{Jahr, für welches der Überschreitungsplot erstellt werden soll.}
 
 \item{plot_typ}{Legt fest, für welche Art von Überschreitungen eine Auswertung vorgenommen werden soll. Mögliche Werte:
 \itemize{
@@ -27,6 +27,8 @@ ggplot2 Plot-Objekt
 GSchV-Überschreitungen in Mischproben plotten
 }
 \examples{
+set_ch_locale(lang = "de")
+
 \donttest{
 # Andauernde Überschreitungen (und Unterschreitungen) für die Jahre 2019 und 2020 plotten
 plot_misch_ue(rq_ue_beispiel_mvwizr, "URT010", jahr = c(2019, 2020))

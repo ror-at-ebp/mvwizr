@@ -59,23 +59,24 @@ system.file("extdata", mv_beispiele, package = "mvwizr")
 
 ```
 
-### Andere MV-Daten
+### NAWA_MV-Daten
 
-Andere MV-Daten müssen als dataframe/tibble vorliegen, wobei je eine Zeile eine Messung an einem Standort für eine bestimmte Substanz darstellt. Dabei müssen mindestens die folgenden Variablen vorhanden seine (siehe oben und auch auch `?mvdaten_beispiel_mvwizr` für Type jeder Variable):
+mvwizr kann auch NAWA-MV-Daten einlesen - entweder mit `einlesen_nawa()` für einzelne Dateien oder mit `batch_einlesen_nawa()` für mehrere Dateien. Die NAWA-MV-Dateien sind in der Regel im Format `csv` (kommagetrennt) oder `xlsx` (Excel). Die Struktur ist dabei vorgegeben (definiert durch das BAFU), wobei die Spaltennamen auf Deutsch oder Französisch angegeben sein können. 
+Dabei müssen mindestens die folgenden Variablen vorhanden seine:
 
-* UID
-* CODE
-* STANDORT
-* NAME
-* PROBEARTID
-* BEGINNPROBENAHME
-* ENDEPROBENAHME
-* PARAMETERID_BAFU
-* BEZEICHNUNG_BAFU
-* ID_Substanz
-* WERT_NUM
+| Variable                                   | Beschreibung                                                                                                                                                                                                                                                                                                    | Formatierung                     |
+|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------|
+| Messsstelle ID                             | Stationscode (entspricht `CODE` bei GBL-Daten)                                                                                                                                                                                                                                                                  | `character`                      |
+| Messstelle Name                            | Standort Station (entspricht `STANDORT` bei GBL-Daten)                                                                                                                                                                                                                                                          | `character`                      |
+| Probenahme Ort                             | Name des Gewässers/Ort (entspricht `NAME` bei GBL-Daten)                                                                                                                                                                                                                                                        | `character`                      |
+| Probenahme Art                             | Art der Probe: Sammelprobe (muss "sammelprobe" oder "composite" enthalten; wird zu SaP - siehe `PROBEARTID` bei GBL-FOrmat), Stichprobe (muss "stichprobe" oder "ponctuel" enthalten; wird zu S). Achtung: Unterstützt momentan keine Unterscheidung zwischen echten Sammelproben und berechneten Sammelproben! | `character`                      |
+| NAWA Probenahme Beginn (Datum und Uhrzeit) | Beginn der Probenahme (entspricht `BEGINNPROBENAHME`bei GBL-Daten).                                                                                                                                                                                                                                             | `datetime` (DD.MM.YYYY hh:mm:ss) |
+| NAWA Probenahme Ende (Datum und Uhrzeit)   | Bei Mischproben Ende der Probenahme. Bei Stichproben leer (entspricht `ENDEPROBENAHME` bei GBL-Daten).                                                                                                                                                                                                          | `datetime` (DD.MM.YYYY hh:mm:ss) |
+| Parameter                                  | Spaltenname auf Deutsch oder Französisch. Enthält entweder BAFU-Parameter-ID (Schlüssel) oder die Deutsche Bezeichnung oder die Französische Bezeichnung.                                                                                                                                                       | `character`                      |
+| Messwert                                   | Messwert (wird zu `WERT_NUM` umgewandelt). Falls <BG, dann markiert.                                                                                                                                                                                                                                            | `numeric`                        |
+| Bestimmungsgrenze                          | Bestimmungsgrenze - immer angegeben.                                                                                                                                                                                                                                                                            |                                  |
+| Einheit                                    | Einheit des Messwertes in pg/l, ng/l, µg/l oder mg/l                                                                                                                                                                                                                                                            |                                  |
 
-Für die Anzeige der Bestimmungsgrenze ist BG_min und BG_max erforderlich.
 
 ## Regulierungen und Zulassungen
 

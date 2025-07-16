@@ -2,7 +2,7 @@
 % Please edit documentation in R/parsing.R
 \name{schreibe_nawa_import_manifest_template}
 \alias{schreibe_nawa_import_manifest_template}
-\title{Import Manifest Vorlage für NAWA-MV-Daten schreiben}
+\title{Schreibe Import Manifest Vorlage für NAWA-MV-Daten}
 \usage{
 schreibe_nawa_import_manifest_template(
   import_manifest_file,
@@ -18,7 +18,7 @@ schreibe_nawa_import_manifest_template(
 Gibt das Manifest-Template als tibble zurück.
 }
 \description{
-Import Manifest Vorlage für NAWA-MV-Daten schreiben
+Schreibe Import Manifest Vorlage für NAWA-MV-Daten
 }
 \examples{
 

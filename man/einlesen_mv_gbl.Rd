@@ -23,7 +23,7 @@ Liest MV-Daten des GBL (Kt. Bern) ein und bereitet sie für die weitere Verarbei
 }
 \examples{
 mv_daten_pfad <- system.file("extdata", "Daten_MV_GBL_2019_2020.txt", package = "mvwizr")
-vsa_lookup_pfad <- system.file("extdata", "Tab_Substanzen.xlsx", package = "mvwizr")
+vsa_lookup_pfad <- system.file("extdata", "Tab_Substanzen.txt", package = "mvwizr")
 bafu_filename <- "BAFU_Liste_Parameter_Bezeichnungen_Datenaustausch.xlsx"
 bafu_code_pfad <- system.file("extdata", bafu_filename, package = "mvwizr")
 

@@ -7,11 +7,11 @@
 plot_stich_uebersicht(mv_daten, stationscode, jahr = NULL)
 }
 \arguments{
-\item{mv_daten}{Dataframe mit aufbereiteten MV-Daten gemäss Spezifikation mit Stichproben}
+\item{mv_daten}{Dataframe mit aufbereiteten MV-Daten gemäss Spezifikation}
 
 \item{stationscode}{Station, für welche der Plot erstellt werden soll}
 
-\item{jahr}{Jahr, für welches der Überschreitungsplot erstellt werden soll. Falls \code{NULL}, werden alle Jahre geplottet.}
+\item{jahr}{Jahre (numerischer Vektor), für welche ein Verlauf geplottet werden soll. Falls \code{NULL} (Vorgabewert), werden alle verfügbaren Daten geplottet.}
 }
 \value{
 ggplot2 Plot-Objekt
@@ -20,6 +20,7 @@ ggplot2 Plot-Objekt
 Diese Übersichtsfunktion plottet sämtliche Substanzen in allen Stichproben in einem als Raster über die Zeit und benutzt eine logarithmische Farbskala um relevante Substanzen und Veränderungen hervorzuheben.
 }
 \examples{
+set_ch_locale(lang = "de")
 
 # Stichprobenübersichten für zwei Stationen
 plot_stich_uebersicht(mvdaten_beispiel_mvwizr, stationscode = "SA51")

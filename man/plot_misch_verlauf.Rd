@@ -58,6 +58,8 @@ Es sind in Abhängigkeit des Modus (\code{id_substanz}) verschiedene Plottypen \
 }
 }
 \examples{
+set_ch_locale(lang = "de")
+
 # Summenplot mit Barplot-Darstellung
 plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, "URT010")
 

@@ -9,7 +9,7 @@ plot_misch_mixtox_haeufigkeit(rq_ue_daten, stationscode, modus = "andauernd")
 \arguments{
 \item{rq_ue_daten}{Dataframe mit Output der Funktion \code{berechne_rq_ue()}}
 
-\item{stationscode}{Station, für welche der Plot erstellt werden soll}
+\item{stationscode}{Station, für welche der Plot erstellt werden soll.}
 
 \item{modus}{\itemize{
 \item \code{"andauernd"}: Berücksichtigt nur Stoffe mit einem spezifischen andauernden Grenzwert in der GSchV. Nur Proben mit einer Dauer von >= 10 Tagen werden verwendet und unter Verwendung des CQK beurteilt.
@@ -23,6 +23,7 @@ ggplot2 Plot-Objekt
 Zeitreihe Häufigkeitsverteilung Mischungstoxizität
 }
 \examples{
+set_ch_locale(lang = "de")
 
 # Häufigkeitsverteilung für andauernde Belastungen
 plot_misch_mixtox_haeufigkeit(rq_ue_beispiel_mvwizr,

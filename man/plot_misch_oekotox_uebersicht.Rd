@@ -15,16 +15,16 @@ plot_misch_oekotox_uebersicht(
 \arguments{
 \item{rq_ue_daten}{Dataframe mit Output der Funktion \code{berechne_rq_ue()}}
 
-\item{stationscode}{Station, für welche der Plot erstellt werden soll}
+\item{stationscode}{Station, für welche der Plot erstellt werden soll.}
 
-\item{jahr}{Jahr, für welches der Plot erstellt werden soll}
+\item{jahr}{Jahr, für welches der Überschreitungsplot erstellt werden soll.}
 
-\item{modus}{\describe{
-\item{"andauernd"}{Verwendung des CQK für die Beurteilung & Proben mit Dauer >= 10 Tage}
-\item{"kurzzeitig"}{Verwendung des AQK für die Beurteilung}
+\item{modus}{\itemize{
+\item \code{"andauernd"}: Berücksichtigt nur Stoffe mit einem spezifischen andauernden Grenzwert in der GSchV. Nur Proben mit einer Dauer von >= 10 Tagen werden verwendet und unter Verwendung des CQK beurteilt.
+\item \code{"kurzzeitig"}: Berücksichtigt nur Stoffe mit einem spezifischen akuten Grenzwert in der GSchV. Berücksichtigt alle Proben (ausser Stichproben) und verwendet das AQK zur Beurteilung.
 }}
 
-\item{optin_mischtox_S}{Logisch (Vorgabe: \code{FALSE}). Ab v1.2 unterstützt mvwizr auch die Anzeige der Fischtoxizität (\code{S_chron}). Falls \code{TRUE}, wird eine vierte Zeile bei den Mischtoxizitäten angezeigt, falls sie in den Daten vorhanden ist. Falls \code{FALSE}, wird sie nicht angezeigt.}
+\item{optin_mischtox_S}{Logisch (Vorgabe: \code{FALSE}). Ab v1.2 unterstützt mvwizr auch die Anzeige der Fischtoxizität / Secondary toxicity (\code{S_chron}). Falls \code{TRUE}, wird eine vierte Zeile bei den Mischtoxizitäten angezeigt, falls sie in den Daten vorhanden ist. Falls \code{FALSE}, wird sie nicht angezeigt.}
 }
 \value{
 ggplot2 Plot-Objekt
@@ -33,6 +33,7 @@ ggplot2 Plot-Objekt
 Stationsübersicht Ökotoxbeurteilung plotten
 }
 \examples{
+set_ch_locale(lang = "de")
 
 plot_misch_oekotox_uebersicht(rq_ue_beispiel_mvwizr, "URT010", 2020)
 
