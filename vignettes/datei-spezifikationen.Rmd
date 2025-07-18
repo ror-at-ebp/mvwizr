@@ -61,7 +61,7 @@ system.file("extdata", mv_beispiele, package = "mvwizr")
 
 ### NAWA_MV-Daten
 
-mvwizr kann auch NAWA-MV-Daten einlesen - entweder mit `einlesen_nawa()` für einzelne Dateien oder mit `batch_einlesen_nawa()` für mehrere Dateien. Die NAWA-MV-Dateien sind in der Regel im Format `csv` (kommagetrennt) oder `xlsx` (Excel). Die Struktur ist dabei vorgegeben (definiert durch das BAFU), wobei die Spaltennamen auf Deutsch oder Französisch angegeben sein können. 
+mvwizr kann auch NAWA-MV-Daten einlesen - entweder mit `einlesen_nawa()` für einzelne Dateien (oder Dataframes im NAWA-MV-Format) oder mit `batch_einlesen_nawa()` für mehrere Dateien. Die NAWA-MV-Dateien liegen in der Regel im Format `csv` (mit Trennzeichen getrennt) oder `xlsx` (Excel) vor. Die Struktur ist dabei vorgegeben (definiert durch das BAFU), wobei die Spaltennamen auf Deutsch oder Französisch angegeben sein können. 
 Dabei müssen mindestens die folgenden Variablen vorhanden seine:
 
 | Variable                                   | Beschreibung                                                                                                                                                                                                                                                                                                    | Formatierung                     |
@@ -77,6 +77,19 @@ Dabei müssen mindestens die folgenden Variablen vorhanden seine:
 | Bestimmungsgrenze                          | Bestimmungsgrenze - immer angegeben.                                                                                                                                                                                                                                                                            |                                  |
 | Einheit                                    | Einheit des Messwertes in pg/l, ng/l, µg/l oder mg/l                                                                                                                                                                                                                                                            |                                  |
 
+#### Parameter, Heuristik und Manifest
+
+Obwohl das NAWA-MV-Format klar definiert ist, sind die NAWA-MV-Dateien oft nicht in einem ideal maschinenlesbaren Format. Insbesondere die folgenden Punkte verkomplizieren das Einlesen:
+
+* Header: In NAWA-MV-Excel-Dateien gibt es einen Header, der Infos zur Datenlieferung enthält. Dieser steht vor den eigentlichen Tabellendaten, ist aber nicht unbedingt immer gleich lang. 
+* Sprache der Datei/Spalten: Die NAWA-MV-Definition sieht vor, dass die Spaltennamen sowohl auf Deutsch als auch Französisch geschrieben sein können.
+* Parameter-Spalte: Obwohl ein Schlüssel für die Identifizierung aller MV existiert (die BAFU-Parameter-ID, die keine Sonderzeichen enthält, sonst aber sehr ähnlich wie der Substanzname ist), kann die Parameter-Spalte entweder diesen Schlüssel, die Deutsche Bezeichnung oder die Französische Bezeichnung enthalten - wobei unglücklicherweise nicht klar ist, um welche Art es sich handelt.
+* Trennzeichen: Bei Text-Dateien können unterschiedliche Trennzeichen verwendet werden.
+* Encoding: Bei Text-Dateien können unterschiedliche Encodings verwendet werden. Vor allem ältere Datenbanken exportieren standardmässig nicht als UTF-8.
+
+Alle diese Parameter können beim Einlesen mit der Funktion `einlesen_nawa` angegeben werden. Falls sie nicht oder unvollständig angegeben werden, so versucht die Funktion mittels Heuristik die korrekten Funktionsargumente zu "erraten".
+
+Für das Batch-Einlesen mehrerer NAWA-MV-Dateien kann die Funktion `batch_einlesen_nawa` verwendet werden. Diese akzeptiert optional auch eine sogenannte Manifest-Datei, die die Konfiguration (der oben genannten Einstellungen) für jede Input-Datei aufführt. Eine Vorlage dieser Datei kann mit `schreibe_nawa_import_manifest_template` in eine Excel-Datei geschrieben werden.
 
 ## Regulierungen und Zulassungen
 

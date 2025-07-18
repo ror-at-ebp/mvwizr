@@ -157,7 +157,7 @@ plot_misch_verlauf <- function(mv_daten,
   # 3. Neue eindeutige ID (UID) für jede Probe -> Wichtig für Treppenplots
   if (is.null(id_substanz)) {
     if (!zulassungstyp == "Alle") {
-    mv_daten <- mv_daten |>
+      mv_daten <- mv_daten |>
         dplyr::filter(stringr::str_detect(.data[["Informationen Recht"]], .env$zulassungstyp))
     }
 
@@ -1048,7 +1048,7 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
     dplyr::filter(.data$Kriterium %in% .env$switchKriterium)
 
   # Falls nicht explizit gewünscht wird, dass wir secondary toxicity auch bewerten, werden diese Resultate ausgeblendet, damit keine Änderung gegenüber v1.1.0 entsteht. Falls alle Daten NA sind (=keine Stoffe mit S_chron gemessen), filtern wir die Variable auch raus
-  if (!optin_mischtox_S || all(is.na(mixtox_data[mixtox_data$Ziel == "Secondary","RQ"]))) {
+  if (!optin_mischtox_S || all(is.na(mixtox_data[mixtox_data$Ziel == "Secondary", "RQ"]))) {
     mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Secondary")
   }
 
@@ -1312,8 +1312,8 @@ plot_misch_mixtox_verlauf <- function(rq_ue_daten,
 #'
 #' # Häufigkeitsverteilung für andauernde Belastungen
 #' plot_misch_mixtox_haeufigkeit(rq_ue_beispiel_mvwizr,
-#'  stationscode = "URT010",
-#'  modus = "andauernd"
+#'   stationscode = "URT010",
+#'   modus = "andauernd"
 #' )
 #'
 #' # Häufigkeitsverteilung für kurzzeitige Belastungen
@@ -1354,7 +1354,7 @@ plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
   pobj <- ggplot2::ggplot(mixtox_data, ggplot2::aes(x = .data$Jahr, fill = .data$Beurteilung)) +
     # geom_bar berechnet automatisch die Anteile der Beurteilungen. Mit position = fill werden relative Anteile auf 100% geplottet
     ggplot2::geom_bar(position = "fill") +
-    ggplot2::facet_wrap(~ Ziel, scales = "free_y") +
+    ggplot2::facet_wrap(~Ziel, scales = "free_y") +
     ggplot2::scale_x_continuous(
       "",
       breaks = unique(mixtox_data$Jahr),
@@ -1525,10 +1525,10 @@ plot_stich_mixtox_zf <- function(rq_ue_daten,
                                  stationscode = NULL,
                                  jahr = NULL) {
   plot_misch_mixtox_verlauf(rq_ue_daten,
-                            stationscode = stationscode,
-                            jahr = jahr,
-                            modus = "kurzzeitig",
-                            plot_zusammenfassung = "stichproben"
+    stationscode = stationscode,
+    jahr = jahr,
+    modus = "kurzzeitig",
+    plot_zusammenfassung = "stichproben"
   )
 }
 

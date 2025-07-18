@@ -70,13 +70,16 @@ einlesen_mv_gbl <- function(mv_daten_pfad, vsa_lookup_pfad, bafu_lookup_pfad, bS
   mv_daten_df <- mv_daten_list |>
     purrr::list_rbind() |>
     # Explizite Schreibweise mit all_of() als Bedingung - alles andere mit everything() auswählen
-    dplyr::select(dplyr::any_of(c("PARAMETER_GBL" = "PARAMETER")),
-                  dplyr::all_of(c(
-      "CODE", "STANDORT", "NAME", "PROBEARTID", "BEGINNPROBENAHME",
-      "ENDEPROBENAHME", "PARAMETER" = "PARAMETERID_BAFU",
-      "OPERATOR", "WERT_NUM", "EINHEIT", "MSTLTYP", "PARAMETERGRUPPEID",
-      "PARAMETERGRUPPE"
-    )),  tidyr::everything())
+    dplyr::select(
+      dplyr::any_of(c("PARAMETER_GBL" = "PARAMETER")),
+      dplyr::all_of(c(
+        "CODE", "STANDORT", "NAME", "PROBEARTID", "BEGINNPROBENAHME",
+        "ENDEPROBENAHME",
+        "PARAMETER" = "PARAMETERID_BAFU",
+        "OPERATOR", "WERT_NUM", "EINHEIT", "MSTLTYP", "PARAMETERGRUPPEID",
+        "PARAMETERGRUPPE"
+      )), tidyr::everything()
+    )
 
   # Alle weiteren Funktionen gehen davon aus, dass 1. die Einheiten normalisiert/alle gleich sind und 2. dass es sich um µg/l handelt.
   mv_daten_df <- normalise_units(mv_daten_df, wert = "WERT_NUM", einheit = "EINHEIT", zieleinheit = "\u00b5g/l")
@@ -372,7 +375,6 @@ einlesen_nawa <- function(nawa_mv,
   }
 
   if (type == "excel") {
-
     if (is.na(header) || is.na(lang)) {
       suppressMessages({
         head_lines <- readxl::read_excel(
@@ -380,7 +382,9 @@ einlesen_nawa <- function(nawa_mv,
           col_names = FALSE,
           col_types = "text",
           n_max = 30,
-          .name_repair = function(x) {gsub("[\t\n\r]*", "", x)}
+          .name_repair = function(x) {
+            gsub("[\t\n\r]*", "", x)
+          }
         )
       })
 
@@ -616,7 +620,6 @@ batch_einlesen_nawa <- function(nawa_mv_pfade = NULL,
       },
       .progress = TRUE
     )
-
   } else {
     cli::cli_alert_info("Keine Import-Manifest-Datei angegeben. Lese Dateien ein und errate Funktionsparameter...")
     mv_data_list <- purrr::imap(
@@ -633,8 +636,11 @@ batch_einlesen_nawa <- function(nawa_mv_pfade = NULL,
     )
   }
   cli::cli_alert_info("Kombiniere MV-Daten aus {length(mv_data_list)} Dateien...")
-  names(mv_data_list) <- basename(if (is.null(import_manifest)) nawa_mv_pfade
-                                  else import_manifest_df$file)
+  names(mv_data_list) <- basename(if (is.null(import_manifest)) {
+    nawa_mv_pfade
+  } else {
+    import_manifest_df$file
+  })
 
   mv_data_combined <- dplyr::bind_rows(mv_data_list, .id = "file")
   cli::cli_alert_success("MV-Daten erfolgreich eingelesen und kombiniert.")
@@ -956,13 +962,13 @@ berechne_mixtox <- function(rq_data) {
   mixtox_data <- rq_data |>
     dplyr::group_by(.data$CODE, .data$STANDORT, .data$BEGINNPROBENAHME, .data$ENDEPROBENAHME, .data$Jahr, .data$Tage) |>
     dplyr::summarise(
-      Mix_Pflanzen_CQK     = dplyr::if_else(any(!is.na(.data$RQ_CQK_P)), sum(.data$RQ_CQK_P, na.rm = TRUE), NA_real_),
+      Mix_Pflanzen_CQK = dplyr::if_else(any(!is.na(.data$RQ_CQK_P)), sum(.data$RQ_CQK_P, na.rm = TRUE), NA_real_),
       Mix_Invertebraten_CQK = dplyr::if_else(any(!is.na(.data$RQ_CQK_I)), sum(.data$RQ_CQK_I, na.rm = TRUE), NA_real_),
-      Mix_Vertebraten_CQK  = dplyr::if_else(any(!is.na(.data$RQ_CQK_V)), sum(.data$RQ_CQK_V, na.rm = TRUE), NA_real_),
-      Mix_Secondary_CQK    = dplyr::if_else(any(!is.na(.data$RQ_CQK_S)), sum(.data$RQ_CQK_S, na.rm = TRUE), NA_real_),
-      Mix_Pflanzen_AQK     = dplyr::if_else(any(!is.na(.data$RQ_AQK_P)), sum(.data$RQ_AQK_P, na.rm = TRUE), NA_real_),
+      Mix_Vertebraten_CQK = dplyr::if_else(any(!is.na(.data$RQ_CQK_V)), sum(.data$RQ_CQK_V, na.rm = TRUE), NA_real_),
+      Mix_Secondary_CQK = dplyr::if_else(any(!is.na(.data$RQ_CQK_S)), sum(.data$RQ_CQK_S, na.rm = TRUE), NA_real_),
+      Mix_Pflanzen_AQK = dplyr::if_else(any(!is.na(.data$RQ_AQK_P)), sum(.data$RQ_AQK_P, na.rm = TRUE), NA_real_),
       Mix_Invertebraten_AQK = dplyr::if_else(any(!is.na(.data$RQ_AQK_I)), sum(.data$RQ_AQK_I, na.rm = TRUE), NA_real_),
-      Mix_Vertebraten_AQK  = dplyr::if_else(any(!is.na(.data$RQ_AQK_V)), sum(.data$RQ_AQK_V, na.rm = TRUE), NA_real_)
+      Mix_Vertebraten_AQK = dplyr::if_else(any(!is.na(.data$RQ_AQK_V)), sum(.data$RQ_AQK_V, na.rm = TRUE), NA_real_)
     ) |>
     tidyr::pivot_longer(dplyr::starts_with("Mix"), names_prefix = "Mix_", names_sep = "_", names_to = c("Ziel", "Kriterium"), values_to = "RQ") |>
     dplyr::mutate(
@@ -1046,21 +1052,21 @@ normalise_units <- function(mvdata, wert, einheit, zieleinheit = "\u00b5g/l") {
   zielfaktor <- faktoren_ziele[zieleinheit]
 
   # Die Funktion ist so geschrieben, dass die Bezeichnung der Spalten angegeben werden kann/variabel ist.
-  mvdata |>  dplyr::mutate(
+  mvdata |> dplyr::mutate(
     # Bei dynamischen Variablennamen in mutate() muss := zur Zuweisung verwendet werden.
     {{ einheit }} := tolower({{ einheit }}),
     dplyr::across(
-      .cols = all_of(wert),
+      .cols = dplyr::all_of(wert),
       .fns = ~ dplyr::case_when(
-        {{ einheit }} == "pg/l"       ~ .x / 1e6,
-        {{ einheit }} == "ng/l"       ~ .x / 1e3,
-        {{ einheit }} == "mg/l"       ~ .x * 1e3,
+        {{ einheit }} == "pg/l" ~ .x / 1e6,
+        {{ einheit }} == "ng/l" ~ .x / 1e3,
+        {{ einheit }} == "mg/l" ~ .x * 1e3,
         {{ einheit }} %in% c("ug/l", "\u00b5g/l") ~ .x,
-        TRUE                          ~ .x
+        TRUE ~ .x
       )
     ),
     dplyr::across(
-      .cols = all_of(wert),
+      .cols = dplyr::all_of(wert),
       .fns = ~ dplyr::if_else(
         {{ einheit }} %in% names(faktoren_ziele),
         .x * zielfaktor,
@@ -1380,4 +1386,3 @@ sanitise_nawa_input <- function(mv_data) {
 
   mv_data
 }
-
