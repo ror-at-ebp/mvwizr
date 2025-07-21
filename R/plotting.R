@@ -89,9 +89,6 @@ plot_misch_verlauf <- function(mv_daten,
     "Alle" = "Summen-Konzentrationen"
   )
 
-  # Regulären Ausdruck zuweisen um alle Daten auszuwählen
-  zulassungstyp <- if (zulassungstyp == "Alle") ".*" else zulassungstyp
-
   # Join der MV-Daten mit der Regulierungstabelle
   mv_daten <- dplyr::left_join(mv_daten, regulierungen, by = "ID_Substanz")
 
@@ -157,6 +154,11 @@ plot_misch_verlauf <- function(mv_daten,
   # 3. Neue eindeutige ID (UID) für jede Probe -> Wichtig für Treppenplots
   if (is.null(id_substanz)) {
     if (!zulassungstyp == "Alle") {
+
+      # Regulären Ausdruck zuweisen um alle Daten auszuwählen
+      # Erst hier, sonst werden Einträge mit NA bei Informationen Recht (=nicht in Ökotox-Liste) herausgefiltert! Beispiel: Süssstoffe wie Sucralose
+      zulassungstyp <- if (zulassungstyp == "Alle") ".*" else zulassungstyp
+
       mv_daten <- mv_daten |>
         dplyr::filter(stringr::str_detect(.data[["Informationen Recht"]], .env$zulassungstyp))
     }
