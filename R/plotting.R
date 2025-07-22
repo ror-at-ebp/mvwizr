@@ -154,7 +154,6 @@ plot_misch_verlauf <- function(mv_daten,
   # 3. Neue eindeutige ID (UID) für jede Probe -> Wichtig für Treppenplots
   if (is.null(id_substanz)) {
     if (!zulassungstyp == "Alle") {
-
       # Regulären Ausdruck zuweisen um alle Daten auszuwählen
       # Erst hier, sonst werden Einträge mit NA bei Informationen Recht (=nicht in Ökotox-Liste) herausgefiltert! Beispiel: Süssstoffe wie Sucralose
       zulassungstyp <- if (zulassungstyp == "Alle") ".*" else zulassungstyp
@@ -595,6 +594,16 @@ plot_misch_ue <- function(rq_ue_daten,
       plot_ymax = .data$Bez_fct_int + 0.5
     )
 
+  optimised_plot_df <- mv_daten_plot |>
+    dplyr::group_by(.data$ID_Substanz, .data$BAFU_Bez_DE, .data$BEZEICHNUNG_md, .data$Bez_fct_int, .data$plot_ymin, .data$plot_ymax, !!Ue_GSchV_fill) |>
+    dplyr::arrange(.data$ID_Substanz, .data$BEGINNPROBENAHME, .data$ENDEPROBENAHME) |>
+    dplyr::mutate(Overlap = difftime(.data$BEGINNPROBENAHME, dplyr::lag(.data$ENDEPROBENAHME)), Overlap = dplyr::if_else(.data$Overlap < 86400 | is.na(.data$Overlap), lubridate::duration(0, units = "sec"), .data$Overlap), cum_group = cumsum(.data$Overlap)) |>
+    dplyr::group_by(.data$ID_Substanz, .data$BAFU_Bez_DE, .data$BEZEICHNUNG_md, .data$Bez_fct_int, .data$plot_ymin, .data$plot_ymax, !!Ue_GSchV_fill, .data$cum_group) |>
+    dplyr::mutate(BEGINNPROBENAHME = min(.data$BEGINNPROBENAHME), ENDEPROBENAHME = max(.data$ENDEPROBENAHME)) |>
+    dplyr::ungroup() |>
+    dplyr::select(dplyr::all_of(c("ID_Substanz", "BAFU_Bez_DE", "BEZEICHNUNG_md", "Bez_fct_int", "BEGINNPROBENAHME", "ENDEPROBENAHME", "plot_ymin", "plot_ymax")), !!Ue_GSchV_fill) |>
+    dplyr::distinct()
+
   plot_limits <- c(
     lubridate::as_datetime(paste0(min(
       mv_daten_plot$Jahr
@@ -618,7 +627,7 @@ plot_misch_ue <- function(rq_ue_daten,
         ymax = .data$plot_ymax,
         fill = !!Ue_GSchV_fill
       ),
-      mv_daten_plot
+      optimised_plot_df
     ) +
     ggplot2::scale_fill_manual(
       name = "\u00dcberschreitung GSchV",
@@ -637,8 +646,8 @@ plot_misch_ue <- function(rq_ue_daten,
     ggplot2::geom_vline(ggplot2::aes(xintercept = !!markierungen_jahre)) +
     # Reverse, damit y-Skala z->A läuft (A oben)
     ggplot2::scale_y_reverse(
-      breaks = mv_daten_plot$Bez_fct_int,
-      labels = mv_daten_plot$BEZEICHNUNG_md,
+      breaks = optimised_plot_df$Bez_fct_int,
+      labels = optimised_plot_df$BEZEICHNUNG_md,
       expand = c(0, 0)
     ) +
     # Plotbasis-theme
@@ -653,7 +662,7 @@ plot_misch_ue <- function(rq_ue_daten,
     )
 
   # Für summary strip: Nur Überschreitungen pro Probe (ohne Aufschlüsselung nach Substanz) behalten
-  summary_data <- mv_daten_plot |>
+  summary_data <- optimised_plot_df |>
     dplyr::distinct(.data$BEGINNPROBENAHME,
       .data$ENDEPROBENAHME,
       !!Ue_GSchV_fill,

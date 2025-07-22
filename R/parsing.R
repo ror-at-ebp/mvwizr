@@ -421,7 +421,9 @@ einlesen_nawa <- function(nawa_mv,
       nawa_mv,
       skip = header - 1,
       guess_max = 1e7,
-      .name_repair = function(x) {gsub("[\t\n\r]*", "", x)} # Bei Umbrüchen in Excel-Zellen...
+      .name_repair = function(x) {
+        gsub("[\t\n\r]*", "", x)
+      } # Bei Umbrüchen in Excel-Zellen...
     )
 
     mv_data <- sanitise_nawa_input(mv_data)
