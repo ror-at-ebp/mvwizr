@@ -995,15 +995,18 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
   farbskala_tox <- farbskala_bewertung_ecotox()
 
   # Substanz-Bezeichnung als Faktor um entlang kontinuierlicher y-Skala anordnen zu können. RQ und Beurteilung wird je nach Modus unterschiedlich gesetzt (Verweis auf Symbole oben). Zur Notation siehe: https://dplyr.tidyverse.org/articles/programming.html
+  # NB: Reihenfolge geändert (d.h. zuerst Einträge ohne Risikoquotienten, dann erst Faktoren erstellen), weil sonst teilweise Lücken auf y-Achse (in denen Fällen, in denen eine Substanz im Filterschritt rausfliegt)
   rq_data_fct <- rq_data |>
     dplyr::mutate(
-      BAFU_Bez_DE = forcats::fct(.data$BAFU_Bez_DE, levels = sort(unique(.data$BAFU_Bez_DE), decreasing = TRUE)),
-      BEZ_NUM = as.integer(.data$BAFU_Bez_DE),
       RQ = {{ switchRQ }},
       Beurteilung = {{ switchBeurteilung }}
     ) |>
     # Wir entfernen Einträge ohne Risikoquotienten (= mit fehlenden QK), da diese nicht geplottet werden können
-    dplyr::filter(!is.na(.data$RQ))
+    dplyr::filter(!is.na(.data$RQ)) |>
+    dplyr::mutate(
+      BAFU_Bez_DE = forcats::fct(.data$BAFU_Bez_DE, levels = sort(unique(.data$BAFU_Bez_DE), decreasing = TRUE)),
+      BEZ_NUM = as.integer(.data$BAFU_Bez_DE),
+    )
 
   # Maximale RQ je Substanz (ohne Ties!). Gerundet auf 1 Dezimalstelle für Anzeige.
   rq_summary <- rq_data_fct |>
