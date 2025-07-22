@@ -556,7 +556,7 @@ plot_misch_ue <- function(rq_ue_daten,
     "allgemein" = {
       # Betrifft nur Substanzen ohne einen spezifischen Grenzwert in der GSchV
       AnyUe <- dplyr::sym("AnyUe_allg")
-      Ue_GSchV_fill <- dplyr::sym("Ue_allgemein")
+      Ue_GSchV_fill <- dplyr::sym("Ue_generisch")
       mv_daten_Ue <- rq_ue_daten_station |> dplyr::filter(.data$GSCHV == 2)
       titel_plot <- "Allgemeine Verunreinigungen gem\u00e4ss GSchV"
     }
