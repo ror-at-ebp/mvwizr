@@ -95,6 +95,11 @@ plot_misch_verlauf <- function(mv_daten,
   # Stichproben (kein Enddatum) werden ausgeschlossen. NB: Die Angaben "S" (für Stichprobe) in der Spalte PROBEARTID ist nicht zuverlässig.
   mv_daten <- dplyr::filter(mv_daten, .data$CODE %in% .env$stationscode, !is.na(.data$ENDEPROBENAHME))
 
+  # Verwende benutzerdefinierte Subklasse für Condition-Objekt für präzisere Tests
+  if (nrow(mv_daten) == 0) {
+    cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} gefunden.", class = "mvwizr_keine_mischproben")
+  }
+
   stationsname <- unique(mv_daten$STANDORT)
 
   # NB: Alle Umlaute/Unicode-Spezialzeichen als Escape-Sequenz geschrieben, weil sonst R CMD CHECK eine Warnung macht. Kann automatisch mit dem Prefixer Package/Addin umgewandelt werden.
@@ -105,11 +110,6 @@ plot_misch_verlauf <- function(mv_daten,
     plot_parametergruppe <- dplyr::sym(plot_parametergruppe)
   } else {
     plot_parametergruppe <- NULL
-  }
-
-  # Verwende benutzerdefinierte Subklasse für Condition-Objekt für präzisere Tests
-  if (nrow(mv_daten) == 0) {
-    cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} gefunden.", class = "mvwizr_keine_mischproben")
   }
 
   # Extrahiere Jahr und Intervalldauer pro Probe (in Tagen)
@@ -499,6 +499,11 @@ plot_misch_ue <- function(rq_ue_daten,
   rq_ue_daten <- rq_ue_daten |>
     dplyr::filter(.data$CODE %in% .env$stationscode, .data$GSCHV %in% c(1, 2), !is.na(.data$ENDEPROBENAHME)) |>
     dplyr::select(dplyr::all_of(c("CODE", "STANDORT", "BEGINNPROBENAHME", "ENDEPROBENAHME", "ID_Substanz", "BAFU_Bez_DE", "Jahr", "Tage", "GSCHV", "AQK", "CQK")), dplyr::any_of("BG_max"), dplyr::starts_with("Ue"))
+
+  # Verwende benutzerdefinierte Subklasse für Condition-Objekt für präzisere Tests
+  if (nrow(rq_ue_daten) == 0) {
+    cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} gefunden.", class = "mvwizr_keine_mischproben")
+  }
 
   stationsname <- unique(rq_ue_daten$STANDORT)
 
@@ -978,6 +983,11 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
   # Der Plot ist immer nur für eine Station und ein bestimmtes Jahr gedacht
   rq_data <- rq_ue_daten |>
     dplyr::filter(.data$CODE %in% .env$stationscode, .data$Jahr %in% .env$jahr, !is.na(.data$ENDEPROBENAHME))
+
+  # Verwende benutzerdefinierte Subklasse für Condition-Objekt für präzisere Tests
+  if (nrow(rq_data) == 0) {
+    cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} gefunden.", class = "mvwizr_keine_mischproben")
+  }
 
   stationsname <- unique(rq_data$STANDORT)
 
