@@ -561,6 +561,11 @@ plot_misch_ue <- function(rq_ue_daten,
     }
   )
 
+  # Verwende benutzerdefinierte Subklasse für Condition-Objekt für präzisere Tests
+  if (nrow(mv_daten_Ue) == 0) {
+    cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} gefunden und f\u00fcr Plot-Typ gefunden.", class = "mvwizr_keine_mischproben")
+  }
+
   # Mit den Informationen zur Überschreitung pro Substanz können die Substanznamen im Plot als HTML/Markdown formatiert werden (rot/fett).
   # Zudem wird eine Warnung hinzugefügt, falls die BG höher ist als der Grenzwert
   mv_daten_plot <- mv_daten_Ue |>
