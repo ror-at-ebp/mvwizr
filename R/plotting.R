@@ -130,12 +130,21 @@ plot_misch_verlauf <- function(mv_daten,
   # Filtern nach id_substanz, falls angegeben
   if (!is.null(id_substanz)) {
     mv_daten <- dplyr::filter(mv_daten, .data$ID_Substanz %in% .env$id_substanz)
+
+    if (nrow(mv_daten) == 0) {
+      cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} und f\u00fcr Substanz(en) mit ID {id_substanz} gefunden.", class = "mvwizr_keine_mischproben")
+    }
   }
 
   # Filtern nach Jahr (aus Beginn der Probenahme), falls angegeben
   if (!is.null(jahr)) {
     mv_daten <- dplyr::filter(mv_daten, .data$Jahr %in% .env$jahr)
+
+    if (nrow(mv_daten) == 0) {
+      cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} und f\u00fcr Substanz(en) mit ID {id_substanz} f\u00fcr Jahr {jahr} gefunden.", class = "mvwizr_keine_mischproben")
+    }
   }
+
 
   plot_limits <- c(lubridate::as_datetime(paste0(min(
     lubridate::year(mv_daten$BEGINNPROBENAHME)
@@ -154,12 +163,14 @@ plot_misch_verlauf <- function(mv_daten,
   # 3. Neue eindeutige ID (UID) für jede Probe -> Wichtig für Treppenplots
   if (is.null(id_substanz)) {
     if (!zulassungstyp == "Alle") {
-      # Regulären Ausdruck zuweisen um alle Daten auszuwählen
-      # Erst hier, sonst werden Einträge mit NA bei Informationen Recht (=nicht in Ökotox-Liste) herausgefiltert! Beispiel: Süssstoffe wie Sucralose
-      zulassungstyp <- if (zulassungstyp == "Alle") ".*" else zulassungstyp
+      # Nur filtern, wenn zulassungstyp nicht "Alle" ist, damit NA-Einträge nicht rusfliegen
 
       mv_daten <- mv_daten |>
         dplyr::filter(stringr::str_detect(.data[["Informationen Recht"]], .env$zulassungstyp))
+
+      if (nrow(mv_daten) == 0) {
+        cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} und Zulassungstyp {zulassungstyp} gefunden.", class = "mvwizr_keine_mischproben")
+      }
     }
 
     mv_daten <- mv_daten |>
@@ -198,6 +209,10 @@ plot_misch_verlauf <- function(mv_daten,
         )
       ) |>
       dplyr::filter(.data$Tage >= 10)
+
+    if (nrow(mv_daten_treppen) == 0) {
+      cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} f\u00fcr Treppen/Kombi-plot (nur Mischproben >= 10 Tage) gefunden.", class = "mvwizr_keine_mischproben")
+    }
 
     # Bei summenplots müssen wir für den nächsten Schritt nur nach UID und Datum sortieren, sonst auch zuerst noch nach Substanz
     if (purrr::is_empty(id_substanz)) {

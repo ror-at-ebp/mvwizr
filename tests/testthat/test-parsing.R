@@ -8,7 +8,10 @@ test_that("einlesen_mv_gbl produziert tibble mit korrekten variablen", {
   bafu_filename <- "BAFU_Liste_Parameter_Bezeichnungen_Datenaustausch.xlsx"
   bafu_code_pfad <- system.file("extdata", bafu_filename, package = "mvwizr")
 
-  out <- suppressWarnings(einlesen_mv_gbl(mv_daten_pfad, vsa_lookup_pfad, bafu_code_pfad))
+  rlang::local_options(rlib_message_verbosity = "quiet")
+  rlang::local_options(rlib_warning_verbosity = "quiet")
+
+  out <- einlesen_mv_gbl(mv_daten_pfad, vsa_lookup_pfad, bafu_code_pfad)
 
   fixe_var <- c(
     "UID", "CODE", "STANDORT", "NAME", "PROBEARTID", "BEGINNPROBENAHME",
@@ -72,8 +75,12 @@ test_that("einlesen_regulierungen produziert tibble", {
 
 ## Teste Struktur der Rückgabe ####
 
-test_that("einlesen_regulierungen produziert tibble", {
+test_that("einlesen_kriterien produziert tibble", {
   krit_pfad <- system.file("extdata", "Dat_Qual_kriterien.xlsx", package = "mvwizr")
+
+  rlang::local_options(rlib_message_verbosity = "quiet")
+  rlang::local_options(rlib_warning_verbosity = "quiet")
+
   out <- suppressWarnings(einlesen_kriterien(krit_pfad))
   out_names <- names(out)
 
@@ -97,7 +104,11 @@ test_that("einlesen_regulierungen produziert tibble", {
 
 test_that("einlesen_vsa_lookup produziert tibble", {
   vsa_lookup_pfad <- system.file("extdata", "Tab_Substanzen.txt", package = "mvwizr")
-  out <- suppressWarnings(einlesen_vsa_lookup(vsa_lookup_pfad))
+
+  rlang::local_options(rlib_message_verbosity = "quiet")
+  rlang::local_options(rlib_warning_verbosity = "quiet")
+
+  out <- einlesen_vsa_lookup(vsa_lookup_pfad)
   out_names <- names(out)
 
   fixe_var <- c("ID_Substanz", "Parameter-ID")
@@ -118,7 +129,7 @@ test_that("einlesen_vsa_lookup produziert tibble", {
 
 test_that("einlesen_bafu_lookup produziert tibble", {
   bafu_lookup_pfad <- system.file("extdata", "BAFU_Liste_Parameter_Bezeichnungen_Datenaustausch.xlsx", package = "mvwizr")
-  out <- suppressWarnings(einlesen_bafu_lookup(bafu_lookup_pfad))
+  out <- einlesen_bafu_lookup(bafu_lookup_pfad)
   out_names <- names(out)
 
   fixe_var <- c("BAFU_Parameter_ID", "BAFU_Bez_DE", "BAFU_Bez_FR")
@@ -137,6 +148,9 @@ test_that("einlesen_bafu_lookup produziert tibble", {
 ## Teste Struktur der Rückgabe ####
 
 test_that("berechne_rq_ue produziert tibble", {
+  rlang::local_options(rlib_message_verbosity = "quiet")
+  rlang::local_options(rlib_warning_verbosity = "quiet")
+
   out <- berechne_rq_ue(mvwizr::mvdaten_beispiel_mvwizr,
     mvwizr::regulierungen_mvwizr,
     mvwizr::kriterien_mvwizr,

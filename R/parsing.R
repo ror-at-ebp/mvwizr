@@ -660,7 +660,7 @@ batch_einlesen_nawa <- function(nawa_mv_pfade = NULL,
 #' @returns Dataframe mit MV-Daten ohne Duplikate.
 #' @export
 entferne_duplikate <- function(mv_data, dateiname = NULL) {
-  cli::cli_alert_info("Suche nach Duplikaten in Daten...")
+  cli::cli_inform("Suche nach Duplikaten in Daten...")
   duplikate <- mv_data |>
     dplyr::group_by(
       .data$CODE,
@@ -744,7 +744,7 @@ einlesen_kriterien <- function(kriterien_pfad) {
       dplyr::distinct() |>
       dplyr::pull(.data$Name)
 
-    cli::cli_inform(
+    cli::cli_warn(
       c(
         "!" = "Nicht alle Substanzen haben eine VSA ID_Substanz. Diese werden entfernt.",
         "i" = "Betroffene Substanzen: {substanz_id_na}"
@@ -829,7 +829,7 @@ einlesen_vsa_lookup <- function(vsa_lookup_pfad, alle_felder = FALSE) {
   dup_character <- paste(sort(duplikate_vec), collapse = ", ")
 
   if (!(purrr::is_empty(duplikate_vec))) {
-    cli::cli_inform(
+    cli::cli_warn(
       c(
         "!" = "VSA-Lookup: {anz_duplikate} mehrfache Bezeichnungen (VSA Parameter-ID) pro Substanz_ID gefunden. Verwende tiefere Substanz_ID.",
         "i" = "Betroffen: {dup_character}"
@@ -947,7 +947,7 @@ berechne_rq_ue <- function(mv_daten, regulierungen, kriterien, robust3 = TRUE) {
     dplyr::select(dplyr::all_of(c("CODE", "BEGINNPROBENAHME", "ENDEPROBENAHME", "PARAMETERID_BAFU", "WERT_NUM", "Ue_AQK", "Ue_CQK")))
 
   if (nrow(Ue_robust_3) > 0 && robust3) {
-    cli::cli_alert_info("Achtung: Folgende Proben \u00fcberschreiten QK mit Robustheit == 3 (nicht in Daten enthalten):")
+    cli::cli_warn("Achtung: Folgende Proben \u00fcberschreiten QK mit Robustheit == 3 (nicht in Daten enthalten):")
     print(Ue_robust_3)
   }
 
@@ -1008,7 +1008,7 @@ berechne_stichproben_gbl_aggregiert <- function(mv_daten, perzentil = 90) {
     dplyr::mutate(Jahr = lubridate::year(.data$BEGINNPROBENAHME))
 
   if (nrow(stichproben) == 0) {
-    cli::cli_alert("Keine Stichproben im Datensatz gefunden.")
+    cli::cli_abort("Keine Stichproben im Datensatz gefunden.")
   }
 
   stichproben_agg <- stichproben |>
