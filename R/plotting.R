@@ -365,7 +365,7 @@ plot_misch_verlauf <- function(mv_daten,
       " (ID = ",
       id_substanz,
       "; Station: ",
-      stationscode,
+      stationsname,
       ")"
     )
 
@@ -436,7 +436,7 @@ plot_misch_verlauf <- function(mv_daten,
     # Plots für mehrere Substanzen
     plot_titel <- paste0(
       "Konzentrationsverlauf f\u00fcr mehrere Substanzen (Station: ",
-      stationscode,
+      stationsname,
       ")"
     )
 
