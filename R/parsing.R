@@ -166,7 +166,7 @@ einlesen_mv_gbl <- function(mv_daten_pfad, vsa_lookup_pfad, bafu_lookup_pfad, bS
 
   # Falls berechnete Mischproben (bSaP) verwendet werden sollen, werden die kürzeren 3.5-Tage-Proben, die für die Berechnung verwendet wurden, entfernt, ansonsten die bSaP.
   if (bSaP) {
-    return(entferne_berech_gbl(mv_daten_df))
+    return(prozessiere_bSaP(mv_daten_df, bSaP_identifier = "PROBEARTID"))
   } else {
     return(mv_daten_df |> dplyr::filter(.data$PROBEARTID != "bSaP"))
   }
@@ -644,10 +644,51 @@ batch_einlesen_nawa <- function(nawa_mv_pfade = NULL,
     import_manifest_df$file
   })
 
-  mv_data_combined <- dplyr::bind_rows(mv_data_list, .id = "file")
+  mv_data_combined <- dplyr::bind_rows(mv_data_list, .id = "filename")
   cli::cli_alert_success("MV-Daten erfolgreich eingelesen und kombiniert.")
   mv_data_combined <- mv_data_combined |>
     dplyr::mutate(UID = dplyr::row_number())
+}
+
+#' Entferne SaP, welche für bSaP verwendet wurden
+#'
+#' Bei den (gemessenen) Mischproben unterscheidet das NAWA-MV-Protokoll zwischen 3.5-Tage-Proben und 14-Tage-Proben (SaP). Ausserdem können berechnete 14-Tage-Proben (bSaP) aus 4 kürzeren Mischproben errechnet werden. Damit diese Werte nicht doppelt gezählt werden, sollten solche kürzeren Proben, die für die Berechnung verwendet wurden, aus den Daten entfernt werden.
+#'
+#' Für GBL-Daten wird diese Funktion automatisch aufgerufen. Da beim NAWA-MV-Format zur Zeit keine Kennzeichnung von bSaP-Proben vorgesehen ist, muss dieser Schritt nach dem Einlesen erfolgen, und bSaP Proben müssen manuell gekennzeichnet werden.
+#'
+#' Achtung: Diese Berechnungen funktionieren nur, wenn die 3.5-Tage Proben zeitlich innerhalb der 14-Tage Proben liegen oder sich mit dem Zeitraum (auf Tag gerundet) decken. Falls die zur Berechnung verwendeten 3.5-Tage-Mischproben das Intervall der betreffenden bSaP 14-Tage-Probe überschneiden, so werden nur die 3.5-Tage-Proben, die innerhalb des Zeitraums liegen, entfernt!
+#'
+#' @param mv_daten Tibble mit den MV-Daten aus der Funktion `einlesen_mv_gbl` oder `einlesen_nawa` resp. `batch_einlesen_nawa`.
+#'
+#' @param bSaP_identifier Name der Spalte als String mit der Information, ob es sich um berechnete Mischproben ("bSaP") oder gemessene Mischproben ("SaP") handelt. Erlaubte Werte in Spalte: "bSaP", "SaP" und "S" (für Stichproben - werden nicht bearbeitet).
+#'
+#' @return mv-daten mit entfernten Datensätzen
+#' @export
+prozessiere_bSaP <- function(mv_daten, bSaP_identifier) {
+  identifiers_data <- unique(mv_daten[[bSaP_identifier]])
+  identifiers_allowed <- c("SaP", "bSaP", "S")
+  diff_identifiers <- setdiff(identifiers_data, identifiers_allowed)
+  if (!(rlang::is_empty(diff_identifiers))) {
+    cli::cli_abort(message = c(
+      "Nur folgende Probenidentifier d\u00fcrfen verwendet werden: {identifiers_allowed}",
+      "x" = "Nicht erlaubter Identifier in Spalte {bSaP_identifier} gefunden: {diff_identifiers}"
+    ), class = "mvwizr_bSaP_identifier_ungueltig")
+  }
+
+  # Zuerst bestimmen wir alle Intervalle, bei denen es berechnete Daten gibt
+  berechnete_intervalle <- mv_daten |>
+    dplyr::filter(.data[[bSaP_identifier]] == "bSaP", !is.na(.data$ID_Substanz)) |>
+    dplyr::mutate(bSaP_Intervall = lubridate::interval(lubridate::as_date(.data$BEGINNPROBENAHME), lubridate::as_date(.data$ENDEPROBENAHME))) |>
+    dplyr::distinct(.data$CODE, .data$bSaP_Intervall, .data$ID_Substanz, .data$PARAMETERID_BAFU)
+
+  # Dann überprüfen wir für jedes Sample (pro Substanz und Station), ob das Probenintervall im bSaP-Intervall liegt (Achtung: 3.5-Tage SaP-Proben, die ausserhalb des bSaP beginnen/enden und für die Berechnung verwendet wurden, werden so nicht gefunden!).
+  SaP_zum_entfernen <- mv_daten |>
+    dplyr::left_join(berechnete_intervalle, by = c("CODE", "ID_Substanz", "PARAMETERID_BAFU")) |>
+    dplyr::mutate(In_bSaP = lubridate::interval(lubridate::as_date(.data$BEGINNPROBENAHME), lubridate::as_date(.data$ENDEPROBENAHME)) %within% .data$bSaP_Intervall) |>
+    dplyr::filter(.data$In_bSaP & .data[[bSaP_identifier]] == "SaP") |>
+    dplyr::pull("UID")
+
+  mv_daten |> dplyr::filter(!(.data$UID %in% .env$SaP_zum_entfernen))
 }
 
 #' Entferne Duplikate aus MV-Daten
@@ -1077,33 +1118,6 @@ normalise_units <- function(mvdata, wert, einheit, zieleinheit = "\u00b5g/l") {
     ),
     {{ einheit }} := dplyr::if_else({{ einheit }} %in% names(faktoren_ziele), zieleinheit, {{ einheit }})
   )
-}
-
-#' Entferne SaP, welche für bSaP verwendet wurden
-#'
-#' Bei den (gemessenen) Mischproben unterscheidet das GBL zwischen 3.5-Tage Proben und 14-Tage Proben (SaP). Ausserdem können berechnete 14-Tage Proben (bSaP) aus 4 kürzeren Mischproben errechnet werden. Damit diese Werte nicht doppelt gezählt werden, sollten solche kürzeren Proben, die für die Berechnung verwendet wurden, aus den Daten entfernt werden.
-#'
-#' @param mv_daten Tibble mit den MV-Daten aus der Funktion `einlesen_mv_gbl`.
-#'
-#' Hinweis: Interne, nicht exportierte Funktion.
-#'
-#' @return mv-daten mit entfernten Datensätzen
-#' @noRd
-entferne_berech_gbl <- function(mv_daten) {
-  # Zuerst bestimmen wir alle Intervalle, bei denen es berechnete Daten gibt
-  berechnete_intervalle <- mv_daten |>
-    dplyr::filter(.data$PROBEARTID == "bSaP", !is.na(.data$ID_Substanz)) |>
-    dplyr::mutate(bSaP_Intervall = lubridate::interval(lubridate::as_date(.data$BEGINNPROBENAHME), lubridate::as_date(.data$ENDEPROBENAHME))) |>
-    dplyr::distinct(.data$CODE, .data$bSaP_Intervall, .data$ID_Substanz, .data$PARAMETERID_BAFU)
-
-  # Dann überprüfen wir für jedes Sample (pro Substanz und Station), ob das Probenintervall im bSaP-Intervall liegt (Achtung: 3.5-Tage SaP-Proben, die ausserhalb des bSaP beginnen/enden und für die Berechnung verwendet wurden, werden so nicht gefunden!).
-  SaP_zum_entfernen <- mv_daten |>
-    dplyr::left_join(berechnete_intervalle, by = c("CODE", "ID_Substanz", "PARAMETERID_BAFU")) |>
-    dplyr::mutate(In_bSaP = lubridate::interval(lubridate::as_date(.data$BEGINNPROBENAHME), lubridate::as_date(.data$ENDEPROBENAHME)) %within% .data$bSaP_Intervall) |>
-    dplyr::filter(.data$In_bSaP & .data$PROBEARTID == "SaP") |>
-    dplyr::pull("UID")
-
-  mv_daten |> dplyr::filter(!(.data$UID %in% .env$SaP_zum_entfernen))
 }
 
 guess_nawa_delim <- function(lines, filename, delims = c(",", "\t", ";")) {

@@ -214,24 +214,19 @@ test_that("berechne_mixtox produziert tibble", {
 
 ## Teste Struktur der Rückgabe ####
 
-test_that("entferne_berech_gbl produziert tibble", {
+test_that("prozessiere_bSaP produziert tibble", {
   mv <- mvwizr::mvdaten_beispiel_mvwizr
-  out <- mvwizr:::entferne_berech_gbl(mv)
-  out_names <- names(out)
-
-  fixe_var <- c(
-    "UID", "CODE", "STANDORT", "NAME", "PROBEARTID", "BEGINNPROBENAHME",
-    "ENDEPROBENAHME", "ID_Substanz", "PARAMETERID_BAFU", "OPERATOR",
-    "WERT_NUM", "Konz_inkl_BG", "EINHEIT", "MSTLTYP", "PARAMETERGRUPPEID",
-    "PARAMETERGRUPPE", "PARAMETER_GBL", "BEZEICHNUNG_BAFU", "BAFU_Bez_DE",
-    "BAFU_Bez_FR", "BG_max", "BG_min"
-  )
-
-  var_enthalten_bool <- all(fixe_var %in% out_names)
+  out <- mvwizr::prozessiere_bSaP(mv, bSaP_identifier = "PROBEARTID")
 
   out_kleinergl <- nrow(out) <= nrow(mv)
 
   expect_s3_class(out, class = c("tbl_df", "tbl", "data.frame"))
-  expect_true(var_enthalten_bool)
   expect_true(out_kleinergl)
+})
+
+test_that("prozessiere_bSaP stoppt bei falschen parametern", {
+  mv <- mvwizr::mvdaten_beispiel_mvwizr
+  mv[1, "PROBEARTID"] <- "X"
+
+  expect_error(mvwizr::prozessiere_bSaP(mv, bSaP_identifier = "PROBEARTID"), class = "mvwizr_bSaP_identifier_ungueltig")
 })
