@@ -13,6 +13,7 @@ plot_misch_verlauf(
   zulassungstyp = "[BP]",
   plot_typ = "barplot",
   plot_bg = TRUE,
+  bg_typ = "minmax",
   plot_parametergruppe = ""
 )
 }

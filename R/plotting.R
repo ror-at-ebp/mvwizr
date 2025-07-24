@@ -30,6 +30,7 @@
 #' }
 #' @param plot_bg Logisch (Vorgabe: `TRUE`). Sollen Bestimmungsgrenzen, falls vorhanden, gezeichnet werden?
 #' @param plot_parametergruppe Name der Spalte (String), die für das Kategorisieren gruppierter Barplots (Summenplots) verwendet werden soll. Für die Daten des GBL Bern "PARAMETERGRUPPE" verwenden.
+#' @param bg_typ Falls `"minmax"` (Standard), werden minmale und maximale Bestimmungsgrenzen als gestrichelte Linie geplottet. Falls `"effektiv"` und falls die Spalte `"Bestimmungsgrenze` in den Daten vorhanden ist, so werden effektive Bestimmungsgrenzen als hellblaue teiltransparente Säulen geplottet.
 #'
 #' @return ggplot2 Plot-Objekt
 #' @export
@@ -80,6 +81,7 @@ plot_misch_verlauf <- function(mv_daten,
                                zulassungstyp = "[BP]",
                                plot_typ = "barplot",
                                plot_bg = TRUE,
+                               bg_typ = "minmax",
                                plot_parametergruppe = "") {
   # Unterschiedliche Plottitel je nach ausgewähltem Zulassungstyp
   plot_titel <- switch(zulassungstyp,
@@ -403,9 +405,9 @@ plot_misch_verlauf <- function(mv_daten,
       cli::cli_abort(message = c("Ung\u00fcltiger Plottyp f\u00fcr Verlauf von Einzelsubstanz", "i" = "G\u00fcltige Werte f\u00fcr `plot_typ`: `barplot`, `striche`, `treppen`"), , class = "mvwizr_plottyp_ungueltig")
     }
 
-    # Falls Bestimmungsgrenzen in den Daten sind und diese nicht NA sind, werden diese beim Einzelsubstanz-Plot hinzugefügt. Achtung: Die BG werden beim Einlesen aufgrund der eingelesenen Daten bestimmt - falls dort sehr unterschiedliche BG gefunden werden, wird dies hier wiedergegeben.
+    # Falls Bestimmungsgrenzen in den Daten sind und diese nicht NA sind, werden diese beim Einzelsubstanz-Plot hinzugefügt. Achtung: Standardmässig werden die BG als Minima und Maxima beim Einlesen aufgrund der eingelesenen Daten bestimmt - falls dort sehr unterschiedliche BG gefunden werden, wird dies hier wiedergegeben.
     if (plot_bg && "BG_min" %in% names(mv_daten) &&
-      "BG_max" %in% names(mv_daten)) {
+      "BG_max" %in% names(mv_daten) && bg_typ == "minmax") {
       BG_min <- unique(mv_daten$BG_min)
       BG_max <- unique(mv_daten$BG_max)
       if (!is.na(BG_min) || !is.na(BG_max)) {
@@ -428,9 +430,28 @@ plot_misch_verlauf <- function(mv_daten,
             )
           )
       } else {
-        cli::cli_warn("Keine Bestimmungsgrenzen f\u00fcr Substanz mit ID {id_substanz} gefunden.")
+        cli::cli_warn("Keine minimalen/maximalen Bestimmungsgrenzen f\u00fcr Substanz mit ID {id_substanz} gefunden.")
       }
     }
+
+    if (plot_bg && bg_typ == "effektiv") {
+      if ("Bestimmungsgrenze" %in% names(mv_daten)) {
+        plot_final <- plot_final +
+          ggplot2::geom_rect(
+            ggplot2::aes(
+              xmin = .data$BEGINNPROBENAHME,
+              xmax = .data$ENDEPROBENAHME,
+              ymin = 0,
+              ymax = .data$Bestimmungsgrenze
+            ),
+            mv_daten,
+            fill = "dodgerblue", alpha = 0.2
+          )
+      } else {
+        cli::cli_warn("Spalte 'Bestimmungsgrenze' nicht in Daten gefunden")
+      }
+    }
+
     plot_final <- plot_final + ggplot2::ggtitle(plot_titel)
   } else if (length(id_substanz) > 1) {
     # Plots für mehrere Substanzen
