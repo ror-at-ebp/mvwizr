@@ -14,13 +14,15 @@
 #'
 #' @examples
 #' mv_daten_pfad <- system.file("extdata", "Daten_MV_GBL_2019_2020.txt", package = "mvwizr")
-#' vsa_lookup_pfad <- system.file("extdata", "Tab_Substanzen.txt", package = "mvwizr")
-#' bafu_filename <- "BAFU_Liste_Parameter_Bezeichnungen_Datenaustausch.xlsx"
-#' bafu_code_pfad <- system.file("extdata", bafu_filename, package = "mvwizr")
 #'
-#' mvdaten <- einlesen_mv_gbl(mv_daten_pfad, vsa_lookup_pfad, bafu_code_pfad)
+#' # Ab mvwizr v1.2 können vsa_lookup_pfad und bafu_lookup_pfad leer gelassen werden - es wird dann die mit dem Paket gebundelte Datei verwendet.
+#' mvdaten <- einlesen_mv_gbl(mv_daten_pfad)
 #'
-einlesen_mv_gbl <- function(mv_daten_pfad, vsa_lookup_pfad, bafu_lookup_pfad, bSaP = FALSE) {
+einlesen_mv_gbl <- function(mv_daten_pfad, vsa_lookup_pfad = NULL, bafu_lookup_pfad = NULL, bSaP = FALSE) {
+  # Falls die Argumente NULL sind, ersetzen wir sie durch den Standardwert - den Pfad zu den Dateien im Paket selber
+  vsa_lookup_pfad <- vsa_lookup_pfad %||% system.file("extdata/Tab_Substanzen.txt", package = "mvwizr")
+  bafu_lookup_pfad <- bafu_lookup_pfad %||% system.file("extdata/BAFU_Liste_Parameter_Bezeichnungen_Datenaustausch.xlsx", package = "mvwizr")
+
   vsa_lookup_df <- einlesen_vsa_lookup(vsa_lookup_pfad, alle_felder = FALSE)
   bafu_lookup_df <- einlesen_bafu_lookup(bafu_lookup_pfad)
 
@@ -264,13 +266,17 @@ schreibe_nawa_import_manifest_template <- function(import_manifest_file, mv_data
 #' @return Dataframe mit MV-Daten
 #' @export
 einlesen_nawa <- function(nawa_mv,
-                          vsa_lookup_pfad,
-                          bafu_lookup_pfad,
+                          vsa_lookup_pfad = NULL,
+                          bafu_lookup_pfad = NULL,
                           delimiter = NA_character_,
                           encoding = NA_character_,
                           lang = NA_character_,
                           parameter = NA_character_,
                           header = NA_integer_) {
+  # Falls die Argumente NULL sind, ersetzen wir sie durch den Standardwert - den Pfad zu den Dateien im Paket selber
+  vsa_lookup_pfad <- vsa_lookup_pfad %||% system.file("extdata/Tab_Substanzen.txt", package = "mvwizr")
+  bafu_lookup_pfad <- bafu_lookup_pfad %||% system.file("extdata/BAFU_Liste_Parameter_Bezeichnungen_Datenaustausch.xlsx", package = "mvwizr")
+
   vsa_lookup_df <- einlesen_vsa_lookup(vsa_lookup_pfad, alle_felder = FALSE)
   bafu_lookup_df <- einlesen_bafu_lookup(bafu_lookup_pfad)
 
@@ -359,8 +365,18 @@ einlesen_nawa <- function(nawa_mv,
       locale = readr::locale(encoding = encoding, tz = "Europe/Zurich"),
       trim_ws = TRUE,
       skip = header - 1,
-      col_types = colspecs
+      col_types = colspecs,
+      na = c("", "NA", "---"),
     )
+
+    # Falls beim Parsen der Dateien Probleme auftreten, zeigen wir diese an und signalisieren anschliessend einen Fehler.
+    mv_df_problems <- readr::problems(mv_data)
+    if (nrow(mv_df_problems) > 0) {
+      cli::cli_alert("Fehler: MV-Datei wurde nicht korrekt eingelesen: {nawa_mv} ")
+      print(mv_df_problems)
+    }
+
+    readr::stop_for_problems(mv_data)
 
     mv_data <- sanitise_nawa_input(mv_data)
 
@@ -371,7 +387,12 @@ einlesen_nawa <- function(nawa_mv,
       cli::cli_abort("Parameter muss entweder 'BAFU_Parameter_ID', 'BAFU_Bez_DE' oder 'BAFU_Bez_FR' sein.")
     }
 
-    mv_data <- rename_nawa_fields(mv_data, parameter = parameter, lang = lang)
+    # Wir lesen die Datumsfelder als Strings ein und wandeln danach um, weil die Datumsformate inkonsistent sein können (Z.T. ohne Zeitangabe)
+    mv_data <- rename_nawa_fields(mv_data, parameter = parameter, lang = lang) |>
+      dplyr::mutate(dplyr::across(
+        c("BEGINNPROBENAHME", "ENDEPROBENAHME"),
+        ~ lubridate::parse_date_time(.x, orders = c("dmY", "dmYHM", "dmYHMS"))
+      ))
   }
 
   if (type == "excel") {
@@ -579,8 +600,8 @@ einlesen_nawa <- function(nawa_mv,
 #' @returns Dataframe mit kombinierten MV-Daten aus allen angegebenen Dateien (Achtung: Entfernt keine Duplikate zwischen den Dateien, sondern nur innerhalb einer Datei).
 #' @export
 batch_einlesen_nawa <- function(nawa_mv_pfade = NULL,
-                                vsa_lookup_pfad,
-                                bafu_lookup_pfad,
+                                vsa_lookup_pfad = NULL,
+                                bafu_lookup_pfad = NULL,
                                 import_manifest = NULL) {
   if (is.null(nawa_mv_pfade) && is.null(import_manifest)) {
     cli::cli_abort("Bitte entweder Pfade zu MV-Daten oder Import-Manifest angeben.")
@@ -918,7 +939,11 @@ einlesen_bafu_lookup <- function(bafu_lookup_pfad, alle_felder = FALSE) {
 #'
 #' @return Dataframe mit MV-Daten, ergänzt mit Risikoquotienten
 #' @export
-berechne_rq_ue <- function(mv_daten, regulierungen, kriterien, robust3 = TRUE) {
+berechne_rq_ue <- function(mv_daten, regulierungen = NULL, kriterien = NULL, robust3 = TRUE) {
+  # Falls regulierungen oder kriterien nicht angegeben werden, verwenden wir den Standardwert (= die mit dem Paket gebundelten Daten)
+  regulierungen <- regulierungen %||% mvwizr::regulierungen_mvwizr
+  kriterien <- kriterien %||% mvwizr::kriterien_mvwizr
+
   # Ergänzt, damit klare Fehlermeldung ausgegeben wird
   if (!is.data.frame(regulierungen)) {
     cli::cli_abort(c(
@@ -1172,45 +1197,16 @@ get_nawa_spec <- function(type = c("names", "colspecs"),
         "Einheit"
       )
     } else if (type == "colspecs") {
-      spec <- structure(
-        list(
-          cols = list(
-            `Messstelle ID` = structure(list(), class = c("collector_double", "collector")),
-            `Messstelle Name` = structure(list(), class = c(
-              "collector_character", "collector"
-            )),
-            `Probenahme Ort` = structure(list(), class = c(
-              "collector_character", "collector"
-            )),
-            `Probenahme Art` = structure(list(), class = c(
-              "collector_character", "collector"
-            )),
-            `NAWA Probenahme Beginn (Datum und Uhrzeit)` = structure(
-              list(format = "%d.%m.%Y %H:%M"),
-              class = c("collector_datetime", "collector")
-            ),
-            `NAWA Probenahme Ende (Datum und Uhrzeit)` = structure(
-              list(format = "%d.%m.%Y %H:%M"),
-              class = c("collector_datetime", "collector")
-            ),
-            Parameter = structure(list(), class = c(
-              "collector_character", "collector"
-            )),
-            Messwert = structure(list(), class = c(
-              "collector_character", "collector"
-            )),
-            Bestimmungsgrenze = structure(list(), class = c("collector_double", "collector")),
-            Einheit = structure(list(), class = c(
-              "collector_character", "collector"
-            ))
-          ),
-          default = structure(list(), class = c(
-            "collector_character", "collector"
-          )),
-          delim = NULL
-        ),
-        class = "col_spec"
-      )
+      spec <- structure(list(cols = list(`Messstelle ID` = structure(list(), class = c("collector_double",
+"collector")), `Messstelle Name` = structure(list(), class = c("collector_character",
+"collector")), `Probenahme Ort` = structure(list(), class = c("collector_character",
+"collector")), `Probenahme Art` = structure(list(), class = c("collector_character",
+"collector")), `NAWA Probenahme Beginn (Datum und Uhrzeit)` = structure(list(), class = c("collector_character", "collector")), `NAWA Probenahme Ende (Datum und Uhrzeit)` = structure(list(), class = c("collector_character", "collector")), Parameter = structure(list(), class = c("collector_character",
+"collector")), Messwert = structure(list(), class = c("collector_character",
+"collector")), Bestimmungsgrenze = structure(list(), class = c("collector_double",
+"collector")), Einheit = structure(list(), class = c("collector_character",
+"collector"))), default = structure(list(), class = c("collector_character",
+"collector")), delim = NULL), class = "col_spec")
     }
   } else if (lang == "FR") {
     if (type == "names") {
