@@ -20,7 +20,5 @@ ggplot2 Plot-Objekt
 Hinweis: Hierbei handelt es sich nur um einen Wrapper um \code{plot_misch_mixtox_verlauf} für dieselben Plots aber mit Stichproben.
 }
 \examples{
-set_ch_locale(lang = "de")
-
 plot_stich_mixtox_zf(rq_ue_beispiel_mvwizr)
 }

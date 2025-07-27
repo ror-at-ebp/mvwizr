@@ -17,3 +17,4 @@
 ^docs$
 ^pkgdown$
 ^_DONOTCOMMIT_$
+^RELEASE_RUN\.md$

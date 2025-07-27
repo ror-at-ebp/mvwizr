@@ -1008,14 +1008,14 @@ berechne_mixtox <- function(rq_data) {
       Mix_Pflanzen_CQK = dplyr::if_else(any(!is.na(.data$RQ_CQK_P)), sum(.data$RQ_CQK_P, na.rm = TRUE), NA_real_),
       Mix_Invertebraten_CQK = dplyr::if_else(any(!is.na(.data$RQ_CQK_I)), sum(.data$RQ_CQK_I, na.rm = TRUE), NA_real_),
       Mix_Vertebraten_CQK = dplyr::if_else(any(!is.na(.data$RQ_CQK_V)), sum(.data$RQ_CQK_V, na.rm = TRUE), NA_real_),
-      Mix_Secondary_CQK = dplyr::if_else(any(!is.na(.data$RQ_CQK_S)), sum(.data$RQ_CQK_S, na.rm = TRUE), NA_real_),
+      Mix_Akkumulation_CQK = dplyr::if_else(any(!is.na(.data$RQ_CQK_S)), sum(.data$RQ_CQK_S, na.rm = TRUE), NA_real_),
       Mix_Pflanzen_AQK = dplyr::if_else(any(!is.na(.data$RQ_AQK_P)), sum(.data$RQ_AQK_P, na.rm = TRUE), NA_real_),
       Mix_Invertebraten_AQK = dplyr::if_else(any(!is.na(.data$RQ_AQK_I)), sum(.data$RQ_AQK_I, na.rm = TRUE), NA_real_),
       Mix_Vertebraten_AQK = dplyr::if_else(any(!is.na(.data$RQ_AQK_V)), sum(.data$RQ_AQK_V, na.rm = TRUE), NA_real_)
     ) |>
     tidyr::pivot_longer(dplyr::starts_with("Mix"), names_prefix = "Mix_", names_sep = "_", names_to = c("Ziel", "Kriterium"), values_to = "RQ") |>
     dplyr::mutate(
-      Ziel = forcats::fct(.data$Ziel, levels = c("Vertebraten", "Invertebraten", "Pflanzen", "Secondary")),
+      Ziel = forcats::fct(.data$Ziel, levels = c("Vertebraten", "Invertebraten", "Pflanzen", "Akkumulation")),
       Ziel_num = as.integer(.data$Ziel),
       Beurteilung = dplyr::case_when(
         .data$RQ >= 0 & .data$RQ < 0.1 ~ "sehr gut",

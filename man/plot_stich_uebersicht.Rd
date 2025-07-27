@@ -20,8 +20,6 @@ ggplot2 Plot-Objekt
 Diese Übersichtsfunktion plottet sämtliche Substanzen in allen Stichproben in einem als Raster über die Zeit und benutzt eine logarithmische Farbskala um relevante Substanzen und Veränderungen hervorzuheben.
 }
 \examples{
-set_ch_locale(lang = "de")
-
 # Stichprobenübersichten für zwei Stationen
 plot_stich_uebersicht(mvdaten_beispiel_mvwizr, stationscode = "SA51")
 plot_stich_uebersicht(mvdaten_beispiel_mvwizr, stationscode = "KI52")

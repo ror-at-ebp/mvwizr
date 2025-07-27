@@ -8,7 +8,7 @@ plot_misch_mixtox_verlauf(
   rq_ue_daten,
   stationscode = NULL,
   jahr = NULL,
-  modus = "andauernd",
+  modus = c("andauernd", "kurzzeitig"),
   plot_zusammenfassung = "keine",
   optin_mischtox_S = FALSE
 )
@@ -27,19 +27,20 @@ plot_misch_mixtox_verlauf(
 
 \item{plot_zusammenfassung}{Entweder \code{NULL} (Vorgabe), "stichproben" oder "mischproben". Falls einer der letzeren beiden, wird pro Jahr und nicht pro Monat aggregiert (entweder nur für Stichproben oder nur für Mischproben). Für Stichproben muss der \code{modus} auf "kurzzeitig" gesetzt werden.}
 
-\item{optin_mischtox_S}{Logisch (Vorgabe: \code{FALSE}). Ab v1.2 unterstützt mvwizr auch die Anzeige der Fischtoxizität / Secondary toxicity (\code{S_chron}). Falls \code{TRUE}, wird eine vierte Zeile bei den Mischtoxizitäten angezeigt, falls sie in den Daten vorhanden ist. Falls \code{FALSE}, wird sie nicht angezeigt.}
+\item{optin_mischtox_S}{Logisch (Vorgabe: \code{FALSE}). Ab v1.2 unterstützt mvwizr auch die Anzeige der Akkumulation / Secondary toxicity (\code{S_chron}). Falls \code{TRUE}, wird eine vierte Zeile bei den Mischtoxizitäten angezeigt, falls sie in den Daten vorhanden ist. Falls \code{FALSE}, wird sie nicht angezeigt.}
 }
 \value{
 ggplot2 Plot-Objekt
 }
 \description{
-Verlauf von Mischungstoxizitäten plotten
+Zeigt den Verlauf der Mischungstoxizitäten pro Jahr (fortlaufend möglich) und Stationen.
 }
 \examples{
-set_ch_locale(lang = "de")
-
 # Ausführlicher Verlauf für andauernde Belastungen
 plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd")
+
+# Ausführlicher Verlauf für andauernde Belastungen mit vierter Zeile für Akkumulation
+plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd", optin_mischtox_S = TRUE)
 
 # Ausführlicher Verlauf für kurzzeitige Belastungen
 plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "kurzzeitig")

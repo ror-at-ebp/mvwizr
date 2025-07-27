@@ -27,8 +27,6 @@ ggplot2 Plot-Objekt
 Stichproben Konzentrationsverlauf
 }
 \examples{
-set_ch_locale(lang = "de")
-
 # Plotten aller Substanzen für alle Stationen - sehr unübersichtlich
 pobj <- plot_stich_verlauf(mvdaten_beispiel_mvwizr)
 

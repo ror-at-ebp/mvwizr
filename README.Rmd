@@ -65,14 +65,6 @@ Nach der Installation kann mvwizr in Scripts oder in der Konsole verwendet werde
 library(mvwizr)
 ```
 
-Die mit mvwizr erstellten Grafiken verwenden für die Monatsnamen auf der X-Achse die Sprache, unter welcher R läuft - die sogenannte **locale**. Diese lässt sich mit folgender Funktion entweder auf Deutsch ("de") oder Französisch ("fr") setzen:
-
-``` r
-set_ch_locale(lang = "fr") # Setzt locale auf Französisch-Schweiz
-```
-
-Das Setzen der **locale** ändert (zur Zeit) die Sprache auf den Plots allerdings nicht.
-
 ### Hilfe erhalten
 
 Das Paket enthält verschiedene eingebaute Möglichkeiten, Hilfe zu erhalten:
@@ -154,7 +146,7 @@ Die Funktionen im Paket hängen wie in der nachfolgenden Abbildung dargestellt z
 
 ## Das Paket erweitern
 
-Das Paket kann durch Hinzufügen neuer Funktionen und Daten erweitert werden. Hier sind einige Schritte, die befolgt werden müssen, um das Paket zu erweitern:
+Das Paket kann durch Hinzufügen neuer Funktionen und Daten erweitert werden. Eine Checkliste für das Veröffentlichen von Updates findet sich in der Datei `RELEASE_RUN.md` im Hauptverzeichnis des Repository. Hier sind einige weitere Schritte, die befolgt werden sollten, um das Paket zu erweitern:
 
 1.  **Neue Funktionen hinzufügen**: Neue R-Skripte im `R`-Verzeichnis erstellen (oder die Dateien `parsing.R` und `plotting.R` ergänzen) und Funktionen dort definieren. Sicherstellen, dass die Funktionen mit Roxygen-Tag dokumentiert und exportiert werden, damit sie für Benutzer verfügbar sind. Falls die Funktionen Dataframes zurückliefern, sollte die Struktur dieser Dataframes ebenfalls definiert werden (z.B. in der Dokumentation der Beispieldaten im nächsten Schritt).
 

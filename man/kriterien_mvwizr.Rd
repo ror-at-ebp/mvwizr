@@ -29,6 +29,6 @@ VSA
 kriterien_mvwizr
 }
 \description{
-Dieser Datensatz beinhaltet Qualitätskriterien des VSA zu Mikroverunreinigungen (ohne Duplikate).
+Dieser Datensatz beinhaltet Qualitätskriterien des Ökotoxzentrums zu Mikroverunreinigungen (ohne Duplikate).
 }
 \keyword{datasets}

@@ -36,8 +36,6 @@
 #' @export
 #'
 #' @examples
-#' set_ch_locale(lang = "de")
-#'
 #' # Summenplot mit Barplot-Darstellung
 #' plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, "URT010")
 #'
@@ -88,7 +86,8 @@ plot_misch_verlauf <- function(mv_daten,
     "[BP]" = "Pestizide Summen-Konzentration",
     "[B]" = "Biozide Summen-Konzentration",
     "[P]" = "PSM Summen-Konzentration",
-    "Alle" = "Summen-Konzentrationen"
+    "Alle" = "Summen-Konzentrationen",
+    sprintf("Summen-Konzentrationen für %s", zulassungstyp)
   )
 
   # Join der MV-Daten mit der Regulierungstabelle
@@ -146,7 +145,6 @@ plot_misch_verlauf <- function(mv_daten,
       cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} und f\u00fcr Substanz(en) mit ID {id_substanz} f\u00fcr Jahr {jahr} gefunden.", class = "mvwizr_keine_mischproben")
     }
   }
-
 
   plot_limits <- c(lubridate::as_datetime(paste0(min(
     lubridate::year(mv_daten$BEGINNPROBENAHME)
@@ -502,6 +500,8 @@ plot_misch_verlauf <- function(mv_daten,
 
 #' GSchV-Überschreitungen in Mischproben plotten
 #'
+#' Plottet Konzentrationsüberschreitungen von Stoffen, für die in der GSchV entweder ein ökotoxikologisch begründeter Wert vorliegt oder ein allgemeiner Grenzwert (0.1 µg/l).
+#'
 #' @inheritParams plot_misch_mixtox_verlauf
 #' @param plot_typ Legt fest, für welche Art von Überschreitungen eine Auswertung vorgenommen werden soll. Mögliche Werte:
 #' \itemize{
@@ -514,23 +514,20 @@ plot_misch_verlauf <- function(mv_daten,
 #' @export
 #'
 #' @examples
-#' set_ch_locale(lang = "de")
-#'
-#' \donttest{
 #' # Andauernde Überschreitungen (und Unterschreitungen) für die Jahre 2019 und 2020 plotten
 #' plot_misch_ue(rq_ue_beispiel_mvwizr, "URT010", jahr = c(2019, 2020))
 #'
-#' # Kurzzeitige Überschreitungen für 2019 anzeigen
-#' plot_misch_ue(rq_ue_beispiel_mvwizr, "URT010", plot_typ = "kurzzeitig", jahr = 2019)
+#' # Allgemeine Überschreitungen für 2019 anzeigen
+#' plot_misch_ue(rq_ue_beispiel_mvwizr, "URT010", plot_typ = "allgemein", jahr = 2019)
 #'
 #' # Kurzzeitige Überschreitungen für Station MUS001 für gesamte Zeitdauer in Daten anzeigen
 #' plot_misch_ue(rq_ue_beispiel_mvwizr, "MUS001", plot_typ = "kurzzeitig")
-#' }
 plot_misch_ue <- function(rq_ue_daten,
                           stationscode,
                           jahr = NULL,
-                          plot_typ = "andauernd") {
+                          plot_typ = c("andauernd", "allgemein", "kurzzeitig")) {
   # Für Ue-Plots sind nur Stoffe relevant, die in GSchV Anh.2 geregelt sind (organische Pestizide)
+  plot_typ <- match.arg(plot_typ)
   rq_ue_daten <- rq_ue_daten |>
     dplyr::filter(.data$CODE %in% .env$stationscode, .data$GSCHV %in% c(1, 2), !is.na(.data$ENDEPROBENAHME)) |>
     dplyr::select(dplyr::all_of(c("CODE", "STANDORT", "BEGINNPROBENAHME", "ENDEPROBENAHME", "ID_Substanz", "BAFU_Bez_DE", "Jahr", "Tage", "GSCHV", "AQK", "CQK")), dplyr::any_of("BG_max"), dplyr::starts_with("Ue"))
@@ -606,7 +603,7 @@ plot_misch_ue <- function(rq_ue_daten,
   # Zudem wird eine Warnung hinzugefügt, falls die BG höher ist als der Grenzwert
   mv_daten_plot <- mv_daten_Ue |>
     dplyr::left_join(Ue_pro_Substanz, by = "BAFU_Bez_DE") |>
-    dplyr::arrange(.data$BAFU_Bez_DE) |>
+    dplyr::arrange(.data$BAFU_Bez_DE, .locale = get_lang()) |>
     dplyr::mutate(
       BG_warnung = dplyr::if_else(
         !is.na(.data$BG_max) &
@@ -769,7 +766,9 @@ plot_misch_ue <- function(rq_ue_daten,
   belastungen_plot
 }
 
-#' Aufsummierte GSchV-Überschreitungen plotten
+#' Aufsummierte andauernde GSchV-Überschreitungen plotten
+#'
+#' Zeigt die andauernden Überschreitungen pro Jahr und Station. Dafür werden nur Proben mit einer Messdauer >= 10 Tage berücksichtigt.
 #'
 #' @inheritParams plot_misch_mixtox_verlauf
 #'
@@ -777,8 +776,6 @@ plot_misch_ue <- function(rq_ue_daten,
 #' @export
 #'
 #' @examples
-#' set_ch_locale(lang = "de")
-#'
 #' plot_misch_ue_summe(rq_ue_beispiel_mvwizr)
 #'
 plot_misch_ue_summe <- function(rq_ue_daten,
@@ -824,6 +821,8 @@ plot_misch_ue_summe <- function(rq_ue_daten,
 
 #' Aufsummierte QK-Überschreitungen plotten
 #'
+#' Zeigt die Überschreitung chronischer oder akuter Qualitätskriterien pro Jahr und Station, wobei sichtbar wird, ob es viele relevante Überschreitungen gibt von Qualitätskriterien, die nicht in der GSchV aufgenommen sind als spezifischer Grenzwert.
+#'
 #' @inheritParams plot_misch_mixtox_verlauf
 #' @param qk Qualitätskriterium, für welches geplottet werden soll. Mögliche Werte: "chronisch" (Vorgabe) oder "akut".
 #' @param detailliert Logisch (Vorgabe: `FALSE`). Soll der detaillierte VSA-Plot mit Aufspaltung nach Substanzen erstellt werden?
@@ -832,8 +831,6 @@ plot_misch_ue_summe <- function(rq_ue_daten,
 #' @export
 #'
 #' @examples
-#' set_ch_locale(lang = "de")
-#'
 #' # Chronische Übertretungen auswerten
 #' plot_misch_ue_qk(rq_ue_beispiel_mvwizr, qk = "chronisch", detailliert = FALSE)
 #'
@@ -849,8 +846,9 @@ plot_misch_ue_summe <- function(rq_ue_daten,
 plot_misch_ue_qk <- function(rq_ue_daten,
                              stationscode = NULL,
                              jahr = NULL,
-                             qk = "chronisch",
+                             qk = c("chronisch", "akut"),
                              detailliert = FALSE) {
+  qk <- match.arg(qk)
   rq_ue_daten <- dplyr::filter(rq_ue_daten, !is.na(.data$ENDEPROBENAHME))
 
   farben_qk <- c("Anz_gschv" = "#e51f20", "Anz_qk" = "#fbbf09")
@@ -935,7 +933,7 @@ plot_misch_ue_qk <- function(rq_ue_daten,
       dplyr::filter(.data$Anzahl > 0) |>
       dplyr::ungroup() |>
       # Verwendung von Faktoren zum Sortieren, aber auch weil ggpattern Probleme hatte mit den Sonderzeichen in der BAFU_Bez_DE
-      dplyr::mutate(BAFU_Bez_DE_fct = forcats::fct(.data$BAFU_Bez_DE, levels = sort(unique(.data$BAFU_Bez_DE))))
+      dplyr::mutate(BAFU_Bez_DE_fct = forcats::fct(.data$BAFU_Bez_DE, levels = stringr::str_sort(unique(.data$BAFU_Bez_DE), locale = get_lang())))
 
     anz_farben <- length(unique(rq_ue_summary$ID_Substanz))
 
@@ -994,13 +992,14 @@ plot_misch_ue_qk <- function(rq_ue_daten,
 
 #' Stationsübersicht Ökotoxbeurteilung plotten
 #'
+#' Plottet die Ökotoxbeurteilung für Einzelstoffe (kurzzeitig oder andauernd) und Mischtoxizitäten pro Jahr und Station zusammen.
+#'
 #' @inheritParams plot_misch_mixtox_verlauf
 #'
 #' @return ggplot2 Plot-Objekt
 #' @export
 #'
 #' @examples
-#' set_ch_locale(lang = "de")
 #'
 #' plot_misch_oekotox_uebersicht(rq_ue_beispiel_mvwizr, "URT010", 2020)
 #'
@@ -1010,8 +1009,9 @@ plot_misch_ue_qk <- function(rq_ue_daten,
 plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
                                           stationscode,
                                           jahr,
-                                          modus = "andauernd",
+                                          modus = c("andauernd", "kurzzeitig"),
                                           optin_mischtox_S = FALSE) {
+  modus <- match.arg(modus)
   # Je nach Modus definieren wir gewisse Variablen resp. Symbole unterschiedlich
   switch(modus,
     "andauernd" = {
@@ -1054,7 +1054,7 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
     # Wir entfernen Einträge ohne Risikoquotienten (= mit fehlenden QK), da diese nicht geplottet werden können
     dplyr::filter(!is.na(.data$RQ)) |>
     dplyr::mutate(
-      BAFU_Bez_DE = forcats::fct(.data$BAFU_Bez_DE, levels = sort(unique(.data$BAFU_Bez_DE), decreasing = TRUE)),
+      BAFU_Bez_DE = forcats::fct(.data$BAFU_Bez_DE, levels = stringr::str_sort(unique(.data$BAFU_Bez_DE), decreasing = TRUE, locale = get_lang())),
       BEZ_NUM = as.integer(.data$BAFU_Bez_DE),
     )
 
@@ -1078,7 +1078,8 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
     ggplot2::geom_rect(ggplot2::aes(xmin = .data$BEGINNPROBENAHME, xmax = .data$ENDEPROBENAHME, ymin = .data$BEZ_NUM - 0.5, ymax = .data$BEZ_NUM + 0.5, fill = .data$Beurteilung), colour = "white", linewidth = 0.1) +
     ggplot2::scale_x_datetime("",
       date_breaks = "1 month",
-      date_labels = "%b", position = "top", expand = c(0, 0)
+      labels = lagged_labels_jahr,
+      position = "top", expand = c(0, 0)
     ) +
     ggplot2::scale_y_continuous(breaks = rq_data_fct$BEZ_NUM, labels = rq_data_fct$BAFU_Bez_DE, expand = c(0, 0)) +
     ggplot2::scale_fill_manual(values = farbskala_tox) +
@@ -1113,8 +1114,8 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
     dplyr::filter(.data$Kriterium %in% .env$switchKriterium)
 
   # Falls nicht explizit gewünscht wird, dass wir secondary toxicity auch bewerten, werden diese Resultate ausgeblendet, damit keine Änderung gegenüber v1.1.0 entsteht. Falls alle Daten NA sind (=keine Stoffe mit S_chron gemessen), filtern wir die Variable auch raus
-  if (!optin_mischtox_S || all(is.na(mixtox_data[mixtox_data$Ziel == "Secondary", "RQ"]))) {
-    mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Secondary")
+  if (!optin_mischtox_S || all(is.na(mixtox_data[mixtox_data$Ziel == "Akkumulation", "RQ"]))) {
+    mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Akkumulation")
   }
 
   # Mischtoxizitätsplot analog oben
@@ -1122,7 +1123,7 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
     ggplot2::geom_rect(ggplot2::aes(xmin = .data$BEGINNPROBENAHME, xmax = .data$ENDEPROBENAHME, ymin = .data$Ziel_num - 0.5, ymax = .data$Ziel_num + 0.5, fill = .data$Beurteilung), colour = "white", linewidth = 0.1, show.legend = TRUE) +
     ggplot2::scale_x_datetime("",
       date_breaks = "1 month",
-      date_labels = "%b",
+      labels = lagged_labels_jahr,
       expand = c(0, 0)
     ) +
     ggplot2::scale_y_continuous(breaks = mixtox_data$Ziel_num, labels = mixtox_data$Ziel, expand = c(0, 0)) +
@@ -1189,6 +1190,8 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
 
 #' Verlauf von Mischungstoxizitäten plotten
 #'
+#' Zeigt den Verlauf der Mischungstoxizitäten pro Jahr (fortlaufend möglich) und Stationen.
+#'
 #' @param rq_ue_daten Dataframe mit Output der Funktion `berechne_rq_ue()`
 #' @param stationscode Station, für welche der Plot erstellt werden soll.
 #' @param jahr Jahr, für welches der Überschreitungsplot erstellt werden soll.
@@ -1198,16 +1201,17 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
 #'   \item `"kurzzeitig"`: Berücksichtigt nur Stoffe mit einem spezifischen akuten Grenzwert in der GSchV. Berücksichtigt alle Proben (ausser Stichproben) und verwendet das AQK zur Beurteilung.
 #' }
 #' @param plot_zusammenfassung Entweder `NULL` (Vorgabe), "stichproben" oder "mischproben". Falls einer der letzeren beiden, wird pro Jahr und nicht pro Monat aggregiert (entweder nur für Stichproben oder nur für Mischproben). Für Stichproben muss der `modus` auf "kurzzeitig" gesetzt werden.
-#' @param optin_mischtox_S Logisch (Vorgabe: `FALSE`). Ab v1.2 unterstützt mvwizr auch die Anzeige der Fischtoxizität / Secondary toxicity (`S_chron`). Falls `TRUE`, wird eine vierte Zeile bei den Mischtoxizitäten angezeigt, falls sie in den Daten vorhanden ist. Falls `FALSE`, wird sie nicht angezeigt.
+#' @param optin_mischtox_S Logisch (Vorgabe: `FALSE`). Ab v1.2 unterstützt mvwizr auch die Anzeige der Akkumulation / Secondary toxicity (`S_chron`). Falls `TRUE`, wird eine vierte Zeile bei den Mischtoxizitäten angezeigt, falls sie in den Daten vorhanden ist. Falls `FALSE`, wird sie nicht angezeigt.
 #'
 #' @return ggplot2 Plot-Objekt
 #' @export
 #'
 #' @examples
-#' set_ch_locale(lang = "de")
-#'
 #' # Ausführlicher Verlauf für andauernde Belastungen
 #' plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd")
+#'
+#' # Ausführlicher Verlauf für andauernde Belastungen mit vierter Zeile für Akkumulation
+#' plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd", optin_mischtox_S = TRUE)
 #'
 #' # Ausführlicher Verlauf für kurzzeitige Belastungen
 #' plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "kurzzeitig")
@@ -1232,9 +1236,10 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
 plot_misch_mixtox_verlauf <- function(rq_ue_daten,
                                       stationscode = NULL,
                                       jahr = NULL,
-                                      modus = "andauernd",
+                                      modus = c("andauernd", "kurzzeitig"),
                                       plot_zusammenfassung = "keine",
                                       optin_mischtox_S = FALSE) {
+  modus <- match.arg(modus)
   # Stichproben nur für Zusammenfassungsplot relevant
   if (plot_zusammenfassung == "stichproben") {
     rq_ue_daten <- dplyr::filter(rq_ue_daten, is.na(.data$ENDEPROBENAHME))
@@ -1281,7 +1286,7 @@ plot_misch_mixtox_verlauf <- function(rq_ue_daten,
 
   # Falls nicht explizit gewünscht wird, dass wir secondary toxicity auch bewerten, werden diese Resultate ausgeblendet, damit keine Änderung gegenüber v1.1.0 entsteht
   if (!optin_mischtox_S) {
-    mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Secondary")
+    mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Akkumulation")
   }
 
   farbskala_tox <- farbskala_bewertung_ecotox()
@@ -1367,14 +1372,14 @@ plot_misch_mixtox_verlauf <- function(rq_ue_daten,
 
 #' Zeitreihe Häufigkeitsverteilung Mischungstoxizität
 #'
+#' Zeigt die Häufigkeitsverteilung der Beurteilung der Mischungstoxizität über die Zeit für eine Station.
+#'
 #' @inheritParams plot_misch_mixtox_verlauf
 #'
 #' @return ggplot2 Plot-Objekt
 #' @export
 #'
 #' @examples
-#' set_ch_locale(lang = "de")
-#'
 #' # Häufigkeitsverteilung für andauernde Belastungen
 #' plot_misch_mixtox_haeufigkeit(rq_ue_beispiel_mvwizr,
 #'   stationscode = "URT010",
@@ -1388,7 +1393,9 @@ plot_misch_mixtox_verlauf <- function(rq_ue_daten,
 #' )
 plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
                                           stationscode,
-                                          modus = "andauernd") {
+                                          modus = c("andauernd", "kurzzeitig"),
+                                          optin_mischtox_S = FALSE) {
+  modus <- match.arg(modus)
   rq_data <- rq_ue_daten |>
     dplyr::filter(.data$CODE %in% .env$stationscode, !is.na(.data$ENDEPROBENAHME))
 
@@ -1412,13 +1419,18 @@ plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
     mixtox_data <- dplyr::filter(mixtox_data, .data$Tage >= 10)
   }
 
+  # Falls nicht explizit gewünscht wird, dass wir secondary toxicity auch bewerten, werden diese Resultate ausgeblendet, damit keine Änderung gegenüber v1.1.0 entsteht
+  if (!optin_mischtox_S) {
+    mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Akkumulation")
+  }
+
   farbskala_tox <- farbskala_bewertung_ecotox()
 
   stationsname <- unique(mixtox_data$STANDORT)
 
   pobj <- ggplot2::ggplot(mixtox_data, ggplot2::aes(x = .data$Jahr, fill = .data$Beurteilung)) +
     # geom_bar berechnet automatisch die Anteile der Beurteilungen. Mit position = fill werden relative Anteile auf 100% geplottet
-    ggplot2::geom_bar(position = "fill") +
+    ggplot2::geom_bar(position = "fill", show.legend = TRUE) +
     ggplot2::facet_wrap(~Ziel, scales = "free_y") +
     ggplot2::scale_x_continuous(
       "",
@@ -1430,7 +1442,7 @@ plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
       # Darstellung als Prozent (100) anstelle Anteil (1)
       labels = scales::percent(seq(0, 1, by = 0.1))
     ) +
-    ggplot2::scale_fill_manual(values = farbskala_tox) +
+    ggplot2::scale_fill_manual(values = farbskala_tox, drop = FALSE) +
     ggplot2::ggtitle(sprintf("Verteilung Mischungstoxizit\u00e4t (Station: %s)", stationsname)) +
     plot_theme_proto() +
     ggplot2::theme(
@@ -1453,8 +1465,6 @@ plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
 #' @export
 #'
 #' @examples
-#' set_ch_locale(lang = "de")
-#'
 #' # Stichprobenübersichten für zwei Stationen
 #' plot_stich_uebersicht(mvdaten_beispiel_mvwizr, stationscode = "SA51")
 #' plot_stich_uebersicht(mvdaten_beispiel_mvwizr, stationscode = "KI52")
@@ -1466,7 +1476,8 @@ plot_stich_uebersicht <- function(mv_daten,
   }
 
   stichproben <- mv_daten |>
-    dplyr::filter(is.na(.data$ENDEPROBENAHME), !is.na(.data$ID_Substanz), .data$PROBEARTID == "S", .data$CODE %in% .env$stationscode, .data$WERT_NUM > 0, lubridate::year(.data$BEGINNPROBENAHME) %in% jahr)
+    dplyr::filter(is.na(.data$ENDEPROBENAHME), !is.na(.data$ID_Substanz), .data$PROBEARTID == "S", .data$CODE %in% .env$stationscode, .data$WERT_NUM > 0, lubridate::year(.data$BEGINNPROBENAHME) %in% jahr) |>
+    dplyr::mutate(BAFU_Bez_DE_fct = forcats::fct(.data$BAFU_Bez_DE, levels = stringr::str_sort(unique(.data$BAFU_Bez_DE), locale = get_lang())))
 
   if (nrow(stichproben) == 0) {
     cli::cli_abort("Keine Stichproben in Datensatz f\u00fcr Station {stationscode} gefunden.")
@@ -1474,7 +1485,7 @@ plot_stich_uebersicht <- function(mv_daten,
 
   stationsname <- unique(stichproben$STANDORT)
 
-  stichprobe_uebersicht_pobj <- ggplot2::ggplot(stichproben, ggplot2::aes(x = .data$BEGINNPROBENAHME, y = .data$BAFU_Bez_DE, fill = .data$WERT_NUM)) +
+  stichprobe_uebersicht_pobj <- ggplot2::ggplot(stichproben, ggplot2::aes(x = .data$BEGINNPROBENAHME, y = .data$BAFU_Bez_DE_fct, fill = .data$WERT_NUM)) +
     ggplot2::geom_tile() +
     # Log-Transformation für binned Skala
     ggplot2::scale_fill_viridis_b("Konz.\n \u00b5g/l", trans = scales::log_trans(base = 10)) +
@@ -1514,8 +1525,6 @@ plot_stich_uebersicht <- function(mv_daten,
 #' @export
 #'
 #' @examples
-#' set_ch_locale(lang = "de")
-#'
 #' # Plotten aller Substanzen für alle Stationen - sehr unübersichtlich
 #' pobj <- plot_stich_verlauf(mvdaten_beispiel_mvwizr)
 #'
@@ -1548,13 +1557,14 @@ plot_stich_verlauf <- function(mv_daten,
 
   stichproben <- stichproben |>
     dplyr::left_join(substanzen_ueber0, by = c("STANDORT", "ID_Substanz")) |>
-    dplyr::filter(.data$ueber0)
+    dplyr::filter(.data$ueber0) |>
+    dplyr::mutate(BAFU_Bez_DE_fct = forcats::fct(.data$BAFU_Bez_DE, levels = stringr::str_sort(unique(.data$BAFU_Bez_DE), locale = get_lang())))
 
   if (nrow(stichproben) == 0) {
     cli::cli_abort("Keine Stichproben in Datensatz f\u00fcr Station {stationscode} gefunden.")
   }
 
-  ggplot2::ggplot(stichproben, ggplot2::aes(x = .data$BEGINNPROBENAHME, y = .data$WERT_NUM, colour = .data$BAFU_Bez_DE)) +
+  ggplot2::ggplot(stichproben, ggplot2::aes(x = .data$BEGINNPROBENAHME, y = .data$WERT_NUM, colour = .data$BAFU_Bez_DE_fct)) +
     ggplot2::facet_grid(.data$STANDORT ~ ., scales = "free_y") +
     ggplot2::geom_point() +
     ggplot2::geom_line() +
@@ -1583,8 +1593,6 @@ plot_stich_verlauf <- function(mv_daten,
 #' @export
 #'
 #' @examples
-#' set_ch_locale(lang = "de")
-#'
 #' plot_stich_mixtox_zf(rq_ue_beispiel_mvwizr)
 plot_stich_mixtox_zf <- function(rq_ue_daten,
                                  stationscode = NULL,
@@ -1610,8 +1618,8 @@ plot_stich_mixtox_zf <- function(rq_ue_daten,
 #' @noRd
 lagged_labels_jahr <- function(x) {
   dplyr::if_else(is.na(dplyr::lag(x)) | !lubridate::year(dplyr::lag(x)) == lubridate::year(x),
-    paste(lubridate::month(x, label = TRUE), "\n", lubridate::year(x)),
-    paste(lubridate::month(x, label = TRUE))
+    paste(lubridate::month(x, label = TRUE, locale = get_lang()), "\n", lubridate::year(x)),
+    paste(lubridate::month(x, label = TRUE, locale = get_lang()))
   )
 }
 

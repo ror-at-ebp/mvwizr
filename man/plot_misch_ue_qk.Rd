@@ -8,7 +8,7 @@ plot_misch_ue_qk(
   rq_ue_daten,
   stationscode = NULL,
   jahr = NULL,
-  qk = "chronisch",
+  qk = c("chronisch", "akut"),
   detailliert = FALSE
 )
 }
@@ -27,11 +27,9 @@ plot_misch_ue_qk(
 ggplot2 Plot-Objekt
 }
 \description{
-Aufsummierte QK-Überschreitungen plotten
+Zeigt die Überschreitung chronischer oder akuter Qualitätskriterien pro Jahr und Station, wobei sichtbar wird, ob es viele relevante Überschreitungen gibt von Qualitätskriterien, die nicht in der GSchV aufgenommen sind als spezifischer Grenzwert.
 }
 \examples{
-set_ch_locale(lang = "de")
-
 # Chronische Übertretungen auswerten
 plot_misch_ue_qk(rq_ue_beispiel_mvwizr, qk = "chronisch", detailliert = FALSE)
 

@@ -61,7 +61,6 @@ test_that("plot_misch_verlauf (mehrere/treppen) liefert ggplot", {
 test_that("plot_misch_verlauf bsp ist identisch zu snapshot", {
   # Nicht durch Github Actions/CI ausführen, da fehleranfällig
   skip_on_ci()
-  set_ch_locale(lang = "de")
   test <- plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, stationscode = "MUS001", plot_typ = "barplot")
   vdiffr::expect_doppelganger("plot_misch_verlauf", test)
 })
@@ -91,7 +90,6 @@ test_that("plot_misch_ue (kurzzeitig) liefert ggplot", {
 ## Snapshot Test ####
 test_that("plot_misch_ue beispiel ist identisch zu snapshot", {
   skip_on_ci()
-  set_ch_locale(lang = "de")
   test <- plot_misch_ue(rq_ue_beispiel_mvwizr, stationscode = "URT010", plot_typ = "andauernd", jahr = 2019)
   vdiffr::expect_doppelganger("plot_misch_ue", test)
 })
@@ -107,7 +105,6 @@ test_that("plot_misch_ue_summe liefert ggplot", {
 ## Snapshot Test ####
 test_that("plot_misch_ue_summe bsp ist identisch zu snapshot", {
   skip_on_ci()
-  set_ch_locale(lang = "de")
   test <- plot_misch_ue_summe(rq_ue_beispiel_mvwizr)
   vdiffr::expect_doppelganger("plot_misch_ue_summe", test)
 })
@@ -135,14 +132,12 @@ test_that("plot_misch_ue_qk (chronisch-detailliert) liefert ggplot", {
 ## Snapshot Tests ####
 test_that("plot_misch_ue_qk bsp ist identisch zu snapshot", {
   skip_on_ci()
-  set_ch_locale(lang = "de")
   test <- plot_misch_ue_qk(rq_ue_beispiel_mvwizr, qk = "chronisch", detailliert = FALSE)
   vdiffr::expect_doppelganger("plot_misch_ue_qk_chron", test)
 })
 
 test_that("plot_misch_ue_qk detailliert bsp ist identisch zu snapshot", {
   skip_on_ci()
-  set_ch_locale(lang = "de")
   test <- plot_misch_ue_qk(rq_ue_beispiel_mvwizr, qk = "chronisch", detailliert = TRUE)
   vdiffr::expect_doppelganger("plot_misch_ue_qk_chron_detail", test)
 })
@@ -166,7 +161,6 @@ test_that("plot_misch_oekotox_uebersicht (andauernd) liefert patchwork", {
 ## Snapshot Test ####
 test_that("plot_misch_oekotox_uebersicht ist identisch zu snapshot", {
   skip_on_ci()
-  set_ch_locale(lang = "de")
   test <- plot_misch_oekotox_uebersicht(rq_ue_beispiel_mvwizr, stationscode = "URT010", jahr = 2020)
   vdiffr::expect_doppelganger("plot_misch_oekotox_uebersicht", test)
 })
@@ -208,14 +202,12 @@ test_that("plot_misch_mixtox_verlauf (stichproben zf) liefert ggplot", {
 ## Snapshot Tests ####
 test_that("plot_misch_mixtox_verlauf ist identisch zu snapshot", {
   skip_on_ci()
-  set_ch_locale(lang = "de")
   test <- plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd")
   vdiffr::expect_doppelganger("plot_misch_mixtox_verlauf", test)
 })
 
 test_that("plot_misch_mixtox_verlauf zf ist identisch zu snapshot", {
   skip_on_ci()
-  set_ch_locale(lang = "de")
   test <- plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd", plot_zusammenfassung = "mischproben")
   vdiffr::expect_doppelganger("plot_misch_mixtox_verlauf_zf", test)
 })
@@ -239,7 +231,6 @@ test_that("plot_misch_mixtox_haeufigkeit (kurzzeitig) liefert ggplot", {
 ## Snapshot Test ####
 test_that("plot_misch_mixtox_haeufigkeit ist identisch zu snapshot", {
   skip_on_ci()
-  set_ch_locale(lang = "de")
   test <- plot_misch_mixtox_haeufigkeit(rq_ue_beispiel_mvwizr, stationscode = "URT010", modus = "andauernd")
   vdiffr::expect_doppelganger("plot_misch_mixtox_haeufigkeit", test)
 })
@@ -255,7 +246,6 @@ test_that("plot_stich_uebersicht liefert ggplot", {
 ## Snapshot Test ####
 test_that("plot_stich_uebersicht ist identisch zu snapshot", {
   skip_on_ci()
-  set_ch_locale(lang = "de")
   test <- plot_stich_uebersicht(mvdaten_beispiel_mvwizr, stationscode = "SA51")
   vdiffr::expect_doppelganger("plot_stich_uebersicht", test)
 })

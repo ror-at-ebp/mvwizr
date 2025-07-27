@@ -39,7 +39,7 @@
 
 #' Qualitätskriterien
 #'
-#' Dieser Datensatz beinhaltet Qualitätskriterien des VSA zu Mikroverunreinigungen (ohne Duplikate).
+#' Dieser Datensatz beinhaltet Qualitätskriterien des Ökotoxzentrums zu Mikroverunreinigungen (ohne Duplikate).
 #'
 #' @format ## `kriterien_mvwizr`
 #' Eine Tabelle mit 10 Variablen und 441 Einträgen. Untenstehend sind alle Variablen mit ihren Datentypen beschrieben:
@@ -61,7 +61,7 @@
 
 #' Regulierungen
 #'
-#' Dieser Datensatz beinhaltet Informationen zur Regulierung von Mikroverunreinigungen.
+#' Dieser Datensatz beinhaltet Informationen des VSA zur Regulierung von Mikroverunreinigungen.
 #'
 #' @format ## `regulierungen_mvwizr`
 #' Tabelle mit 4 Variablen und knapp 3000 Einträgen. Im Folgenden sind die Variablen mit ihren Datentypen beschrieben:

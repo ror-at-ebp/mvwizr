@@ -4,7 +4,12 @@
 \alias{plot_misch_ue}
 \title{GSchV-Überschreitungen in Mischproben plotten}
 \usage{
-plot_misch_ue(rq_ue_daten, stationscode, jahr = NULL, plot_typ = "andauernd")
+plot_misch_ue(
+  rq_ue_daten,
+  stationscode,
+  jahr = NULL,
+  plot_typ = c("andauernd", "allgemein", "kurzzeitig")
+)
 }
 \arguments{
 \item{rq_ue_daten}{Dataframe mit Output der Funktion \code{berechne_rq_ue()}}
@@ -24,19 +29,15 @@ plot_misch_ue(rq_ue_daten, stationscode, jahr = NULL, plot_typ = "andauernd")
 ggplot2 Plot-Objekt
 }
 \description{
-GSchV-Überschreitungen in Mischproben plotten
+Plottet Konzentrationsüberschreitungen von Stoffen, für die in der GSchV entweder ein ökotoxikologisch begründeter Wert vorliegt oder ein allgemeiner Grenzwert (0.1 µg/l).
 }
 \examples{
-set_ch_locale(lang = "de")
-
-\donttest{
 # Andauernde Überschreitungen (und Unterschreitungen) für die Jahre 2019 und 2020 plotten
 plot_misch_ue(rq_ue_beispiel_mvwizr, "URT010", jahr = c(2019, 2020))
 
-# Kurzzeitige Überschreitungen für 2019 anzeigen
-plot_misch_ue(rq_ue_beispiel_mvwizr, "URT010", plot_typ = "kurzzeitig", jahr = 2019)
+# Allgemeine Überschreitungen für 2019 anzeigen
+plot_misch_ue(rq_ue_beispiel_mvwizr, "URT010", plot_typ = "allgemein", jahr = 2019)
 
 # Kurzzeitige Überschreitungen für Station MUS001 für gesamte Zeitdauer in Daten anzeigen
 plot_misch_ue(rq_ue_beispiel_mvwizr, "MUS001", plot_typ = "kurzzeitig")
-}
 }

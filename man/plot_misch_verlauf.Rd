@@ -39,6 +39,8 @@ plot_misch_verlauf(
 
 \item{plot_bg}{Logisch (Vorgabe: \code{TRUE}). Sollen Bestimmungsgrenzen, falls vorhanden, gezeichnet werden?}
 
+\item{bg_typ}{Falls \code{"minmax"} (Standard), werden minmale und maximale Bestimmungsgrenzen als gestrichelte Linie geplottet. Falls \code{"effektiv"} und falls die Spalte \verb{"Bestimmungsgrenze} in den Daten vorhanden ist, so werden effektive Bestimmungsgrenzen als hellblaue teiltransparente Säulen geplottet.}
+
 \item{plot_parametergruppe}{Name der Spalte (String), die für das Kategorisieren gruppierter Barplots (Summenplots) verwendet werden soll. Für die Daten des GBL Bern "PARAMETERGRUPPE" verwenden.}
 }
 \value{
@@ -59,8 +61,6 @@ Es sind in Abhängigkeit des Modus (\code{id_substanz}) verschiedene Plottypen \
 }
 }
 \examples{
-set_ch_locale(lang = "de")
-
 # Summenplot mit Barplot-Darstellung
 plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, "URT010")
 
