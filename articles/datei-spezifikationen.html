@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mvwizr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,8 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/datei-spezifikationen.html">Dateispezifikationen für mvwizr</a></li>
+<li><a class="dropdown-item" href="../articles/berechnete-mischproben.html">Berechnete Mischproben</a></li>
+    <li><a class="dropdown-item" href="../articles/datei-spezifikationen.html">Dateispezifikationen für mvwizr</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -66,7 +67,8 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ror-at-ebp.github.io/mvwizr/">mvwizr</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ror-at-ebp.github.io/mvwizr/">mvwizr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; mvwizr geladen: v1.2.0</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="einleitung">Einleitung<a class="anchor" aria-label="anchor" href="#einleitung"></a>
 </h2>
@@ -192,38 +194,141 @@ Bestimmungsgrenze wird im Feld <code>WERT_NUM</code> angegeben.</td>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="va">mv_beispiele</span>, package <span class="op">=</span> <span class="st">"mvwizr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
-<h4 id="andere-mv-daten">Andere MV-Daten<a class="anchor" aria-label="anchor" href="#andere-mv-daten"></a>
+<h4 id="nawa_mv-daten">NAWA_MV-Daten<a class="anchor" aria-label="anchor" href="#nawa_mv-daten"></a>
 </h4>
-<p>Andere MV-Daten müssen als dataframe/tibble vorliegen, wobei je eine
-Zeile eine Messung an einem Standort für eine bestimmte Substanz
-darstellt. Dabei müssen mindestens die folgenden Variablen vorhanden
-seine (siehe oben und auch auch <code><a href="../reference/mvdaten_beispiel_mvwizr.html">?mvdaten_beispiel_mvwizr</a></code>
-für Type jeder Variable):</p>
+<p>mvwizr kann auch NAWA-MV-Daten einlesen - entweder mit
+<code><a href="../reference/einlesen_nawa.html">einlesen_nawa()</a></code> für einzelne Dateien (oder Dataframes im
+NAWA-MV-Format) oder mit <code><a href="../reference/batch_einlesen_nawa.html">batch_einlesen_nawa()</a></code> für mehrere
+Dateien. Die NAWA-MV-Dateien liegen in der Regel im Format
+<code>csv</code> (mit Trennzeichen getrennt) oder <code>xlsx</code>
+(Excel) vor. Die Struktur ist dabei vorgegeben (definiert durch das
+BAFU), wobei die Spaltennamen auf Deutsch oder Französisch angegeben
+sein können. Dabei müssen mindestens die folgenden Variablen vorhanden
+seine:</p>
+<table class="table">
+<colgroup>
+<col width="11%">
+<col width="79%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th>Variable</th>
+<th>Beschreibung</th>
+<th>Formatierung</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Messsstelle ID</td>
+<td>Stationscode (entspricht <code>CODE</code> bei GBL-Daten)</td>
+<td><code>character</code></td>
+</tr>
+<tr class="even">
+<td>Messstelle Name</td>
+<td>Standort Station (entspricht <code>STANDORT</code> bei
+GBL-Daten)</td>
+<td><code>character</code></td>
+</tr>
+<tr class="odd">
+<td>Probenahme Ort</td>
+<td>Name des Gewässers/Ort (entspricht <code>NAME</code> bei
+GBL-Daten)</td>
+<td><code>character</code></td>
+</tr>
+<tr class="even">
+<td>Probenahme Art</td>
+<td>Art der Probe: Sammelprobe (muss “sammelprobe” oder “composite”
+enthalten; wird zu SaP - siehe <code>PROBEARTID</code> bei GBL-FOrmat),
+Stichprobe (muss “stichprobe” oder “ponctuel” enthalten; wird zu S).
+Achtung: Unterstützt momentan keine Unterscheidung zwischen echten
+Sammelproben und berechneten Sammelproben!</td>
+<td><code>character</code></td>
+</tr>
+<tr class="odd">
+<td>NAWA Probenahme Beginn (Datum und Uhrzeit)</td>
+<td>Beginn der Probenahme (entspricht <code>BEGINNPROBENAHME</code>bei
+GBL-Daten).</td>
+<td>
+<code>datetime</code> (DD.MM.YYYY hh:mm:ss)</td>
+</tr>
+<tr class="even">
+<td>NAWA Probenahme Ende (Datum und Uhrzeit)</td>
+<td>Bei Mischproben Ende der Probenahme. Bei Stichproben leer
+(entspricht <code>ENDEPROBENAHME</code> bei GBL-Daten).</td>
+<td>
+<code>datetime</code> (DD.MM.YYYY hh:mm:ss)</td>
+</tr>
+<tr class="odd">
+<td>Parameter</td>
+<td>Spaltenname auf Deutsch oder Französisch. Enthält entweder
+BAFU-Parameter-ID (Schlüssel) oder die Deutsche Bezeichnung oder die
+Französische Bezeichnung.</td>
+<td><code>character</code></td>
+</tr>
+<tr class="even">
+<td>Messwert</td>
+<td>Messwert (wird zu <code>WERT_NUM</code> umgewandelt). Falls &lt;BG,
+dann markiert.</td>
+<td><code>numeric</code></td>
+</tr>
+<tr class="odd">
+<td>Bestimmungsgrenze</td>
+<td>Bestimmungsgrenze - immer angegeben.</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Einheit</td>
+<td>Einheit des Messwertes in pg/l, ng/l, µg/l oder mg/l</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="section level5">
+<h5 id="parameter-heuristik-und-manifest">Parameter, Heuristik und Manifest<a class="anchor" aria-label="anchor" href="#parameter-heuristik-und-manifest"></a>
+</h5>
+<p>Obwohl das NAWA-MV-Format klar definiert ist, sind die
+NAWA-MV-Dateien oft nicht in einem ideal maschinenlesbaren Format.
+Insbesondere die folgenden Punkte verkomplizieren das Einlesen:</p>
 <ul>
-<li>UID</li>
-<li>CODE</li>
-<li>STANDORT</li>
-<li>NAME</li>
-<li>PROBEARTID</li>
-<li>BEGINNPROBENAHME</li>
-<li>ENDEPROBENAHME</li>
-<li>PARAMETERID_BAFU</li>
-<li>BEZEICHNUNG_BAFU</li>
-<li>ID_Substanz</li>
-<li>WERT_NUM</li>
+<li>Header: In NAWA-MV-Excel-Dateien gibt es einen Header, der Infos zur
+Datenlieferung enthält. Dieser steht vor den eigentlichen Tabellendaten,
+ist aber nicht unbedingt immer gleich lang.</li>
+<li>Sprache der Datei/Spalten: Die NAWA-MV-Definition sieht vor, dass
+die Spaltennamen sowohl auf Deutsch als auch Französisch geschrieben
+sein können.</li>
+<li>Parameter-Spalte: Obwohl ein Schlüssel für die Identifizierung aller
+MV existiert (die BAFU-Parameter-ID, die keine Sonderzeichen enthält,
+sonst aber sehr ähnlich wie der Substanzname ist), kann die
+Parameter-Spalte entweder diesen Schlüssel, die Deutsche Bezeichnung
+oder die Französische Bezeichnung enthalten - wobei unglücklicherweise
+nicht klar ist, um welche Art es sich handelt.</li>
+<li>Trennzeichen: Bei Text-Dateien können unterschiedliche Trennzeichen
+verwendet werden.</li>
+<li>Encoding: Bei Text-Dateien können unterschiedliche Encodings
+verwendet werden. Vor allem ältere Datenbanken exportieren
+standardmässig nicht als UTF-8.</li>
 </ul>
-<p>Für die Anzeige der Bestimmungsgrenze ist BG_min und BG_max
-erforderlich.</p>
+<p>Alle diese Parameter können beim Einlesen mit der Funktion
+<code>einlesen_nawa</code> angegeben werden. Falls sie nicht oder
+unvollständig angegeben werden, so versucht die Funktion mittels
+Heuristik die korrekten Funktionsargumente zu “erraten”.</p>
+<p>Für das Batch-Einlesen mehrerer NAWA-MV-Dateien kann die Funktion
+<code>batch_einlesen_nawa</code> verwendet werden. Diese akzeptiert
+optional auch eine sogenannte Manifest-Datei, die die Konfiguration (der
+oben genannten Einstellungen) für jede Input-Datei aufführt. Eine
+Vorlage dieser Datei kann mit
+<code>schreibe_nawa_import_manifest_template</code> in eine Excel-Datei
+geschrieben werden.</p>
+</div>
 </div>
 </div>
 <div class="section level3">
 <h3 id="regulierungen-und-zulassungen">Regulierungen und Zulassungen<a class="anchor" aria-label="anchor" href="#regulierungen-und-zulassungen"></a>
 </h3>
 <p>Hierbei handelt es sich um die Tabelle
-<code>anf_Substanz_recht_2024.xlsx</code> des VSA, welche Informationen
-zum Regulierungs- und Zulassungsstatus verschiedener
-Mikroverunreinigungen auflistet (zum Zeitpunkt/Jahr der Erstellung der
-Tabelle - in diesem Fall 2024).</p>
+<code>anf_Substanz_recht.xlsx</code> des VSA, welche Informationen zum
+Regulierungs- und Zulassungsstatus verschiedener Mikroverunreinigungen
+auflistet (zum Zeitpunkt/Jahr der Erstellung der Tabelle - in diesem
+Fall 2024).</p>
 <p>Die folgenden Spalten müssen (mindestens) in der Tabelle enthalten
 sein:</p>
 <table class="table">
@@ -389,7 +494,7 @@ kein zugelassenes Produkt im Verzeichnis</td>
 </table>
 <p>Eine Kopie dieser Tabelle befindet sich im Paket:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"anf_Substanz_recht_2024.xlsx"</span>, package <span class="op">=</span> <span class="st">"mvwizr"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"anf_Substanz_recht.xlsx"</span>, package <span class="op">=</span> <span class="st">"mvwizr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="qualitätskriterien">Qualitätskriterien<a class="anchor" aria-label="anchor" href="#qualit%C3%A4tskriterien"></a>

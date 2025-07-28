@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mvwizr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/datei-spezifikationen.html">Dateispezifikationen für mvwizr</a></li>
+<li><a class="dropdown-item" href="../articles/berechnete-mischproben.html">Berechnete Mischproben</a></li>
+    <li><a class="dropdown-item" href="../articles/datei-spezifikationen.html">Dateispezifikationen für mvwizr</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -66,7 +67,8 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ror-at-ebp.github.io/mvwizr/">mvwizr</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ror-at-ebp.github.io/mvwizr/">mvwizr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; mvwizr geladen: v1.2.0</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="beispielgrafiken">Beispielgrafiken<a class="anchor" aria-label="anchor" href="#beispielgrafiken"></a>
 </h2>
@@ -95,8 +97,10 @@ Verteilung pro (arbiträrer) Kategorie gezeigt werden, wobei der Name der
 Variable für die Kategorie angegeben werden muss (hier
 “PARAMETERGRUPPE”):</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, <span class="va">regulierungen_mvwizr</span>, <span class="st">"URT010"</span>, plot_typ <span class="op">=</span> <span class="st">"barplot_gruppen"</span>,</span>
-<span>                   zulassungstyp <span class="op">=</span> <span class="st">"Alle"</span>, plot_parametergruppe <span class="op">=</span> <span class="st">"PARAMETERGRUPPE"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, <span class="va">regulierungen_mvwizr</span>, <span class="st">"URT010"</span>,</span>
+<span>  plot_typ <span class="op">=</span> <span class="st">"barplot_gruppen"</span>,</span>
+<span>  zulassungstyp <span class="op">=</span> <span class="st">"Alle"</span>, plot_parametergruppe <span class="op">=</span> <span class="st">"PARAMETERGRUPPE"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="mvwizr_files/figure-html/unnamed-chunk-4-1.png" width="768"></p>
 </div>
 <div class="section level3">

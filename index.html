@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">mvwizr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/datei-spezifikationen.html">Dateispezifikationen für mvwizr</a></li>
+<li><a class="dropdown-item" href="articles/berechnete-mischproben.html">Berechnete Mischproben</a></li>
+    <li><a class="dropdown-item" href="articles/datei-spezifikationen.html">Dateispezifikationen für mvwizr</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -57,26 +58,49 @@
 </h1></div>
 <!-- badges: start -->
 
+<!-- badges: end -->
 <div class="section level2">
 <h2 id="übersicht">Übersicht<a class="anchor" aria-label="anchor" href="#%C3%BCbersicht"></a>
 </h2>
-<p>mvwizr soll die visuelle Auswertung von Mikroverunreinigungen (MV) in Schweizer Gewässern gemäss dem <a href="https://modul-stufen-konzept.ch/" class="external-link">Modul-Stufen-Konzept</a> erleichtern. Das Paket basiert auf einem Auftrag des Gewässer- und Bodenschutzlabor des Kantons Bern (GBL) an EBP Schweiz. Die Auswertungs- und Plotfunktionen sind aber bewusst so konzipiert, dass sie auch mit MV-Daten anderer Kantone funktionieren können.</p>
+<p>mvwizr soll die visuelle Auswertung von Mikroverunreinigungen (MV) in Schweizer Gewässern gemäss dem <a href="https://modul-stufen-konzept.ch/" class="external-link">Modul-Stufen-Konzept</a> erleichtern. Das Paket basiert auf einem Auftrag des Gewässer- und Bodenschutzlabor des Kantons Bern (GBL) an EBP Schweiz. Die Auswertungs- und Plotfunktionen sind aber bewusst so konzipiert, dass sie auch mit MV-Daten anderer Kantone funktionieren können. Insbesondere unterstützt mvwizr auch das NAWA (Nationale Beobachtung Oberflächengewässeruqalität)-Datenformat, das von verschiedenen Kantonen verwendet wird. Das Paket ist modular aufgebaut und kann daher leicht erweitert werden, um weitere Funktionen oder Datenformate zu unterstützen.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>mvwizr ist nicht auf CRAN veröffentlicht und kann daher am Einfachsten direkt von github installiert werden. Das Paket benötigt mindestens R 4.1. Alternativ kann das Paket z.B. auch auf <a href="https://posit.cloud/" class="external-link">Posit Cloud</a> installiert und getestet werden. Für die Installation auf einem lokalen Rechner (Windows/macOS/Linux) folgende Kommandos ausführen:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span> <span class="co"># falls noch nicht installiert</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ror-at-ebp/mvwizr"</span>, build <span class="op">=</span> <span class="cn">TRUE</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Nach der Installation kann mvwizr in Scripts oder in der Konsole verwendet werden, indem das Paket geladen wird:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ror-at-ebp.github.io/mvwizr/">mvwizr</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span> <span class="co"># falls noch nicht installiert</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"ror-at-ebp/mvwizr"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="updates">Updates<a class="anchor" aria-label="anchor" href="#updates"></a>
+</h2>
+<p>Das Paket wird sporadisch aktualisiert zwecks Fehlerbehebung, Erweiterung der Funktionen und Aktualisierung der Daten (BAFU-ID-Lookup, Qualitätskriterien des Ökotoxzentrums, VSA-ID-Lookup, Rechtliche Anforderungen). Um das Paket zu aktualisieren, kann der gleiche Befehl wie bei der Installation verwendet werden. Dabei sollte eine Meldung wie die folgende erscheinen:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>→ Will update <span class="dv">1</span> package.</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>→ The <span class="fu">package</span> (<span class="dv">0</span> B) is cached.</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="sc">+</span> mvwizr <span class="dv">1</span>.<span class="fl">0.0</span> → <span class="dv">1</span>.<span class="fl">1.0</span> [bld][cmp] (GitHub<span class="sc">:</span> <span class="dv">35</span>d7e78)</span></code></pre></div>
+<div class="section level3">
+<h3 id="übersicht-über-aktuell-gebundelte-daten">Übersicht über aktuell gebundelte Daten<a class="anchor" aria-label="anchor" href="#%C3%BCbersicht-%C3%BCber-aktuell-gebundelte-daten"></a>
+</h3>
+<ul>
+<li>BAFU-ID-Lookup (“BAFU_Liste_Parameter_Bezeichnungen_Datenaustausch”): Version 12.2024</li>
+<li>Dat Qualitätskriterien des Ökotoxzentrums: Version Juni 2025 (Auszug vom VSA)</li>
+<li>Tab Substanzen des VSA: Auszug aus Datenbank Juli 2025</li>
+<li>Tab Anforderungen Recht des VSA: Version Juni 2025</li>
+</ul>
+</div>
 </div>
 <div class="section level2">
 <h2 id="verwendung">Verwendung<a class="anchor" aria-label="anchor" href="#verwendung"></a>
 </h2>
 <p>Das Paket stellt verschiedene Funktionen zum Umgang mit MV-Daten bereit vom Einlesen, über das Auswerten/Berechnen bis (hauptsächlich) zum Visualisieren. Viele Funktionen sind für Mischproben gedacht und unterstützen sowohl eine Auswertung für kurzzeitige Verunreinungen als auch für andauernde Verunreinigungen.</p>
+<div class="section level3">
+<h3 id="erste-schritte">Erste Schritte<a class="anchor" aria-label="anchor" href="#erste-schritte"></a>
+</h3>
+<p>Nach der Installation kann mvwizr in Scripts oder in der Konsole verwendet werden, indem das Paket geladen wird:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ror-at-ebp.github.io/mvwizr/">mvwizr</a></span><span class="op">)</span></span></code></pre></div>
+</div>
 <div class="section level3">
 <h3 id="hilfe-erhalten">Hilfe erhalten<a class="anchor" aria-label="anchor" href="#hilfe-erhalten"></a>
 </h3>
@@ -85,11 +109,9 @@
 <li>
 <code>?funktion</code>: Zeigt die Hilfe für eine bestimmte Funktion an, also z.B. <code><a href="reference/einlesen_mv_gbl.html">?einlesen_mv_gbl</a></code>.</li>
 <li>
-<code>vignette("name-der-vignette")</code>: Zeigt den Inhalt einer Vignette (Hilfedatei) an. Die Vignette <code>datei-spezifikationen</code> gibt z.B. Auskunft über die Formate der Dateien, die von den Einlesefunktionen erwartet werden. Die Vignette <code>mvwizr</code> gibt eine Übersicht über die Funktionen des Pakets anhand von Beispielgrafiken.</li>
-<li>
 <code>??mvwizr</code>: Zeigt die Hilfeseiten zu den gebundelten Beispieldaten an.</li>
 </ul>
-<p>Daneben sind für die meisten Funktionen auch Beispiele in den Hilfeseiten enthalten, die die Verwendung der Funktionen demonstrieren. Vignetten sind als Artikel auch auf der Paketwebseite verfügbar: <a href="https://ror-at-ebp.github.io/mvwizr/" class="uri">https://ror-at-ebp.github.io/mvwizr/</a>.</p>
+<p>Daneben sind für die meisten Funktionen auch Beispiele in den Hilfeseiten enthalten, die die Verwendung der Funktionen demonstrieren. Auf der Paketwebseite sind zudem Artikel mit spezifischen Hilfethemen veröffentlicht: <a href="https://ror-at-ebp.github.io/mvwizr/" class="uri">https://ror-at-ebp.github.io/mvwizr/</a>.</p>
 <p>Folgende Funktionen werden vom Paket exportiert und können direkt verwendet werden:</p>
 </div>
 <div class="section level3">
@@ -97,6 +119,12 @@
 </h3>
 <p>Alle Funktionen zum Einlesen und Berechnen sind in der Datei <code>R/parsing.R</code> enthalten.</p>
 <ul>
+<li>
+<code><a href="reference/einlesen_nawa.html">einlesen_nawa()</a></code>: Liest einzelne MV-Dateien (oder Dataframes) im NAWA-Format ein, normalisiert Einheiten, entfernt Duplikate, bestimmt Bestimmungsgrenzen aus Daten und verknüpft Daten mit der VSA Substanz_ID. Für das Einlesen notwendige Parameter können der Funktion als Argumente übergeben werden. Test-Daten werden mitgeliefert (siehe Beispiele im Hilfetext der Funktion).</li>
+<li>
+<code><a href="reference/batch_einlesen_nawa.html">batch_einlesen_nawa()</a></code>: Liest mehrere NAWA-MV-Daten-Dateien ein, entweder über ein Import-Manifest oder eine Liste von Dateipfaden. Die Funktion kann auch die Parameter wie Encoding, Header, Delimiter und Sprache erraten, wenn diese nicht angegeben sind in Form eines Import-Manifests (oder nur teilweise).</li>
+<li>
+<code>schreibe_schreibe_nawa_import_manifest_template()</code>: Erstellt ein Excel-Template für ein Import-Manifest, das für die Funktion <code><a href="reference/batch_einlesen_nawa.html">batch_einlesen_nawa()</a></code> verwendet werden kann. Der Pfad zu den MV-Dateien kann angegeben werden um diese in das Template zu schreiben. Das Manifest kann dann angepasst werden, um die Parameter für das Einlesen der NAWA-Daten zu definieren.</li>
 <li>
 <code><a href="reference/einlesen_mv_gbl.html">einlesen_mv_gbl()</a></code>: Liest die MV-Daten des GBL ein, normalisiert Einheiten, entfernt Duplikate, bestimmt Bestimmungsgrenzen aus Daten und verknüpft Daten mit der VSA Substanz_ID. Test-Daten werden mitgeliefert (siehe Beispiele im Hilfetext der Funktion).</li>
 <li>
@@ -120,7 +148,7 @@
 <code><a href="reference/berechne_mixtox.html">berechne_mixtox()</a></code>: Berechnet Mischungstoxizitäten aus dem Output von <code><a href="reference/berechne_rq_ue.html">berechne_rq_ue()</a></code>
 </li>
 <li>
-<code><a href="reference/einheiten_normalisieren.html">einheiten_normalisieren()</a></code>: Hilfsfunktion, um bei MV-Daten mit verschiedenen Einheiten (je nach Substanz) überall die gleiche Einheit zu verwenden (Standard: µg/l - wird durch Plotting-Funktionen erwartet).</li>
+<code>einheiten_normalisieren()</code>: Hilfsfunktion, um bei MV-Daten mit verschiedenen Einheiten (je nach Substanz) überall die gleiche Einheit zu verwenden (Standard: µg/l - wird durch Plotting-Funktionen erwartet).</li>
 </ul>
 </div>
 <div class="section level3">
@@ -148,7 +176,7 @@
 <code><a href="reference/plot_stich_verlauf.html">plot_stich_verlauf()</a></code>: Konzentrationsverlauf für Stichproben für mehrere Substanzen und Stationen. Gut geeignet für eine interaktive Analyse mit Plotly.</li>
 </ul>
 <p>Die Rückgaben der Plot-Funktionen sind <code>ggplot2</code>- oder <code>patchwork</code>-Objekte, die weiter bearbeitet werden können, z.B.:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, <span class="va">regulierungen_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, plot_typ <span class="op">=</span> <span class="st">"barplot"</span>, id_substanz <span class="op">=</span> <span class="fl">71</span>,plot_bg <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">plot1</span> <span class="op">+</span> <span class="fu">ylim</span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.02</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -165,7 +193,7 @@
 <li>
 <code>data-raw/</code>: Enthält die Skripte, die die Beispieldaten für das Paket erstellen. Die Beispieldaten sind im Verzeichnis <code>data/</code> gespeichert.</li>
 <li>
-<code>inst/extdata</code>: Enthält zusätzliche Dateien, die mit dem Paket verteilt werden, z.B. die Kopien der MV-Dateien des GBL, die mit dem Paket eingelesen werden können.</li>
+<code>inst/extdata</code>: Enthält zusätzliche Dateien, die mit dem Paket verteilt werden, z.B. die Kopien der MV-Dateien des GBL oder NAWA-MV-Beispieldateien, die mit dem Paket eingelesen werden können.</li>
 <li>
 <code>man/</code>: Enthält die aus Roxygen-Tags automatisch erstellte Dokumentation des Pakets. Nicht manuell anpassen.</li>
 <li>
@@ -199,7 +227,7 @@
 <div class="section level2">
 <h2 id="das-paket-erweitern">Das Paket erweitern<a class="anchor" aria-label="anchor" href="#das-paket-erweitern"></a>
 </h2>
-<p>Das Paket kann durch Hinzufügen neuer Funktionen und Daten erweitert werden. Hier sind einige Schritte, die befolgt werden müssen, um das Paket zu erweitern:</p>
+<p>Das Paket kann durch Hinzufügen neuer Funktionen und Daten erweitert werden. Eine Checkliste für das Veröffentlichen von Updates findet sich in der Datei <code>RELEASE_RUN.md</code> im Hauptverzeichnis des Repository. Hier sind einige weitere Schritte, die befolgt werden sollten, um das Paket zu erweitern:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Neue Funktionen hinzufügen</strong>: Neue R-Skripte im <code>R</code>-Verzeichnis erstellen (oder die Dateien <code>parsing.R</code> und <code>plotting.R</code> ergänzen) und Funktionen dort definieren. Sicherstellen, dass die Funktionen mit Roxygen-Tag dokumentiert und exportiert werden, damit sie für Benutzer verfügbar sind. Falls die Funktionen Dataframes zurückliefern, sollte die Struktur dieser Dataframes ebenfalls definiert werden (z.B. in der Dokumentation der Beispieldaten im nächsten Schritt).</p></li>
 <li><p><strong>Daten hinzufügen</strong>: Mittels Scripts im Verzeichnis <code>data-raw</code> Datensätze erstellen und mit der Funktion <code>usethis::use_data()</code> die Daten im Paket abspeichern. Das Updaten dieser Daten muss manuell gemacht werden. Auch sollten die Daten dokumentiert werden (siehe bestehende Daten mit Dokumentation unter R/data.R).</p></li>

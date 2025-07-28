@@ -3,19 +3,22 @@
 <url><loc>https://ror-at-ebp.github.io/mvwizr/AUTHORS.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/LICENSE-text.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/LICENSE.html</loc></url>
+<url><loc>https://ror-at-ebp.github.io/mvwizr/RELEASE_RUN.html</loc></url>
+<url><loc>https://ror-at-ebp.github.io/mvwizr/articles/berechnete-mischproben.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/articles/datei-spezifikationen.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/articles/index.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/articles/mvwizr.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/authors.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/index.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/news/index.html</loc></url>
+<url><loc>https://ror-at-ebp.github.io/mvwizr/reference/batch_einlesen_nawa.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/reference/berechne_mixtox.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/reference/berechne_rq_ue.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/reference/berechne_stichproben_gbl_aggregiert.html</loc></url>
-<url><loc>https://ror-at-ebp.github.io/mvwizr/reference/einheiten_normalisieren.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/reference/einlesen_bafu_lookup.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/reference/einlesen_kriterien.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/reference/einlesen_mv_gbl.html</loc></url>
+<url><loc>https://ror-at-ebp.github.io/mvwizr/reference/einlesen_nawa.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/reference/einlesen_regulierungen.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/reference/einlesen_vsa_lookup.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/reference/index.html</loc></url>
@@ -33,7 +36,9 @@
 <url><loc>https://ror-at-ebp.github.io/mvwizr/reference/plot_stich_mixtox_zf.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/reference/plot_stich_uebersicht.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/reference/plot_stich_verlauf.html</loc></url>
+<url><loc>https://ror-at-ebp.github.io/mvwizr/reference/prozessiere_bSaP.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/reference/regulierungen_mvwizr.html</loc></url>
 <url><loc>https://ror-at-ebp.github.io/mvwizr/reference/rq_ue_beispiel_mvwizr.html</loc></url>
+<url><loc>https://ror-at-ebp.github.io/mvwizr/reference/schreibe_nawa_import_manifest_template.html</loc></url>
 </urlset>
 
