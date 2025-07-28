@@ -6,13 +6,13 @@
 \usage{
 schreibe_nawa_import_manifest_template(
   import_manifest_file,
-  mv_data_pfad = NULL
+  mv_datei_pfade = NULL
 )
 }
 \arguments{
 \item{import_manifest_file}{Pfad zur Import-Manifest-Datei, die geschrieben werden soll. Diese Datei wird im Excel-Format (.xlsx) geschrieben.}
 
-\item{mv_data_pfad}{Pfad zu den MV-Daten, die im NAWA-Format vorliegen. Falls angegeben, werden alle Dateien im Verzeichnis, die dem NAWA-Format entsprechen, in das Manifest aufgenommen. Falls \code{NULL}, wird ein leeres Manifest geschrieben.}
+\item{mv_datei_pfade}{Dateipfade zu den MV-Daten, die im NAWA-Format vorliegen. Falls angegeben, werden alle Dateien in das Manifest aufgenommen. Falls \code{NULL}, wird ein leeres Manifest geschrieben.}
 }
 \value{
 Gibt das Manifest-Template als tibble zurück.
@@ -22,10 +22,14 @@ Schreibe Import Manifest Vorlage für NAWA-MV-Daten
 }
 \examples{
 
-if (FALSE) {
-  template_path <- "nawa_import_manifest_template.xlsx"
-  data_dir <- "/Users/username/Documents/NAWA_MV_Daten"
-  schreibe_nawa_import_manifest_template(template_path, data_dir)
-}
+nawa_mv_pfade <- system.file("extdata", c(
+  "NAWA_Bsp_1.xlsx",
+  "NAWA_Bsp_2.xlsx", "NAWA_Bsp_3.csv", "NAWA_Bsp_4.xlsx",
+  "NAWA_Bsp_5.csv"
+), package = "mvwizr")
+
+schreibe_nawa_import_manifest_template(tempfile(fileext = ".xlsx"),
+  mv_datei_pfade = nawa_mv_pfade
+)
 
 }

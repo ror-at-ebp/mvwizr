@@ -175,6 +175,12 @@ test_that("plot_misch_mixtox_verlauf (andauernd) liefert ggplot", {
   expect_s3_class(test, class = "ggplot")
 })
 
+### Andauernd - mit Akkumulation ####
+test_that("plot_misch_mixtox_verlauf (andauernd) liefert ggplot", {
+  test <- plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd", optin_mischtox_S = TRUE)
+  expect_s3_class(test, class = "ggplot")
+})
+
 ### Kurzzeitig ####
 test_that("plot_misch_mixtox_verlauf (kurzzeitig) liefert ggplot", {
   test <- plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "kurzzeitig")
@@ -204,6 +210,12 @@ test_that("plot_misch_mixtox_verlauf ist identisch zu snapshot", {
   skip_on_ci()
   test <- plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd")
   vdiffr::expect_doppelganger("plot_misch_mixtox_verlauf", test)
+})
+
+test_that("plot_misch_mixtox_verlauf mit Akkumulationist identisch zu snapshot", {
+  skip_on_ci()
+  test <- plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd", optin_mischtox_S = TRUE)
+  vdiffr::expect_doppelganger("plot_misch_mixtox_verlauf_akkumulation", test)
 })
 
 test_that("plot_misch_mixtox_verlauf zf ist identisch zu snapshot", {

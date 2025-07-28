@@ -6,8 +6,8 @@
 \usage{
 einlesen_nawa(
   nawa_mv,
-  vsa_lookup_pfad,
-  bafu_lookup_pfad,
+  vsa_lookup_pfad = NULL,
+  bafu_lookup_pfad = NULL,
   delimiter = NA_character_,
   encoding = NA_character_,
   lang = NA_character_,
@@ -48,4 +48,20 @@ Bestimmungsgrenzen werden aus den eingelesenen Daten bestimmt, wobei die maximal
 Alle Einheiten werden (für die weiteren Berechnungen) automatisch auf µg/l normalisiert.
 
 Messungen von Substanzen, die nicht einer BAFU-Parameter-ID und einer VSA Substanz-ID zugeordnet werden können, werden entfernt.
+}
+\examples{
+# Testen der Einlesefunktion mit Heuristik
+nawa_mv_fr <- system.file("extdata", "NAWA_Bsp_4.xlsx", package = "mvwizr")
+
+out <- einlesen_nawa(nawa_mv_fr)
+
+# Testen der Einlesefunktion mit Angabe von Argumenten
+out2 <- einlesen_nawa(nawa_mv_fr,
+  lang = "FR", parameter = "BAFU_Bez_FR",
+  header = 8L
+)
+
+# Vergleich der Resultate
+identical(out, out2)
+
 }

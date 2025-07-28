@@ -16,11 +16,12 @@ library(tidyverse)
 library(mvwizr)
 ```
 
-# mvwizr <img src="man/figures/mvwizr_logo.png" align="right" width="120" />
+# mvwizr <img src="man/figures/mvwizr_logo.png" align="right" width="120"/>
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/ror-at-ebp/mvwizr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ror-at-ebp/mvwizr/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/ror-at-ebp/mvwizr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ror-at-ebp/mvwizr/actions/workflows/R-CMD-check.yaml) ![mvwizr version](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fror-at-ebp%2Fmvwizr%2Frefs%2Fheads%2Fmain%2FDESCRIPTION&query=%24.Version&prefix=v&label=mvwizr%20Version)
+
 <!-- badges: end -->
 
 ## Übersicht
@@ -40,7 +41,7 @@ pak::pkg_install("ror-at-ebp/mvwizr")
 
 Das Paket wird sporadisch aktualisiert zwecks Fehlerbehebung, Erweiterung der Funktionen und Aktualisierung der Daten (BAFU-ID-Lookup, Qualitätskriterien des Ökotoxzentrums, VSA-ID-Lookup, Rechtliche Anforderungen). Um das Paket zu aktualisieren, kann der gleiche Befehl wie bei der Installation verwendet werden. Dabei sollte eine Meldung wie die folgende erscheinen:
 
-```
+```         
 → Will update 1 package.
 → The package (0 B) is cached.
 + mvwizr 1.0.0 → 1.1.0 [bld][cmp] (GitHub: 35d7e78)
@@ -48,10 +49,10 @@ Das Paket wird sporadisch aktualisiert zwecks Fehlerbehebung, Erweiterung der Fu
 
 ### Übersicht über aktuell gebundelte Daten
 
-* BAFU-ID-Lookup ("BAFU_Liste_Parameter_Bezeichnungen_Datenaustausch"): Version 12.2024
-* Dat Qualitätskriterien des Ökotoxzentrums: Version Juni 2025 (Auszug vom VSA)
-* Tab Substanzen des VSA: Auszug aus Datenbank Juli 2025
-* Tab Anforderungen Recht des VSA: Version Juni 2025
+-   BAFU-ID-Lookup ("BAFU_Liste_Parameter_Bezeichnungen_Datenaustausch"): Version 12.2024
+-   Dat Qualitätskriterien des Ökotoxzentrums: Version Juni 2025 (Auszug vom VSA)
+-   Tab Substanzen des VSA: Auszug aus Datenbank Juli 2025
+-   Tab Anforderungen Recht des VSA: Version Juni 2025
 
 ## Verwendung
 

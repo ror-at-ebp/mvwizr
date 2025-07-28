@@ -6,8 +6,8 @@
 \usage{
 batch_einlesen_nawa(
   nawa_mv_pfade = NULL,
-  vsa_lookup_pfad,
-  bafu_lookup_pfad,
+  vsa_lookup_pfad = NULL,
+  bafu_lookup_pfad = NULL,
   import_manifest = NULL
 )
 }
@@ -25,4 +25,17 @@ Dataframe mit kombinierten MV-Daten aus allen angegebenen Dateien (Achtung: Entf
 }
 \description{
 Liest mehrere NAWA-MV-Daten-Dateien ein, entweder über ein Import-Manifest oder eine Liste von Dateipfaden. Die Funktion kann auch die Parameter wie Encoding, Header, Delimiter und Sprache erraten, wenn diese nicht angegeben sind (oder nur teilweise).
+}
+\examples{
+# Batch-Einlesen mit Heuristik
+# Die Zahlreichen Meldungen der Funktion sind hilfreich beim Auffinden von Problemen
+
+nawa_mv_pfade <- system.file("extdata", c(
+  "NAWA_Bsp_1.xlsx",
+  "NAWA_Bsp_2.xlsx", "NAWA_Bsp_3.csv", "NAWA_Bsp_4.xlsx",
+  "NAWA_Bsp_5.csv"
+), package = "mvwizr")
+
+out <- batch_einlesen_nawa(nawa_mv_pfade)
+
 }

@@ -6,7 +6,7 @@
 \usage{
 plot_misch_verlauf(
   mv_daten,
-  regulierungen,
+  regulierungen = NULL,
   stationscode,
   jahr = NULL,
   id_substanz = NULL,

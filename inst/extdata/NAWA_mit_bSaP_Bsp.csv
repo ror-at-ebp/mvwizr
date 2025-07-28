@@ -1,0 +1,25 @@
+Messstelle ID;Messstelle Name;Probenahme Ort;Probenahme Art;NAQUA Probenahme Datum;NAQUA Probenahme Uhrzeit;NAWA Probenahme Beginn (Datum und Uhrzeit);NAWA Probenahme Ende (Datum und Uhrzeit);NAWA Probenahme Dauer geplant (h);Labor;Erhebung Feld/Labor;Parameter;Messwert;Bestimmungsgrenze;NAWA Nachweisgrenze;Einheit;Messunsicherheit absolut/relativ;Messunsicherheit;Gerät/Methode;Bemerkung Messwert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;19.03.2019 10:00;02.04.2019 10:00;336;XYZ;Labor;Chlorpyrifos;0.0001885;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;02.04.2019 10:00;16.04.2019 10:00;336;XYZ;Labor;Chlorpyrifos;0.000358;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;16.04.2019 10:00;30.04.2019 10:00;336;XYZ;Labor;Chlorpyrifos;0.0005025;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;30.04.2019 10:00;14.05.2019 10:00;336;XYZ;Labor;Chlorpyrifos;0.00033275;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;14.05.2019 10:00;28.05.2019 10:00;336;XYZ;Labor;Chlorpyrifos;0.0002125;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;28.05.2019 10:00;11.06.2019 10:00;336;XYZ;Labor;Chlorpyrifos;0.00018875;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;11.06.2019 10:00;25.06.2019 10:00;336;XYZ;Labor;Chlorpyrifos;0.00010325;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;09.07.2019 10:00;23.07.2019 10:00;336;XYZ;Labor;Chlorpyrifos;<0.000075;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;23.07.2019 10:00;06.08.2019 10:00;336;XYZ;Labor;Chlorpyrifos;0.0002085;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;31.03.2020 10:00;14.04.2020 10:00;336;XYZ;Labor;Chlorpyrifos;<0.000075;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;14.04.2020 10:00;28.04.2020 10:00;336;XYZ;Labor;Chlorpyrifos;0.00012875;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;28.04.2020 10:00;12.05.2020 10:00;336;XYZ;Labor;Chlorpyrifos;0.000203;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;12.05.2020 10:00;26.05.2020 10:00;336;XYZ;Labor;Chlorpyrifos;0.00018025;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;09.06.2020 10:00;23.06.2020 10:00;336;XYZ;Labor;Chlorpyrifos;0.0000805;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;23.06.2020 10:00;07.07.2020 10:00;336;XYZ;Labor;Chlorpyrifos;0.00036925;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;07.07.2020 10:00;21.07.2020 10:00;336;XYZ;Labor;Chlorpyrifos;0.00013025;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;30.03.2021 10:00;13.04.2021 10:00;336;XYZ;Labor;Chlorpyrifos;0.00007925;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;13.04.2021 10:00;27.04.2021 10:00;336;XYZ;Labor;Chlorpyrifos;0.00010775;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;27.04.2021 10:00;11.05.2021 10:00;336;XYZ;Labor;Chlorpyrifos;0.00011475;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;11.05.2021 10:00;25.05.2021 10:00;336;XYZ;Labor;Chlorpyrifos;0.00014975;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;25.05.2021 10:00;08.06.2021 10:00;336;XYZ;Labor;Chlorpyrifos;0.00012175;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;08.06.2021 10:00;22.06.2021 10:00;336;XYZ;Labor;Chlorpyrifos;0.0001035;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;22.06.2021 10:00;06.07.2021 10:00;336;XYZ;Labor;Chlorpyrifos;<0.000075;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert
+101099;bSaP_Ort1;;Sammelprobe zeitproportional;;;06.07.2021 10:00;20.07.2021 10:00;336;XYZ;Labor;Chlorpyrifos;<0.000075;0.000075;;µg/l;;;GC-MS/MS;berechneter Wert

@@ -39,7 +39,7 @@ devtools::build_readme()
 
 8.  Paket-Version erhöhen (in der Regel "minor"[^release_run-1])
 
-[^release_run-1]: Semantic versioning gemäss dem Buch [R Packages](https://r-pkgs.org/lifecycle.html#sec-lifecycle-release-type). Für rückwärtskompatible Änderungen "minor" oder bei kleinen Änderungen "patch". Auf developer branch "dev" (z.B. 1.1.0.9000).
+[^release_run-1]: Semantic versioning gemäss dem Buch [R Packages](https://r-pkgs.org/lifecycle.html#sec-lifecycle-release-type). Für rückwärtskompatible Änderungen "minor" oder bei kleinen Änderungen "patch". Auf developer branches "dev" (z.B. 1.1.0.9000).
 
 ``` r
 usethis::use_version(which = "minor")

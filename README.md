@@ -1,11 +1,14 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# mvwizr <img src="man/figures/mvwizr_logo.png" align="right" width="120" />
+# mvwizr <img src="man/figures/mvwizr_logo.png" align="right" width="120"/>
 
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/ror-at-ebp/mvwizr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ror-at-ebp/mvwizr/actions/workflows/R-CMD-check.yaml)
+![mvwizr
+version](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fror-at-ebp%2Fmvwizr%2Frefs%2Fheads%2Fmain%2FDESCRIPTION&query=%24.Version&prefix=v&label=mvwizr%20Version)
+
 <!-- badges: end -->
 
 ## Übersicht
@@ -75,18 +78,6 @@ verwendet werden, indem das Paket geladen wird:
 ``` r
 library(mvwizr)
 ```
-
-Die mit mvwizr erstellten Grafiken verwenden für die Monatsnamen auf der
-X-Achse die Sprache, unter welcher R läuft - die sogenannte **locale**.
-Diese lässt sich mit folgender Funktion entweder auf Deutsch (“de”) oder
-Französisch (“fr”) setzen:
-
-``` r
-set_ch_locale(lang = "fr") # Setzt locale auf Französisch-Schweiz
-```
-
-Das Setzen der **locale** ändert (zur Zeit) die Sprache auf den Plots
-allerdings nicht.
 
 ### Hilfe erhalten
 
@@ -263,8 +254,10 @@ Output-Objekten):
 ## Das Paket erweitern
 
 Das Paket kann durch Hinzufügen neuer Funktionen und Daten erweitert
-werden. Hier sind einige Schritte, die befolgt werden müssen, um das
-Paket zu erweitern:
+werden. Eine Checkliste für das Veröffentlichen von Updates findet sich
+in der Datei `RELEASE_RUN.md` im Hauptverzeichnis des Repository. Hier
+sind einige weitere Schritte, die befolgt werden sollten, um das Paket
+zu erweitern:
 
 1.  **Neue Funktionen hinzufügen**: Neue R-Skripte im `R`-Verzeichnis
     erstellen (oder die Dateien `parsing.R` und `plotting.R` ergänzen)

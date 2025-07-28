@@ -72,7 +72,7 @@
 #'   plot_parametergruppe = "PARAMETERGRUPPE"
 #' )
 plot_misch_verlauf <- function(mv_daten,
-                               regulierungen,
+                               regulierungen = NULL,
                                stationscode,
                                jahr = NULL,
                                id_substanz = NULL,
@@ -81,6 +81,9 @@ plot_misch_verlauf <- function(mv_daten,
                                plot_bg = TRUE,
                                bg_typ = "minmax",
                                plot_parametergruppe = "") {
+  # Falls NULL, verwenden wir die gebundelten Regulierungs-Informationen
+  regulierungen <- regulierungen %||% mvwizr::regulierungen_mvwizr
+
   # Unterschiedliche Plottitel je nach ausgewähltem Zulassungstyp
   plot_titel <- switch(zulassungstyp,
     "[BP]" = "Pestizide Summen-Konzentration",
@@ -98,7 +101,7 @@ plot_misch_verlauf <- function(mv_daten,
 
   # Verwende benutzerdefinierte Subklasse für Condition-Objekt für präzisere Tests
   if (nrow(mv_daten) == 0) {
-    cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} gefunden.", class = "mvwizr_keine_mischproben")
+    cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} gefunden.", class = "mvwizr_error_empty_dataset")
   }
 
   stationsname <- unique(mv_daten$STANDORT)
@@ -133,7 +136,7 @@ plot_misch_verlauf <- function(mv_daten,
     mv_daten <- dplyr::filter(mv_daten, .data$ID_Substanz %in% .env$id_substanz)
 
     if (nrow(mv_daten) == 0) {
-      cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} und f\u00fcr Substanz(en) mit ID {id_substanz} gefunden.", class = "mvwizr_keine_mischproben")
+      cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} und f\u00fcr Substanz(en) mit ID {id_substanz} gefunden.", class = "mvwizr_error_empty_dataset")
     }
   }
 
@@ -142,7 +145,7 @@ plot_misch_verlauf <- function(mv_daten,
     mv_daten <- dplyr::filter(mv_daten, .data$Jahr %in% .env$jahr)
 
     if (nrow(mv_daten) == 0) {
-      cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} und f\u00fcr Substanz(en) mit ID {id_substanz} f\u00fcr Jahr {jahr} gefunden.", class = "mvwizr_keine_mischproben")
+      cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} und f\u00fcr Substanz(en) mit ID {id_substanz} f\u00fcr Jahr {jahr} gefunden.", class = "mvwizr_error_empty_dataset")
     }
   }
 
@@ -169,7 +172,7 @@ plot_misch_verlauf <- function(mv_daten,
         dplyr::filter(stringr::str_detect(.data[["Informationen Recht"]], .env$zulassungstyp))
 
       if (nrow(mv_daten) == 0) {
-        cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} und Zulassungstyp {zulassungstyp} gefunden.", class = "mvwizr_keine_mischproben")
+        cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} und Zulassungstyp {zulassungstyp} gefunden.", class = "mvwizr_error_empty_dataset")
       }
     }
 
@@ -211,7 +214,7 @@ plot_misch_verlauf <- function(mv_daten,
       dplyr::filter(.data$Tage >= 10)
 
     if (nrow(mv_daten_treppen) == 0) {
-      cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} f\u00fcr Treppen/Kombi-plot (nur Mischproben >= 10 Tage) gefunden.", class = "mvwizr_keine_mischproben")
+      cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} f\u00fcr Treppen/Kombi-plot (nur Mischproben >= 10 Tage) gefunden.", class = "mvwizr_error_empty_dataset")
     }
 
     # Bei summenplots müssen wir für den nächsten Schritt nur nach UID und Datum sortieren, sonst auch zuerst noch nach Substanz
@@ -269,7 +272,7 @@ plot_misch_verlauf <- function(mv_daten,
           "F\u00fcr Treppenplots d\u00fcrfen keine Daten mit \u00fcberlappenden Intervallen existieren.",
           "x" = "\u00dcberlappungen gefunden f\u00fcr folgende Startdaten: {neg_diff}"
         ),
-        class = "mvwizr_treppen_ueberlapp"
+        class = "mvwizr_error_treppen_ueberlapp"
       )
     }
 
@@ -352,7 +355,7 @@ plot_misch_verlauf <- function(mv_daten,
           legend.justification.bottom = "left"
         )
     } else {
-      cli::cli_abort(message = c("Ung\u00fcltiger Plottyp f\u00fcr Summenverlauf", "i" = "G\u00fcltige Werte f\u00fcr `plot_typ`: `barplot`, `kombiniert`, `treppen`"), class = "mvwizr_plottyp_ungueltig")
+      cli::cli_abort(message = c("Ung\u00fcltiger Plottyp f\u00fcr Summenverlauf", "i" = "G\u00fcltige Werte f\u00fcr `plot_typ`: `barplot`, `kombiniert`, `treppen`"), class = "mvwizr_error_plottyp_ungueltig")
     }
 
     plot_final <- plot_final + ggplot2::ggtitle(plot_titel)
@@ -400,7 +403,7 @@ plot_misch_verlauf <- function(mv_daten,
           mv_daten_treppen
         )
     } else {
-      cli::cli_abort(message = c("Ung\u00fcltiger Plottyp f\u00fcr Verlauf von Einzelsubstanz", "i" = "G\u00fcltige Werte f\u00fcr `plot_typ`: `barplot`, `striche`, `treppen`"), , class = "mvwizr_plottyp_ungueltig")
+      cli::cli_abort(message = c("Ung\u00fcltiger Plottyp f\u00fcr Verlauf von Einzelsubstanz", "i" = "G\u00fcltige Werte f\u00fcr `plot_typ`: `barplot`, `striche`, `treppen`"), , class = "mvwizr_error_plottyp_ungueltig")
     }
 
     # Falls Bestimmungsgrenzen in den Daten sind und diese nicht NA sind, werden diese beim Einzelsubstanz-Plot hinzugefügt. Achtung: Standardmässig werden die BG als Minima und Maxima beim Einlesen aufgrund der eingelesenen Daten bestimmt - falls dort sehr unterschiedliche BG gefunden werden, wird dies hier wiedergegeben.
@@ -488,7 +491,7 @@ plot_misch_verlauf <- function(mv_daten,
         ggplot2::scale_colour_brewer("Substanzname\n(BAFU)", palette = "Set1") +
         ggplot2::ggtitle(plot_titel)
     } else {
-      cli::cli_abort(message = c("Ung\u00fcltiger Plottyp f\u00fcr Verlauf von mehreren Substanzen", "i" = "G\u00fcltige Werte f\u00fcr `plot_typ`: `striche`, `treppen`"), class = "mvwizr_plottyp_ungueltig")
+      cli::cli_abort(message = c("Ung\u00fcltiger Plottyp f\u00fcr Verlauf von mehreren Substanzen", "i" = "G\u00fcltige Werte f\u00fcr `plot_typ`: `striche`, `treppen`"), class = "mvwizr_error_plottyp_ungueltig")
     }
     plot_final <- plot_final + ggplot2::ggtitle(plot_titel)
   }
@@ -534,7 +537,7 @@ plot_misch_ue <- function(rq_ue_daten,
 
   # Verwende benutzerdefinierte Subklasse für Condition-Objekt für präzisere Tests
   if (nrow(rq_ue_daten) == 0) {
-    cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} gefunden.", class = "mvwizr_keine_mischproben")
+    cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} gefunden.", class = "mvwizr_error_empty_dataset")
   }
 
   stationsname <- unique(rq_ue_daten$STANDORT)
@@ -596,7 +599,7 @@ plot_misch_ue <- function(rq_ue_daten,
 
   # Verwende benutzerdefinierte Subklasse für Condition-Objekt für präzisere Tests
   if (nrow(mv_daten_Ue) == 0) {
-    cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} gefunden und f\u00fcr Plot-Typ gefunden.", class = "mvwizr_keine_mischproben")
+    cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} gefunden und f\u00fcr Plot-Typ gefunden.", class = "mvwizr_error_empty_dataset")
   }
 
   # Mit den Informationen zur Überschreitung pro Substanz können die Substanznamen im Plot als HTML/Markdown formatiert werden (rot/fett).
@@ -1036,7 +1039,7 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
 
   # Verwende benutzerdefinierte Subklasse für Condition-Objekt für präzisere Tests
   if (nrow(rq_data) == 0) {
-    cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} gefunden.", class = "mvwizr_keine_mischproben")
+    cli::cli_abort(message = "Keine Mischprobendaten f\u00fcr Station {stationscode} gefunden.", class = "mvwizr_error_empty_dataset")
   }
 
   stationsname <- unique(rq_data$STANDORT)
@@ -1400,7 +1403,7 @@ plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
     dplyr::filter(.data$CODE %in% .env$stationscode, !is.na(.data$ENDEPROBENAHME))
 
   if (nrow(rq_data) == 0) {
-    cli::cli_abort("Keine Daten f\u00fcr Station {stationscode} vorhanden.")
+    cli::cli_abort("Keine Daten f\u00fcr Station {stationscode} vorhanden.", class = "mvwizr_error_empty_dataset")
   }
 
   switch(modus,
@@ -1480,7 +1483,7 @@ plot_stich_uebersicht <- function(mv_daten,
     dplyr::mutate(BAFU_Bez_DE_fct = forcats::fct(.data$BAFU_Bez_DE, levels = stringr::str_sort(unique(.data$BAFU_Bez_DE), locale = get_lang())))
 
   if (nrow(stichproben) == 0) {
-    cli::cli_abort("Keine Stichproben in Datensatz f\u00fcr Station {stationscode} gefunden.")
+    cli::cli_abort("Keine Stichproben in Datensatz f\u00fcr Station {stationscode} gefunden.", class = "mvwizr_error_empty_dataset")
   }
 
   stationsname <- unique(stichproben$STANDORT)
@@ -1561,7 +1564,7 @@ plot_stich_verlauf <- function(mv_daten,
     dplyr::mutate(BAFU_Bez_DE_fct = forcats::fct(.data$BAFU_Bez_DE, levels = stringr::str_sort(unique(.data$BAFU_Bez_DE), locale = get_lang())))
 
   if (nrow(stichproben) == 0) {
-    cli::cli_abort("Keine Stichproben in Datensatz f\u00fcr Station {stationscode} gefunden.")
+    cli::cli_abort("Keine Stichproben in Datensatz f\u00fcr Station {stationscode} gefunden.", class = "mvwizr_error_empty_dataset")
   }
 
   ggplot2::ggplot(stichproben, ggplot2::aes(x = .data$BEGINNPROBENAHME, y = .data$WERT_NUM, colour = .data$BAFU_Bez_DE_fct)) +

@@ -15,7 +15,8 @@
 #' @examples
 #' mv_daten_pfad <- system.file("extdata", "Daten_MV_GBL_2019_2020.txt", package = "mvwizr")
 #'
-#' # Ab mvwizr v1.2 können vsa_lookup_pfad und bafu_lookup_pfad leer gelassen werden - es wird dann die mit dem Paket gebundelte Datei verwendet.
+#' # Ab mvwizr v1.2 können vsa_lookup_pfad und bafu_lookup_pfad leer gelassen werden
+#' # - es wird dann die mit dem Paket gebundelte Datei verwendet.
 #' mvdaten <- einlesen_mv_gbl(mv_daten_pfad)
 #'
 einlesen_mv_gbl <- function(mv_daten_pfad, vsa_lookup_pfad = NULL, bafu_lookup_pfad = NULL, bSaP = FALSE) {
@@ -108,7 +109,8 @@ einlesen_mv_gbl <- function(mv_daten_pfad, vsa_lookup_pfad = NULL, bafu_lookup_p
       c(
         "!" = "Nicht f\u00fcr alle Substanzen Bestimmungsgrenzen gefunden",
         "i" = "Es wurden maximale Bestimmungsgrenzen f\u00fcr {nr_bestimmungsgrenzen} von {nr_bezeichnungen} Substanzen gefunden."
-      )
+      ),
+      class = "mvwizr_warn_missing_loq"
     )
   }
 
@@ -129,7 +131,8 @@ einlesen_mv_gbl <- function(mv_daten_pfad, vsa_lookup_pfad = NULL, bafu_lookup_p
       c(
         "!" = "Nicht alle Substanzen, die in den MV-Daten gefunden wurden, konnten einer VSA ID_Substanz zugeordnet werden. Daten ohne ID_Substanz oder PARAMETERID_BAFU werden entfernt.",
         "i" = "{nr_fehlende_zuo} Fehlende Zuordnung{?en} f\u00fcr {fehlende_zuordnungen}"
-      )
+      ),
+      class = "mvwizr_warn_missing_vsa_sid_match"
     )
   }
 
@@ -177,45 +180,43 @@ einlesen_mv_gbl <- function(mv_daten_pfad, vsa_lookup_pfad = NULL, bafu_lookup_p
 #' Schreibe Import Manifest Vorlage für NAWA-MV-Daten
 #'
 #' @param import_manifest_file Pfad zur Import-Manifest-Datei, die geschrieben werden soll. Diese Datei wird im Excel-Format (.xlsx) geschrieben.
-#' @param mv_data_pfad Pfad zu den MV-Daten, die im NAWA-Format vorliegen. Falls angegeben, werden alle Dateien im Verzeichnis, die dem NAWA-Format entsprechen, in das Manifest aufgenommen. Falls `NULL`, wird ein leeres Manifest geschrieben.
+#' @param mv_datei_pfade Dateipfade zu den MV-Daten, die im NAWA-Format vorliegen. Falls angegeben, werden alle Dateien in das Manifest aufgenommen. Falls `NULL`, wird ein leeres Manifest geschrieben.
 #'
 #' @returns Gibt das Manifest-Template als tibble zurück.
 #' @export
 #'
 #' @examples
 #'
-#' if (FALSE) {
-#'   template_path <- "nawa_import_manifest_template.xlsx"
-#'   data_dir <- "/Users/username/Documents/NAWA_MV_Daten"
-#'   schreibe_nawa_import_manifest_template(template_path, data_dir)
-#' }
+#' nawa_mv_pfade <- system.file("extdata", c(
+#'   "NAWA_Bsp_1.xlsx",
+#'   "NAWA_Bsp_2.xlsx", "NAWA_Bsp_3.csv", "NAWA_Bsp_4.xlsx",
+#'   "NAWA_Bsp_5.csv"
+#' ), package = "mvwizr")
 #'
-schreibe_nawa_import_manifest_template <- function(import_manifest_file, mv_data_pfad = NULL) {
+#' schreibe_nawa_import_manifest_template(tempfile(fileext = ".xlsx"),
+#'   mv_datei_pfade = nawa_mv_pfade
+#' )
+#'
+schreibe_nawa_import_manifest_template <- function(import_manifest_file, mv_datei_pfade = NULL) {
   cli::cli_alert_info("Schreibe Import-Manifest f\u00fcr NAWA-MV-Daten in {import_manifest_file}")
 
-  input_files <- character()
-  if (!is.null(mv_data_pfad)) {
-    input_files <- dir(
-      mv_data_pfad,
-      full.names   = TRUE,
-      pattern      = "\\.(xlsx|xls|csv|txt)$",
-      ignore.case  = TRUE
+  if (is.null(mv_datei_pfade) || length(mv_datei_pfade) == 0) {
+    cli::cli_abort(
+      "Keine Dateien im NAWA-Format im Verzeichnis {mv_datei_pfade} gefunden oder Pfad inexistent."
     )
-
-    if (length(input_files) == 0) {
-      cli::cli_abort(
-        "Keine Dateien im NAWA-Format im Verzeichnis {mv_data_pfad} gefunden oder Pfad inexistent."
-      )
-    } else {
-      cli::cli_alert_info(
-        "Folgende Dateien werden dem Manifest hinzugef\u00fcgt:"
-      )
-      cli::cli_ul(input_files)
-    }
+  } else if (any(!file.exists(mv_datei_pfade))) {
+    cli::cli_abort(
+      "Angegebene Datei(en) existieren nicht."
+    )
+  } else {
+    cli::cli_alert_info(
+      "Folgende Dateien werden dem Manifest hinzugef\u00fcgt:"
+    )
+    cli::cli_ul(mv_datei_pfade)
   }
 
   manifest_template <- tibble::tibble(
-    file      = input_files,
+    file      = mv_datei_pfade,
     encoding  = NA_character_,
     header    = NA_integer_,
     delimiter = NA_character_,
@@ -233,7 +234,6 @@ schreibe_nawa_import_manifest_template <- function(import_manifest_file, mv_data
   if (file.exists(import_manifest_file)) {
     cli::cli_abort("Die Datei {import_manifest_file} existiert bereits.")
   }
-
 
   writexl::write_xlsx(manifest_template, import_manifest_file)
 
@@ -265,6 +265,22 @@ schreibe_nawa_import_manifest_template <- function(import_manifest_file, mv_data
 #'
 #' @return Dataframe mit MV-Daten
 #' @export
+#'
+#' @examples
+#' # Testen der Einlesefunktion mit Heuristik
+#' nawa_mv_fr <- system.file("extdata", "NAWA_Bsp_4.xlsx", package = "mvwizr")
+#'
+#' out <- einlesen_nawa(nawa_mv_fr)
+#'
+#' # Testen der Einlesefunktion mit Angabe von Argumenten
+#' out2 <- einlesen_nawa(nawa_mv_fr,
+#'   lang = "FR", parameter = "BAFU_Bez_FR",
+#'   header = 8L
+#' )
+#'
+#' # Vergleich der Resultate
+#' identical(out, out2)
+#'
 einlesen_nawa <- function(nawa_mv,
                           vsa_lookup_pfad = NULL,
                           bafu_lookup_pfad = NULL,
@@ -495,13 +511,15 @@ einlesen_nawa <- function(nawa_mv,
     einheit = "EINHEIT",
     zieleinheit = "\u00b5g/l"
   )
-
-  mv_data <- entferne_duplikate(mv_data)
+  if (!is.data.frame(nawa_mv)) {
+    dateiname <- nawa_mv
+  }
+  mv_data <- entferne_duplikate(mv_data, var_bg = "Bestimmungsgrenze", dateiname = NULL)
 
   # Bestimmungsgrenzen werden aus allen eingelesenen Daten bestimmt => je länger Messreihe in Eingabedaten, desto grösser Unterschied zwischen min. und max. BG!
   cli::cli_alert_info("Max./min. Bestimmungsgrenzen der MV-Daten bestimmen...")
   bestimmungsgrenzen <- mv_data |>
-    dplyr::select(.data$PARAMETER, .data$Bestimmungsgrenze) |>
+    dplyr::select("PARAMETER", "Bestimmungsgrenze") |>
     dplyr::distinct() |>
     dplyr::group_by(.data$PARAMETER) |>
     dplyr::summarise(
@@ -519,13 +537,13 @@ einlesen_nawa <- function(nawa_mv,
 
   switch(parameter,
     "BAFU_Parameter_ID" = {
-      mv_data <- dplyr::rename(mv_data, BAFU_Parameter_ID = .data$PARAMETER)
+      mv_data <- dplyr::rename(mv_data, BAFU_Parameter_ID = "PARAMETER")
     },
     "BAFU_Bez_DE" = {
-      mv_data <- dplyr::rename(mv_data, BAFU_Bez_DE = .data$PARAMETER)
+      mv_data <- dplyr::rename(mv_data, BAFU_Bez_DE = "PARAMETER")
     },
     "BAFU_Bez_FR" = {
-      mv_data <- dplyr::rename(mv_data, BAFU_Bez_FR = .data$PARAMETER)
+      mv_data <- dplyr::rename(mv_data, BAFU_Bez_FR = "PARAMETER")
     }
   )
 
@@ -539,7 +557,8 @@ einlesen_nawa <- function(nawa_mv,
       c(
         "!" = "{nawa_mv}: Nicht alle Substanzen, die in den MV-Daten gefunden wurden, konnten einer BAFU Parameter-ID zugeordnet werden.",
         "i" = "Es wurden {length(fehlende_zuordnungen_bafu)} Substanzen ohne BAFU Parameter-ID gefunden: {paste(fehlende_zuordnungen_bafu, collapse = '; ')}"
-      )
+      ),
+      class = "mvwizr_warn_missing_bafu_match"
     )
   }
 
@@ -547,7 +566,7 @@ einlesen_nawa <- function(nawa_mv,
     vsa_lookup_df,
     by = c("BAFU_Parameter_ID" = "Parameter-ID")
   ) |>
-    dplyr::rename(PARAMETERID_BAFU = .data$BAFU_Parameter_ID)
+    dplyr::rename(PARAMETERID_BAFU = "BAFU_Parameter_ID")
 
   fehlende_zuordnungen_vsa <- mv_data |>
     dplyr::filter(!is.na(.data$PARAMETERID_BAFU), is.na(.data$ID_Substanz)) |>
@@ -562,7 +581,8 @@ einlesen_nawa <- function(nawa_mv,
       c(
         "!" = "{nawa_mv}: Nicht alle Substanzen, die in den MV-Daten gefunden wurden, konnten einer VSA ID_Substanz zugeordnet werden. Daten ohne ID_Substanz oder PARAMETERID_BAFU werden entfernt.",
         "i" = "{nr_fehlende_zuo} Fehlende Zuordnung{?en} f\u00fcr {fehlende_zuordnungen}"
-      )
+      ),
+      class = "mvwizr_warn_missing_vsa_sid_match"
     )
   }
 
@@ -599,6 +619,19 @@ einlesen_nawa <- function(nawa_mv,
 #'
 #' @returns Dataframe mit kombinierten MV-Daten aus allen angegebenen Dateien (Achtung: Entfernt keine Duplikate zwischen den Dateien, sondern nur innerhalb einer Datei).
 #' @export
+#'
+#' @examples
+#' # Batch-Einlesen mit Heuristik
+#' # Die Zahlreichen Meldungen der Funktion sind hilfreich beim Auffinden von Problemen
+#'
+#' nawa_mv_pfade <- system.file("extdata", c(
+#'   "NAWA_Bsp_1.xlsx",
+#'   "NAWA_Bsp_2.xlsx", "NAWA_Bsp_3.csv", "NAWA_Bsp_4.xlsx",
+#'   "NAWA_Bsp_5.csv"
+#' ), package = "mvwizr")
+#'
+#' out <- batch_einlesen_nawa(nawa_mv_pfade)
+#'
 batch_einlesen_nawa <- function(nawa_mv_pfade = NULL,
                                 vsa_lookup_pfad = NULL,
                                 bafu_lookup_pfad = NULL,
@@ -685,6 +718,27 @@ batch_einlesen_nawa <- function(nawa_mv_pfade = NULL,
 #'
 #' @return mv-daten mit entfernten Datensätzen
 #' @export
+#'
+#' @examples
+#' # Bei NAWA-MV-Dateien muss der bSaP-Identifier manuell hinzugefügt werden.
+#' # Im folgenden Beispiel werden zwei Dateien eingelesen:
+#' # - NAWA_ohne_bSaP_Bsp.xlsx enthält gemessene Mischproben (3.5d und 14d)
+#' # - NAWA_mit_bSaP_Bsp.csv enthält die berechneten Mischproben
+#'
+#' mv_bsap_pfade <- system.file("extdata", c(
+#'   "NAWA_ohne_bSaP_Bsp.xlsx",
+#'   "NAWA_mit_bSaP_Bsp.csv"
+#' ), package = "mvwizr")
+#' out <- batch_einlesen_nawa(mv_bsap_pfade) |>
+#'   dplyr::mutate(PROBEARTID = dplyr::if_else(.data$filename ==
+#'     "NAWA_mit_bSaP_Bsp.csv", "bSaP", .data$PROBEARTID))
+#'
+#' mv_bsap <- prozessiere_bSaP(out, bSaP_identifier = "PROBEARTID") |>
+#'   dplyr::mutate(Dauer = difftime(.data$ENDEPROBENAHME,
+#'     .data$BEGINNPROBENAHME,
+#'     units = "days"
+#'   ))
+#'
 prozessiere_bSaP <- function(mv_daten, bSaP_identifier) {
   identifiers_data <- unique(mv_daten[[bSaP_identifier]])
   identifiers_allowed <- c("SaP", "bSaP", "S")
@@ -693,7 +747,7 @@ prozessiere_bSaP <- function(mv_daten, bSaP_identifier) {
     cli::cli_abort(message = c(
       "Nur folgende Probenidentifier d\u00fcrfen verwendet werden: {identifiers_allowed}",
       "x" = "Nicht erlaubter Identifier in Spalte {bSaP_identifier} gefunden: {diff_identifiers}"
-    ), class = "mvwizr_bSaP_identifier_ungueltig")
+    ), class = "mvwizr_error_bSaP_identifier_ungueltig")
   }
 
   # Zuerst bestimmen wir alle Intervalle, bei denen es berechnete Daten gibt
@@ -704,63 +758,12 @@ prozessiere_bSaP <- function(mv_daten, bSaP_identifier) {
 
   # Dann überprüfen wir für jedes Sample (pro Substanz und Station), ob das Probenintervall im bSaP-Intervall liegt (Achtung: 3.5-Tage SaP-Proben, die ausserhalb des bSaP beginnen/enden und für die Berechnung verwendet wurden, werden so nicht gefunden!).
   SaP_zum_entfernen <- mv_daten |>
-    dplyr::left_join(berechnete_intervalle, by = c("CODE", "ID_Substanz", "PARAMETERID_BAFU")) |>
+    dplyr::left_join(berechnete_intervalle, by = c("CODE", "ID_Substanz", "PARAMETERID_BAFU"), relationship = "many-to-many") |>
     dplyr::mutate(In_bSaP = lubridate::interval(lubridate::as_date(.data$BEGINNPROBENAHME), lubridate::as_date(.data$ENDEPROBENAHME)) %within% .data$bSaP_Intervall) |>
     dplyr::filter(.data$In_bSaP & .data[[bSaP_identifier]] == "SaP") |>
     dplyr::pull("UID")
 
   mv_daten |> dplyr::filter(!(.data$UID %in% .env$SaP_zum_entfernen))
-}
-
-#' Entferne Duplikate aus MV-Daten
-#'
-#' Entfernt Duplikate aus MV-Daten, indem jeweils der Datensatz mit dem höchsten Messwert für die gleiche Probe (Station, Beginn- und Enddatum) und Substanz verwendet wird. Duplikate werden anhand der Spalten `CODE`, `PROBEARTID`, `BEGINNPROBENAHME`, `ENDEPROBENAHME` und `PARAMETER` identifiziert.
-#'
-#' @param mv_data Dataframe mit MV-Daten, die Duplikate enthalten können.
-#' @param dateiname Optionaler Dateiname, der in der Warnung ausgegeben wird, falls Duplikate gefunden werden (da Warnungen gesammelt am Schluss einer Skript-Ausführung erscheinen). Falls `NULL`, wird "MV-Daten" verwendet.
-#'
-#' @returns Dataframe mit MV-Daten ohne Duplikate.
-#' @export
-entferne_duplikate <- function(mv_data, dateiname = NULL) {
-  cli::cli_inform("Suche nach Duplikaten in Daten...")
-  duplikate <- mv_data |>
-    dplyr::group_by(
-      .data$CODE,
-      .data$PROBEARTID,
-      .data$BEGINNPROBENAHME,
-      .data$ENDEPROBENAHME,
-      .data$PARAMETER
-    ) |>
-    dplyr::summarise(n = dplyr::n()) |>
-    dplyr::ungroup()
-
-  anz_duplikate <- nrow(duplikate |> dplyr::filter(.data$n > 1))
-
-  if (!is.null(dateiname)) {
-    dateiname <- basename(dateiname)
-  } else {
-    dateiname <- "MV-Daten"
-  }
-
-  if (anz_duplikate > 0) {
-    cli::cli_warn(
-      c("!" = "{dateiname}: Duplikate f\u00fcr {anz_duplikate} Datens\u00e4tze gefunden.", "i" = "Es wird jeweils der Datensatz (pro Station, Beginn-/Enddatum-zeit und Substanz) mit dem h\u00f6chsten Messwert verwendet.")
-    )
-  }
-
-  # Bei Duplikaten Auswahl des höchsten Messwertes (dabei ist egal, ob dieser unter BG - der höchste Wert ist so oder so die konservativste Annahme)
-  mv_data <- mv_data |>
-    # Ohne ties: Falls mehrmals der gleiche Wert, nehmen wir nur einen davon
-    dplyr::slice_max(
-      order_by = .data$WERT_NUM,
-      n = 1,
-      with_ties = FALSE, by = c(
-        "CODE", "PROBEARTID", "BEGINNPROBENAHME",
-        "ENDEPROBENAHME", "PARAMETER"
-      )
-    )
-
-  mv_data
 }
 
 #' Regulierungsdaten einlesen
@@ -810,7 +813,8 @@ einlesen_kriterien <- function(kriterien_pfad) {
       c(
         "!" = "Nicht alle Substanzen haben eine VSA ID_Substanz. Diese werden entfernt.",
         "i" = "Betroffene Substanzen: {substanz_id_na}"
-      )
+      ),
+      class = "mvwizr_warn_dat_qual_missing_vsa_sid"
     )
   }
 
@@ -827,7 +831,8 @@ einlesen_kriterien <- function(kriterien_pfad) {
       c(
         "!" = "Mehrfache Qualit\u00e4tskriterien f\u00fcr {anz_duplikate} Substanz_ID{?s} gefunden. Der tiefere Wert wird verwendet (CQK vor AQK).",
         "i" = "Betroffen: {dup_character}"
-      )
+      ),
+      class = "mvwizr_warn_dat_qual_dupes"
     )
   }
 
@@ -895,7 +900,8 @@ einlesen_vsa_lookup <- function(vsa_lookup_pfad, alle_felder = FALSE) {
       c(
         "!" = "VSA-Lookup: {anz_duplikate} mehrfache Bezeichnungen (VSA Parameter-ID) pro Substanz_ID gefunden. Verwende tiefere Substanz_ID.",
         "i" = "Betroffen: {dup_character}"
-      )
+      ),
+      class = "mvwizr_warn_vsa_dup_sid"
     )
   }
 
@@ -1013,7 +1019,7 @@ berechne_rq_ue <- function(mv_daten, regulierungen = NULL, kriterien = NULL, rob
     dplyr::select(dplyr::all_of(c("CODE", "BEGINNPROBENAHME", "ENDEPROBENAHME", "PARAMETERID_BAFU", "WERT_NUM", "Ue_AQK", "Ue_CQK")))
 
   if (nrow(Ue_robust_3) > 0 && robust3) {
-    cli::cli_warn("Achtung: Folgende Proben \u00fcberschreiten QK mit Robustheit == 3 (nicht in Daten enthalten):")
+    cli::cli_warn("Achtung: Folgende Proben \u00fcberschreiten QK mit Robustheit == 3 (nicht in Daten enthalten):", class = "mvwizr_warn_ue_robust3")
     print(Ue_robust_3)
   }
 
@@ -1074,7 +1080,7 @@ berechne_stichproben_gbl_aggregiert <- function(mv_daten, perzentil = 90) {
     dplyr::mutate(Jahr = lubridate::year(.data$BEGINNPROBENAHME))
 
   if (nrow(stichproben) == 0) {
-    cli::cli_abort("Keine Stichproben im Datensatz gefunden.")
+    cli::cli_abort("Keine Stichproben im Datensatz gefunden.", class = "mvwizr_error_empty_dataset")
   }
 
   stichproben_agg <- stichproben |>
@@ -1197,16 +1203,34 @@ get_nawa_spec <- function(type = c("names", "colspecs"),
         "Einheit"
       )
     } else if (type == "colspecs") {
-      spec <- structure(list(cols = list(`Messstelle ID` = structure(list(), class = c("collector_double",
-"collector")), `Messstelle Name` = structure(list(), class = c("collector_character",
-"collector")), `Probenahme Ort` = structure(list(), class = c("collector_character",
-"collector")), `Probenahme Art` = structure(list(), class = c("collector_character",
-"collector")), `NAWA Probenahme Beginn (Datum und Uhrzeit)` = structure(list(), class = c("collector_character", "collector")), `NAWA Probenahme Ende (Datum und Uhrzeit)` = structure(list(), class = c("collector_character", "collector")), Parameter = structure(list(), class = c("collector_character",
-"collector")), Messwert = structure(list(), class = c("collector_character",
-"collector")), Bestimmungsgrenze = structure(list(), class = c("collector_double",
-"collector")), Einheit = structure(list(), class = c("collector_character",
-"collector"))), default = structure(list(), class = c("collector_character",
-"collector")), delim = NULL), class = "col_spec")
+      spec <- structure(list(cols = list(`Messstelle ID` = structure(list(), class = c(
+        "collector_double",
+        "collector"
+      )), `Messstelle Name` = structure(list(), class = c(
+        "collector_character",
+        "collector"
+      )), `Probenahme Ort` = structure(list(), class = c(
+        "collector_character",
+        "collector"
+      )), `Probenahme Art` = structure(list(), class = c(
+        "collector_character",
+        "collector"
+      )), `NAWA Probenahme Beginn (Datum und Uhrzeit)` = structure(list(), class = c("collector_character", "collector")), `NAWA Probenahme Ende (Datum und Uhrzeit)` = structure(list(), class = c("collector_character", "collector")), Parameter = structure(list(), class = c(
+        "collector_character",
+        "collector"
+      )), Messwert = structure(list(), class = c(
+        "collector_character",
+        "collector"
+      )), Bestimmungsgrenze = structure(list(), class = c(
+        "collector_double",
+        "collector"
+      )), Einheit = structure(list(), class = c(
+        "collector_character",
+        "collector"
+      ))), default = structure(list(), class = c(
+        "collector_character",
+        "collector"
+      )), delim = NULL), class = "col_spec")
     }
   } else if (lang == "FR") {
     if (type == "names") {
@@ -1395,6 +1419,65 @@ sanitise_nawa_input <- function(mv_data) {
 
   names_renamed <- ifelse(conflict_flags, paste0(names_data, "_input"), names_data)
   names(mv_data) <- names_renamed
+
+  mv_data
+}
+
+
+#' Entferne Duplikate aus MV-Daten
+#'
+#' Entfernt Duplikate aus MV-Daten, indem jeweils der Datensatz mit dem höchsten Messwert für die gleiche Probe (Station, Beginn- und Enddatum) und Substanz verwendet wird. Duplikate werden anhand der Spalten `CODE`, `PROBEARTID`, `BEGINNPROBENAHME`, `ENDEPROBENAHME` und `PARAMETER` identifiziert.
+#'
+#' @param mv_data Dataframe mit MV-Daten, die Duplikate enthalten können.
+#' @param dateiname Optionaler Dateiname, der in der Warnung ausgegeben wird, falls Duplikate gefunden werden (da Warnungen gesammelt am Schluss einer Skript-Ausführung erscheinen). Falls `NULL`, wird "MV-Daten" verwendet.
+#' @param var_bg Name der Spalte mit den (tatsächlichen) Bestimmungsgrenze. Falls angegeben, wird bei Duplikaten, bei denen nicht der Messwert entscheidet (beide 0 oder identisch), der Wert mit der tieferen Bestimmungsgrenze verwendet. Überlegung: Wenn eine Methode eine viel tiefere Bestimmungsgrenze hat (z.B. GC-MS vs. LC-MS für Fipronil), dann wird ein Wert eher mit GC-MS gefunden. Um dann konsistent zu sein, wird die tiefere Bestimmungsgrenze bei Duplikaten mit Wert 0 (< BG) genommen.
+#'
+#' @returns Dataframe mit MV-Daten ohne Duplikate.
+#' @noRd
+entferne_duplikate <- function(mv_data, var_bg = NULL, dateiname = NULL) {
+  if (!is.null(var_bg)) {
+    if (!(var_bg %in% names(mv_data) && is.numeric(mv_data[[var_bg]]))) {
+      cli::cli_warn("Variable für Bestimmungsgrenze {var_bg} nicht gefunden", class = "mvwizr_warn_missing_var_loq")
+      var_bg <- "WERT_NUM"
+    }
+  } else {
+    var_bg <- "WERT_NUM"
+  }
+
+  duplikate <- mv_data |>
+    dplyr::group_by(
+      .data$CODE,
+      .data$PROBEARTID,
+      .data$BEGINNPROBENAHME,
+      .data$ENDEPROBENAHME,
+      .data$PARAMETER
+    ) |>
+    dplyr::summarise(n = dplyr::n()) |>
+    dplyr::ungroup()
+
+  anz_duplikate <- nrow(duplikate |> dplyr::filter(.data$n > 1))
+
+  if (!is.null(dateiname)) {
+    dateiname <- basename(dateiname)
+  } else {
+    dateiname <- "MV-Daten"
+  }
+
+  if (anz_duplikate > 0) {
+    cli::cli_warn(
+      c("!" = "{dateiname}: Duplikate f\u00fcr {anz_duplikate} Datens\u00e4tze gefunden.", "i" = "Es wird jeweils der Datensatz (pro Station, Beginn-/Enddatum-zeit und Substanz) mit dem h\u00f6chsten Messwert verwendet."),
+      class = "mvwizr_warn_dupes_found"
+    )
+  }
+
+  # Bei Duplikaten Auswahl des höchsten Messwertes (dabei ist egal, ob dieser unter BG - der höchste Wert ist so oder so die konservativste Annahme)
+  mv_data <- mv_data |>
+    dplyr::group_by(
+      .data$CODE, .data$PROBEARTID, .data$BEGINNPROBENAHME, .data$ENDEPROBENAHME, .data$PARAMETER
+    ) |>
+    dplyr::arrange(dplyr::desc(.data$WERT_NUM), .data[[var_bg]]) |>
+    dplyr::slice_head(n = 1) |>
+    dplyr::ungroup()
 
   mv_data
 }

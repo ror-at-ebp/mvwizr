@@ -4,7 +4,12 @@
 \alias{berechne_rq_ue}
 \title{Risikoquotienten (RQ) für Einzelstoffe berechnen}
 \usage{
-berechne_rq_ue(mv_daten, regulierungen, kriterien, robust3 = TRUE)
+berechne_rq_ue(
+  mv_daten,
+  regulierungen = NULL,
+  kriterien = NULL,
+  robust3 = TRUE
+)
 }
 \arguments{
 \item{mv_daten}{Normalisierte MV-Daten}

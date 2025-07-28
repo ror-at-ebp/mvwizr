@@ -4,7 +4,12 @@
 \alias{einlesen_mv_gbl}
 \title{MV-Daten des GBL (Kt. Bern) einlesen}
 \usage{
-einlesen_mv_gbl(mv_daten_pfad, vsa_lookup_pfad, bafu_lookup_pfad, bSaP = FALSE)
+einlesen_mv_gbl(
+  mv_daten_pfad,
+  vsa_lookup_pfad = NULL,
+  bafu_lookup_pfad = NULL,
+  bSaP = FALSE
+)
 }
 \arguments{
 \item{mv_daten_pfad}{Pfad zur kommaseparierten Datei mit den MV-Daten}
@@ -23,10 +28,9 @@ Liest MV-Daten des GBL (Kt. Bern) ein und bereitet sie für die weitere Verarbei
 }
 \examples{
 mv_daten_pfad <- system.file("extdata", "Daten_MV_GBL_2019_2020.txt", package = "mvwizr")
-vsa_lookup_pfad <- system.file("extdata", "Tab_Substanzen.txt", package = "mvwizr")
-bafu_filename <- "BAFU_Liste_Parameter_Bezeichnungen_Datenaustausch.xlsx"
-bafu_code_pfad <- system.file("extdata", bafu_filename, package = "mvwizr")
 
-mvdaten <- einlesen_mv_gbl(mv_daten_pfad, vsa_lookup_pfad, bafu_code_pfad)
+# Ab mvwizr v1.2 können vsa_lookup_pfad und bafu_lookup_pfad leer gelassen werden
+# - es wird dann die mit dem Paket gebundelte Datei verwendet.
+mvdaten <- einlesen_mv_gbl(mv_daten_pfad)
 
 }
