@@ -1437,7 +1437,7 @@ sanitise_nawa_input <- function(mv_data) {
 entferne_duplikate <- function(mv_data, var_bg = NULL, dateiname = NULL) {
   if (!is.null(var_bg)) {
     if (!(var_bg %in% names(mv_data) && is.numeric(mv_data[[var_bg]]))) {
-      cli::cli_warn("Variable für Bestimmungsgrenze {var_bg} nicht gefunden", class = "mvwizr_warn_missing_var_loq")
+      cli::cli_warn("Variable f\u00fcr Bestimmungsgrenze {var_bg} nicht gefunden", class = "mvwizr_warn_missing_var_loq")
       var_bg <- "WERT_NUM"
     }
   } else {

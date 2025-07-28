@@ -90,7 +90,7 @@ plot_misch_verlauf <- function(mv_daten,
     "[B]" = "Biozide Summen-Konzentration",
     "[P]" = "PSM Summen-Konzentration",
     "Alle" = "Summen-Konzentrationen",
-    sprintf("Summen-Konzentrationen für %s", zulassungstyp)
+    sprintf("Summen-Konzentrationen f\u00fcr %s", zulassungstyp)
   )
 
   # Join der MV-Daten mit der Regulierungstabelle
@@ -1621,8 +1621,8 @@ plot_stich_mixtox_zf <- function(rq_ue_daten,
 #' @noRd
 lagged_labels_jahr <- function(x) {
   dplyr::if_else(is.na(dplyr::lag(x)) | !lubridate::year(dplyr::lag(x)) == lubridate::year(x),
-    paste(lubridate::month(x, label = TRUE, locale = get_lang()), "\n", lubridate::year(x)),
-    paste(lubridate::month(x, label = TRUE, locale = get_lang()))
+    paste(lubridate::month(x, label = TRUE, locale = get_ch_locale()), "\n", lubridate::year(x)),
+    paste(lubridate::month(x, label = TRUE, locale = get_ch_locale()))
   )
 }
 
