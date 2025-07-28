@@ -8,7 +8,8 @@
 [![R-CMD-check](https://github.com/ror-at-ebp/mvwizr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ror-at-ebp/mvwizr/actions/workflows/R-CMD-check.yaml)
 ![mvwizr
 version](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fror-at-ebp%2Fmvwizr%2Frefs%2Fheads%2Fmain%2FDESCRIPTION&query=%24.Version&prefix=v&label=mvwizr%20Version)
-
+[![Codecov test
+coverage](https://codecov.io/gh/ror-at-ebp/mvwizr/graph/badge.svg)](https://app.codecov.io/gh/ror-at-ebp/mvwizr)
 <!-- badges: end -->
 
 ## Übersicht
@@ -78,6 +79,11 @@ verwendet werden, indem das Paket geladen wird:
 ``` r
 library(mvwizr)
 ```
+
+Eine Einführung in die Verwendung des Pakets findet sich auf der
+[Paketwebseite](https://ror-at-ebp.github.io/mvwizr/articles/mvwizr.html).
+Dort sind auch verschiedene Hilfe-Artikel zu finden, die die Verwendung
+des Pakets demonstrieren.
 
 ### Hilfe erhalten
 
