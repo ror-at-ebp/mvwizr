@@ -66,6 +66,8 @@ Nach der Installation kann mvwizr in Scripts oder in der Konsole verwendet werde
 library(mvwizr)
 ```
 
+Eine Einführung in die Verwendung des Pakets findet sich auf der [Paketwebseite](https://ror-at-ebp.github.io/mvwizr/articles/mvwizr.html). Dort sind auch verschiedene Hilfe-Artikel zu finden, die die Verwendung des Pakets demonstrieren.
+
 ### Hilfe erhalten
 
 Das Paket enthält verschiedene eingebaute Möglichkeiten, Hilfe zu erhalten:

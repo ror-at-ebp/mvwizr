@@ -14,20 +14,61 @@ knitr::opts_chunk$set(
 )
 ```
 
+# Paket laden
+
+mvwizr kann, nachdem es einmal installiert wurde, ganz einfach geladen werden. Dabei wird auch die Versionsnummer angezeigt (ab v1.2). Es lohnt sich, die [Neuigkeiten](https://ror-at-ebp.github.io/mvwizr/news/index.html) zum Paket zu verfolgen und auf neue Versionen zu aktualisieren, um von Fehlerbehebungen und neuen Funktionen zu profitieren.
+
 ```{r setup}
 library(mvwizr)
 ```
 
-# Beispielgrafiken
+# Daten einlesen und Verarbeiten
 
-Im Folgenden werden einige Beispielgrafiken, die mit mvwizr produziert wurden, gezeigt. Es handelt sich dabei nur um eine Auswahl.
+mvwizr unterscheidet grob zwischen zwei Arten von Daten respektive Dataframes, die von den Funktionen im Paket verwendet werden:
 
-## Verlaufsgrafiken für Mischproben
+## MV-Daten
 
-Wir können den Verlauf für einzelne Substanzen für einzelne Stationen inklusive der minimalen und maximalen Bestimmungsgrenzen (falls vorhanden) plotten. Dafür gibt es verschiedene Darstellungsarten; z.B. mittels Barplot:
+Output der Funktionen `einlesen_nawa()`, `batch_einlesen_nawa()` und `einlesen_mv_gbl`. Es handelt sich hierbei um MV-Daten, die mit über den BAFU-Datenaustausch-Schlüssel und die VSA Substanz-Tabelle mit der VSA Substanz-ID verknüpft werden. Substanzen, die nicht verknüpft werden können, werden entfernt (mit Warnung). Duplikate werden ebenfalls entfernt. Falls Bestimmungsgrenzen vorhanden sind, so wird (pro Datensatz und Substanz) die minimale und maximale Bestimmungsgrenze bestimmt. Alle Einheiten von Mikroverunreinigungen werden automatisch auf µg/l normalisiert.
+
+Beispiel:
+
+```{r}
+nawa_mv_pfad <- system.file("extdata", "NAWA_ohne_bSaP_Bsp.xlsx", package = "mvwizr")
+
+# Falls kein Pfad zu VSA- und BAFU-Tabellen angegeben wird, verwendet das Paket die gebundelte Version.
+mv_df_bsp <- einlesen_nawa(nawa_mv_pfad)
+
+nrow(mv_df_bsp)
+```
+
+## RQ-Ue-Daten
+
+Output der Funktion `berechne_rq_ue`: Enthält Überschreitungen (gemäss GSchV) und Risikoquotienten nur für Substanzen, falls es für diese ein Qualitätskriterium der Stufe 1 oder 2 gibt gemäss Liste Qualitätskriterien Ökotoxzentrum - alle anderen Messungen werden herausgefiltert! Beispiel:
+
+```{r}
+rq_ue_df_bsp <- berechne_rq_ue(mv_df_bsp)
+
+nrow(rq_ue_df_bsp)
+```
+
+# Daten plotten
+
+Die Plotfunktionen verlangen entweder nach den MV-Daten oder nach den RQ-Ue-Daten (siehe oben): Alle Plotfunktionen, die nur MV-Daten plotten ohne Bewertung, benötigen nur die MV-Daten. Alle Plotfunktionen, die GSchV-Überschreitungen feststellen oder eine Ökotoxizität (oder Mischtoxizität) bewerten, benutzen die RQ-Ue-Daten. Im Folgenden werden einige Beispielgrafiken, die mit mvwizr produziert wurden, gezeigt. Es handelt sich dabei nur um eine Auswahl.
+
+## MV-Daten-Plots
+
+### Verlaufsgrafiken für Mischproben
+
+Wir können den Verlauf für einzelne Substanzen für einzelne Stationen inklusive der minimalen und maximalen oder der effektiven Bestimmungsgrenzen (falls vorhanden) plotten. Dafür gibt es verschiedene Darstellungsarten; z.B. mittels Barplot:
 
 ```{r fig.width=8, fig.height=5}
+# Standardmässig mit minimaler und maximaler Bestimmungsgrenze geplottet
 plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, stationscode = "URT010", plot_typ = "barplot", id_substanz = 71)
+```
+
+```{r fig.width=8, fig.height=5}
+# Plot mit effektiver Bestimmungsgrenze
+plot_misch_verlauf(mv_df_bsp, stationscode = "101099", plot_typ = "barplot", id_substanz = 71, bg_typ = "effektiv")
 ```
 
 Andererseits ist auch die Darstellung von Summen möglich (z.B. aller Pestizide hier). Falls dafür der "Treppen"-Plot ausgewählt wird, muss sichergestellt werden, dass es keine überlappenden Intervalle gibt, da eine Visualisierung mit Linien sonst nicht möglich ist:
@@ -45,7 +86,9 @@ plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, "URT010",
 )
 ```
 
-## Überschreitungsgrafiken
+## RQ-Ue-Daten-Plots
+
+### Überschreitungsgrafiken
 
 mvwizr bietet auch verschiedene Grafiken an, um (kurzzeitige oder andauernde) Überschreitungen der GSchV-Grenzwerte zu visualisieren. Im folgenden Beispiel werden andauernde Überschreitungen pro Substanz (d.h. Probendauer >= 10 Tage) für die Station "URT010" in den Jahren 2019 bis 2020 ausgewertet.
 
@@ -60,18 +103,23 @@ plot_misch_ue_qk(rq_ue_beispiel_mvwizr, qk = "akut", detailliert = FALSE)
 ```
 
 
-## Ökotoxgrafiken
+### Ökotoxgrafiken
 
 Die Ökotoxgrafiken zeigen Einzel- und Mischungstoxizitäten auf und werden für die Beurteilung gemäss MSK benötigt. Im folgenden Beispiel ist die Stationsübersicht Ökotoxikologie für andauernde Belastungen abgebildet.
 
 ```{r fig.width=8, fig.height=9}
 plot_misch_oekotox_uebersicht(rq_ue_beispiel_mvwizr, stationscode = "URT010", jahr = 2020)
 ```
-
 Der Verlauf von Mischungstoxizitäten kann auch einzeln visualisiert werden:
 
 ```{r fig.width=10, fig.height=5}
 plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd")
+```
+
+Neu (ab mvwizr v1.2) ist auch die Anzeige der Akkumulation (Secondary toxicity) möglich (bei allen Plot-Funktionen mit Anzeige der Mischungstoxizität):
+
+```{r fig.width=10, fig.height=5}
+plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd", optin_mischtox_S = TRUE)
 ```
 
 Schliesslich sind auch Zeitreihen der Häufigkeitsverteilung der verschiedenen Ökotox-Bewertungen möglich (folgend für kurzzeitige Verunreinigungen für die Station URT010):
