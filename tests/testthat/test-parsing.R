@@ -169,7 +169,7 @@ test_that("normalise_units funktioniert", {
 ## Teste Struktur der Rückgabe ####
 
 test_that("einlesen_regulierungen produziert tibble", {
-  reg_pfad <- system.file("extdata", "anf_Substanz_recht.xlsx", package = "mvwizr")
+  reg_pfad <- system.file("extdata", "anf_substanz_recht.xlsx", package = "mvwizr")
   out <- einlesen_regulierungen(reg_pfad)
   out_names <- names(out)
 
