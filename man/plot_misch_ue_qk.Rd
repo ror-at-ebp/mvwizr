@@ -8,16 +8,16 @@ plot_misch_ue_qk(
   rq_ue_daten,
   stationscode = NULL,
   jahr = NULL,
-  qk = "chronisch",
+  qk = c("chronisch", "akut"),
   detailliert = FALSE
 )
 }
 \arguments{
 \item{rq_ue_daten}{Dataframe mit Output der Funktion \code{berechne_rq_ue()}}
 
-\item{stationscode}{Station, für welche der Plot erstellt werden soll. Falls \code{NULL}, wird für alle Stationen geplottet (Facets)}
+\item{stationscode}{Station, für welche der Plot erstellt werden soll.}
 
-\item{jahr}{Jahr, für welches der Überschreitungsplot erstellt werden soll. Falls \code{NULL}, werden alle Jahre geplottet.}
+\item{jahr}{Jahr, für welches der Überschreitungsplot erstellt werden soll.}
 
 \item{qk}{Qualitätskriterium, für welches geplottet werden soll. Mögliche Werte: "chronisch" (Vorgabe) oder "akut".}
 
@@ -27,10 +27,9 @@ plot_misch_ue_qk(
 ggplot2 Plot-Objekt
 }
 \description{
-Aufsummierte QK-Überschreitungen plotten
+Zeigt die Überschreitung chronischer oder akuter Qualitätskriterien pro Jahr und Station, wobei sichtbar wird, ob es viele relevante Überschreitungen gibt von Qualitätskriterien, die nicht in der GSchV aufgenommen sind als spezifischer Grenzwert.
 }
 \examples{
-
 # Chronische Übertretungen auswerten
 plot_misch_ue_qk(rq_ue_beispiel_mvwizr, qk = "chronisch", detailliert = FALSE)
 
@@ -39,6 +38,7 @@ plot_misch_ue_qk(rq_ue_beispiel_mvwizr, qk = "akut", detailliert = FALSE)
 
 \donttest{
 # Chronische Übertretungen detailliert auswerten (VSA-Grafik)
+# Wird nicht automatisch getestet, weil Run zu lange dauert
 plot_misch_ue_qk(rq_ue_beispiel_mvwizr, qk = "chronisch", detailliert = TRUE)
 }
 

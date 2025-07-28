@@ -8,16 +8,17 @@ plot_misch_mixtox_verlauf(
   rq_ue_daten,
   stationscode = NULL,
   jahr = NULL,
-  modus = "andauernd",
-  plot_zusammenfassung = "keine"
+  modus = c("andauernd", "kurzzeitig"),
+  plot_zusammenfassung = "keine",
+  optin_mischtox_S = FALSE
 )
 }
 \arguments{
 \item{rq_ue_daten}{Dataframe mit Output der Funktion \code{berechne_rq_ue()}}
 
-\item{stationscode}{Station, für welche der Plot erstellt werden soll. Falls \code{NULL}, wird für alle Stationen geplottet (Facets)}
+\item{stationscode}{Station, für welche der Plot erstellt werden soll.}
 
-\item{jahr}{Jahr, für welches der Überschreitungsplot erstellt werden soll. Falls \code{NULL}, werden alle Jahre geplottet.}
+\item{jahr}{Jahr, für welches der Überschreitungsplot erstellt werden soll.}
 
 \item{modus}{\itemize{
 \item \code{"andauernd"}: Berücksichtigt nur Stoffe mit einem spezifischen andauernden Grenzwert in der GSchV. Nur Proben mit einer Dauer von >= 10 Tagen werden verwendet und unter Verwendung des CQK beurteilt.
@@ -25,17 +26,21 @@ plot_misch_mixtox_verlauf(
 }}
 
 \item{plot_zusammenfassung}{Entweder \code{NULL} (Vorgabe), "stichproben" oder "mischproben". Falls einer der letzeren beiden, wird pro Jahr und nicht pro Monat aggregiert (entweder nur für Stichproben oder nur für Mischproben). Für Stichproben muss der \code{modus} auf "kurzzeitig" gesetzt werden.}
+
+\item{optin_mischtox_S}{Logisch (Vorgabe: \code{FALSE}). Ab v1.2 unterstützt mvwizr auch die Anzeige der Akkumulation / Secondary toxicity (\code{S_chron}). Falls \code{TRUE}, wird eine vierte Zeile bei den Mischtoxizitäten angezeigt, falls sie in den Daten vorhanden ist. Falls \code{FALSE}, wird sie nicht angezeigt.}
 }
 \value{
 ggplot2 Plot-Objekt
 }
 \description{
-Verlauf von Mischungstoxizitäten plotten
+Zeigt den Verlauf der Mischungstoxizitäten pro Jahr (fortlaufend möglich) und Stationen.
 }
 \examples{
-
 # Ausführlicher Verlauf für andauernde Belastungen
 plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd")
+
+# Ausführlicher Verlauf für andauernde Belastungen mit vierter Zeile für Akkumulation
+plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd", optin_mischtox_S = TRUE)
 
 # Ausführlicher Verlauf für kurzzeitige Belastungen
 plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "kurzzeitig")

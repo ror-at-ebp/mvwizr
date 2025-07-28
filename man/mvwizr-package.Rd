@@ -20,8 +20,10 @@ Useful links:
 
 Other contributors:
 \itemize{
-  \item Veronica Bozzini \email{veronica.bozzini@ebp.ch} [contributor]
+  \item Veronica Bozzini [contributor]
   \item Irene Wittmer \email{irene.wittmer@be.ch} [contributor]
+  \item Johannes Ranke \email{johannes.ranke@agroscope.admin.ch} [contributor]
+  \item Thomas Felder \email{thomas.felder@ebp.ch} [contributor]
   \item Kanton Bern, AWA [copyright holder, funder]
 }
 

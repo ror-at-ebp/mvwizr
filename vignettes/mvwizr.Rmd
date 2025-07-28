@@ -39,8 +39,10 @@ plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, stationscode =
 Bei der Summendarstellung mit Barplots kann schliesslich auch die Verteilung pro (arbiträrer) Kategorie gezeigt werden, wobei der Name der Variable für die Kategorie angegeben werden muss (hier "PARAMETERGRUPPE"):
 
 ```{r fig.width=8, fig.height=5}
-plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, "URT010", plot_typ = "barplot_gruppen",
-                   zulassungstyp = "Alle", plot_parametergruppe = "PARAMETERGRUPPE")
+plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, "URT010",
+  plot_typ = "barplot_gruppen",
+  zulassungstyp = "Alle", plot_parametergruppe = "PARAMETERGRUPPE"
+)
 ```
 
 ## Überschreitungsgrafiken

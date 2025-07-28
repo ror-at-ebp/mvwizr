@@ -14,9 +14,9 @@ plot_stich_verlauf(
 \arguments{
 \item{mv_daten}{Dataframe mit aufbereiteten MV-Daten gemäss Spezifikation}
 
-\item{stationscode}{Station, für welche der Plot erstellt werden soll. Falls \code{NULL}, wird für alle Stationen geplottet (Facets)}
+\item{stationscode}{Station, für welche der Plot erstellt werden soll}
 
-\item{jahr}{Jahr, für welches der Überschreitungsplot erstellt werden soll. Falls \code{NULL}, werden alle Jahre geplottet.}
+\item{jahr}{Jahre (numerischer Vektor), für welche ein Verlauf geplottet werden soll. Falls \code{NULL} (Vorgabewert), werden alle verfügbaren Daten geplottet.}
 
 \item{id_substanz}{Substanz(en), die geplottet werden sollen. Falls \code{NULL} werden sämtliche Substanzen geplottet.}
 }
@@ -27,7 +27,6 @@ ggplot2 Plot-Objekt
 Stichproben Konzentrationsverlauf
 }
 \examples{
-
 # Plotten aller Substanzen für alle Stationen - sehr unübersichtlich
 pobj <- plot_stich_verlauf(mvdaten_beispiel_mvwizr)
 

@@ -2,25 +2,24 @@
 % Please edit documentation in R/plotting.R
 \name{plot_misch_ue_summe}
 \alias{plot_misch_ue_summe}
-\title{Aufsummierte GSchV-Überschreitungen plotten}
+\title{Aufsummierte andauernde GSchV-Überschreitungen plotten}
 \usage{
 plot_misch_ue_summe(rq_ue_daten, stationscode = NULL, jahr = NULL)
 }
 \arguments{
 \item{rq_ue_daten}{Dataframe mit Output der Funktion \code{berechne_rq_ue()}}
 
-\item{stationscode}{Station, für welche der Plot erstellt werden soll}
+\item{stationscode}{Station, für welche der Plot erstellt werden soll.}
 
-\item{jahr}{Jahr, für welches der Überschreitungsplot erstellt werden soll}
+\item{jahr}{Jahr, für welches der Überschreitungsplot erstellt werden soll.}
 }
 \value{
 ggplot2 Plot-Objekt
 }
 \description{
-Aufsummierte GSchV-Überschreitungen plotten
+Zeigt die andauernden Überschreitungen pro Jahr und Station. Dafür werden nur Proben mit einer Messdauer >= 10 Tage berücksichtigt.
 }
 \examples{
-
 plot_misch_ue_summe(rq_ue_beispiel_mvwizr)
 
 }

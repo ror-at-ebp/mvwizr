@@ -23,6 +23,6 @@ VSA
 regulierungen_mvwizr
 }
 \description{
-Dieser Datensatz beinhaltet Informationen zur Regulierung von Mikroverunreinigungen.
+Dieser Datensatz beinhaltet Informationen des VSA zur Regulierung von Mikroverunreinigungen.
 }
 \keyword{datasets}
