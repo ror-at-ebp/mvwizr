@@ -18,3 +18,4 @@
 ^pkgdown$
 ^_DONOTCOMMIT_$
 ^RELEASE_RUN\.md$
+^codecov\.yml$
