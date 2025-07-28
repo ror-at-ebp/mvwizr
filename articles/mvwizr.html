@@ -66,91 +66,179 @@
 
     
     
+<div class="section level2">
+<h2 id="paket-laden">Paket laden<a class="anchor" aria-label="anchor" href="#paket-laden"></a>
+</h2>
+<p>mvwizr kann, nachdem es einmal installiert wurde, ganz einfach
+geladen werden. Dabei wird auch die Versionsnummer angezeigt (ab v1.2).
+Es lohnt sich, die <a href="https://ror-at-ebp.github.io/mvwizr/news/index.html">Neuigkeiten</a>
+zum Paket zu verfolgen und auf neue Versionen zu aktualisieren, um von
+Fehlerbehebungen und neuen Funktionen zu profitieren.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ror-at-ebp.github.io/mvwizr/">mvwizr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; mvwizr geladen: v1.2.0</span></span></code></pre></div>
+</div>
 <div class="section level2">
-<h2 id="beispielgrafiken">Beispielgrafiken<a class="anchor" aria-label="anchor" href="#beispielgrafiken"></a>
+<h2 id="daten-einlesen-und-verarbeiten">Daten einlesen und Verarbeiten<a class="anchor" aria-label="anchor" href="#daten-einlesen-und-verarbeiten"></a>
 </h2>
-<p>Im Folgenden werden einige Beispielgrafiken, die mit mvwizr
-produziert wurden, gezeigt. Es handelt sich dabei nur um eine
-Auswahl.</p>
+<p>mvwizr unterscheidet grob zwischen zwei Arten von Daten respektive
+Dataframes, die von den Funktionen im Paket verwendet werden:</p>
 <div class="section level3">
-<h3 id="verlaufsgrafiken-für-mischproben">Verlaufsgrafiken für Mischproben<a class="anchor" aria-label="anchor" href="#verlaufsgrafiken-f%C3%BCr-mischproben"></a>
+<h3 id="mv-daten">MV-Daten<a class="anchor" aria-label="anchor" href="#mv-daten"></a>
 </h3>
-<p>Wir können den Verlauf für einzelne Substanzen für einzelne Stationen
-inklusive der minimalen und maximalen Bestimmungsgrenzen (falls
-vorhanden) plotten. Dafür gibt es verschiedene Darstellungsarten; z.B.
-mittels Barplot:</p>
+<p>Output der Funktionen <code><a href="../reference/einlesen_nawa.html">einlesen_nawa()</a></code>,
+<code><a href="../reference/batch_einlesen_nawa.html">batch_einlesen_nawa()</a></code> und <code>einlesen_mv_gbl</code>. Es
+handelt sich hierbei um MV-Daten, die mit über den
+BAFU-Datenaustausch-Schlüssel und die VSA Substanz-Tabelle mit der VSA
+Substanz-ID verknüpft werden. Substanzen, die nicht verknüpft werden
+können, werden entfernt (mit Warnung). Duplikate werden ebenfalls
+entfernt. Falls Bestimmungsgrenzen vorhanden sind, so wird (pro
+Datensatz und Substanz) die minimale und maximale Bestimmungsgrenze
+bestimmt. Alle Einheiten von Mikroverunreinigungen werden automatisch
+auf µg/l normalisiert.</p>
+<p>Beispiel:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, <span class="va">regulierungen_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, plot_typ <span class="op">=</span> <span class="st">"barplot"</span>, id_substanz <span class="op">=</span> <span class="fl">71</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mvwizr_files/figure-html/unnamed-chunk-2-1.png" width="768"></p>
+<code class="sourceCode R"><span><span class="va">nawa_mv_pfad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"NAWA_ohne_bSaP_Bsp.xlsx"</span>, package <span class="op">=</span> <span class="st">"mvwizr"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Falls kein Pfad zu VSA- und BAFU-Tabellen angegeben wird, verwendet das Paket die gebundelte Version.</span></span>
+<span><span class="va">mv_df_bsp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/einlesen_nawa.html">einlesen_nawa</a></span><span class="op">(</span><span class="va">nawa_mv_pfad</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> VSA-Lookup: 2 mehrfache Bezeichnungen (VSA Parameter-ID) pro Substanz_ID</span></span>
+<span><span class="co">#&gt;   gefunden. Verwende tiefere Substanz_ID.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Betroffen: 8_2-FTCA, SiO2</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Lese MV-Daten von Excel-Datei /home/runner/work/_temp/Library/mvwizr/extdata/NAWA_ohne_bSaP_Bsp.xlsx ein.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Versuche Start des Tabellen-Headers der Datei /home/runner/work/_temp/Library/mvwizr/extdata/NAWA_ohne_bSaP_Bsp.xlsx zu erraten.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Erkannter Header-Start: Zeile 8.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Versuche Sprache der Datei /home/runner/work/_temp/Library/mvwizr/extdata/NAWA_ohne_bSaP_Bsp.xlsx zu erraten.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Erkannte Sprache: DE.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Versuche Parameter-Feld der Datei /home/runner/work/_temp/Library/mvwizr/extdata/NAWA_ohne_bSaP_Bsp.xlsx zu erraten.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Erkannter Parameter: BAFU_Parameter_ID.</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Bestimmungsgrenzen wurden nicht als Zahlen eingelesen - versuche Typenkonvertierung.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Normalisiere Einheiten der MV-Daten auf µg/l.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Max./min. Bestimmungsgrenzen der MV-Daten bestimmen...</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">mv_df_bsp</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 131</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="rq-ue-daten">RQ-Ue-Daten<a class="anchor" aria-label="anchor" href="#rq-ue-daten"></a>
+</h3>
+<p>Output der Funktion <code>berechne_rq_ue</code>: Enthält
+Überschreitungen (gemäss GSchV) und Risikoquotienten nur für Substanzen,
+falls es für diese ein Qualitätskriterium der Stufe 1 oder 2 gibt gemäss
+Liste Qualitätskriterien Ökotoxzentrum - alle anderen Messungen werden
+herausgefiltert! Beispiel:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rq_ue_df_bsp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/berechne_rq_ue.html">berechne_rq_ue</a></span><span class="op">(</span><span class="va">mv_df_bsp</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">rq_ue_df_bsp</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 131</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="daten-plotten">Daten plotten<a class="anchor" aria-label="anchor" href="#daten-plotten"></a>
+</h2>
+<p>Die Plotfunktionen verlangen entweder nach den MV-Daten oder nach den
+RQ-Ue-Daten (siehe oben): Alle Plotfunktionen, die nur MV-Daten plotten
+ohne Bewertung, benötigen nur die MV-Daten. Alle Plotfunktionen, die
+GSchV-Überschreitungen feststellen oder eine Ökotoxizität (oder
+Mischtoxizität) bewerten, benutzen die RQ-Ue-Daten. Im Folgenden werden
+einige Beispielgrafiken, die mit mvwizr produziert wurden, gezeigt. Es
+handelt sich dabei nur um eine Auswahl.</p>
+<div class="section level3">
+<h3 id="mv-daten-plots">MV-Daten-Plots<a class="anchor" aria-label="anchor" href="#mv-daten-plots"></a>
+</h3>
+<div class="section level4">
+<h4 id="verlaufsgrafiken-für-mischproben">Verlaufsgrafiken für Mischproben<a class="anchor" aria-label="anchor" href="#verlaufsgrafiken-f%C3%BCr-mischproben"></a>
+</h4>
+<p>Wir können den Verlauf für einzelne Substanzen für einzelne Stationen
+inklusive der minimalen und maximalen oder der effektiven
+Bestimmungsgrenzen (falls vorhanden) plotten. Dafür gibt es verschiedene
+Darstellungsarten; z.B. mittels Barplot:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Standardmässig mit minimaler und maximaler Bestimmungsgrenze geplottet</span></span>
+<span><span class="fu"><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, <span class="va">regulierungen_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, plot_typ <span class="op">=</span> <span class="st">"barplot"</span>, id_substanz <span class="op">=</span> <span class="fl">71</span><span class="op">)</span></span></code></pre></div>
+<p><img src="mvwizr_files/figure-html/unnamed-chunk-4-1.png" width="768"></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Plot mit effektiver Bestimmungsgrenze</span></span>
+<span><span class="fu"><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mv_df_bsp</span>, stationscode <span class="op">=</span> <span class="st">"101099"</span>, plot_typ <span class="op">=</span> <span class="st">"barplot"</span>, id_substanz <span class="op">=</span> <span class="fl">71</span>, bg_typ <span class="op">=</span> <span class="st">"effektiv"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="mvwizr_files/figure-html/unnamed-chunk-5-1.png" width="768"></p>
 <p>Andererseits ist auch die Darstellung von Summen möglich (z.B. aller
 Pestizide hier). Falls dafür der “Treppen”-Plot ausgewählt wird, muss
 sichergestellt werden, dass es keine überlappenden Intervalle gibt, da
 eine Visualisierung mit Linien sonst nicht möglich ist:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, <span class="va">regulierungen_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, plot_typ <span class="op">=</span> <span class="st">"treppen"</span>, zulassungstyp <span class="op">=</span> <span class="st">"[BP]"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mvwizr_files/figure-html/unnamed-chunk-3-1.png" width="768"></p>
+<p><img src="mvwizr_files/figure-html/unnamed-chunk-6-1.png" width="768"></p>
 <p>Bei der Summendarstellung mit Barplots kann schliesslich auch die
 Verteilung pro (arbiträrer) Kategorie gezeigt werden, wobei der Name der
 Variable für die Kategorie angegeben werden muss (hier
 “PARAMETERGRUPPE”):</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, <span class="va">regulierungen_mvwizr</span>, <span class="st">"URT010"</span>,</span>
 <span>  plot_typ <span class="op">=</span> <span class="st">"barplot_gruppen"</span>,</span>
 <span>  zulassungstyp <span class="op">=</span> <span class="st">"Alle"</span>, plot_parametergruppe <span class="op">=</span> <span class="st">"PARAMETERGRUPPE"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="mvwizr_files/figure-html/unnamed-chunk-4-1.png" width="768"></p>
+<p><img src="mvwizr_files/figure-html/unnamed-chunk-7-1.png" width="768"></p>
+</div>
 </div>
 <div class="section level3">
-<h3 id="überschreitungsgrafiken">Überschreitungsgrafiken<a class="anchor" aria-label="anchor" href="#%C3%BCberschreitungsgrafiken"></a>
+<h3 id="rq-ue-daten-plots">RQ-Ue-Daten-Plots<a class="anchor" aria-label="anchor" href="#rq-ue-daten-plots"></a>
 </h3>
+<div class="section level4">
+<h4 id="überschreitungsgrafiken">Überschreitungsgrafiken<a class="anchor" aria-label="anchor" href="#%C3%BCberschreitungsgrafiken"></a>
+</h4>
 <p>mvwizr bietet auch verschiedene Grafiken an, um (kurzzeitige oder
 andauernde) Überschreitungen der GSchV-Grenzwerte zu visualisieren. Im
 folgenden Beispiel werden andauernde Überschreitungen pro Substanz (d.h.
 Probendauer &gt;= 10 Tage) für die Station “URT010” in den Jahren 2019
 bis 2020 ausgewertet.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_ue.html">plot_misch_ue</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, plot_typ <span class="op">=</span> <span class="st">"andauernd"</span>, jahr <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2019</span>, <span class="fl">2020</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mvwizr_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
+<p><img src="mvwizr_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
 <p>Auch summierte Grafiken (ohne Aufschlüsselung nach Substanz) sind
 möglich; im Folgenden eine Zeitreihe für die Überschreitung von akuten
 Qualitätskriterien:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_ue_qk.html">plot_misch_ue_qk</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, qk <span class="op">=</span> <span class="st">"akut"</span>, detailliert <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mvwizr_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
+<p><img src="mvwizr_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
 </div>
-<div class="section level3">
-<h3 id="ökotoxgrafiken">Ökotoxgrafiken<a class="anchor" aria-label="anchor" href="#%C3%B6kotoxgrafiken"></a>
-</h3>
+<div class="section level4">
+<h4 id="ökotoxgrafiken">Ökotoxgrafiken<a class="anchor" aria-label="anchor" href="#%C3%B6kotoxgrafiken"></a>
+</h4>
 <p>Die Ökotoxgrafiken zeigen Einzel- und Mischungstoxizitäten auf und
 werden für die Beurteilung gemäss MSK benötigt. Im folgenden Beispiel
 ist die Stationsübersicht Ökotoxikologie für andauernde Belastungen
 abgebildet.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_oekotox_uebersicht.html">plot_misch_oekotox_uebersicht</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, jahr <span class="op">=</span> <span class="fl">2020</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mvwizr_files/figure-html/unnamed-chunk-7-1.png" width="768"></p>
-<p>Der Verlauf von Mischungstoxizitäten kann auch einzeln visualisiert
+<p><img src="mvwizr_files/figure-html/unnamed-chunk-10-1.png" width="768">
+Der Verlauf von Mischungstoxizitäten kann auch einzeln visualisiert
 werden:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_mixtox_verlauf.html">plot_misch_mixtox_verlauf</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, modus <span class="op">=</span> <span class="st">"andauernd"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mvwizr_files/figure-html/unnamed-chunk-8-1.png" width="960"></p>
+<p><img src="mvwizr_files/figure-html/unnamed-chunk-11-1.png" width="960"></p>
+<p>Neu (ab mvwizr v1.2) ist auch die Anzeige der Akkumulation (Secondary
+toxicity) möglich (bei allen Plot-Funktionen mit Anzeige der
+Mischungstoxizität):</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_mixtox_verlauf.html">plot_misch_mixtox_verlauf</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, modus <span class="op">=</span> <span class="st">"andauernd"</span>, optin_mischtox_S <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="mvwizr_files/figure-html/unnamed-chunk-12-1.png" width="960"></p>
 <p>Schliesslich sind auch Zeitreihen der Häufigkeitsverteilung der
 verschiedenen Ökotox-Bewertungen möglich (folgend für kurzzeitige
 Verunreinigungen für die Station URT010):</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_mixtox_haeufigkeit.html">plot_misch_mixtox_haeufigkeit</a></span><span class="op">(</span><span class="va">rq_ue_beispiel_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"URT010"</span>, modus <span class="op">=</span> <span class="st">"kurzzeitig"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mvwizr_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
+<p><img src="mvwizr_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
+</div>
 </div>
 <div class="section level3">
 <h3 id="stichproben">Stichproben<a class="anchor" aria-label="anchor" href="#stichproben"></a>
 </h3>
 <p>Stichproben können mittels Raster-Darstellung pro Station dargestellt
 werden, um rasch explorativ wichtige Substanzen zu identifizieren:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_stich_uebersicht.html">plot_stich_uebersicht</a></span><span class="op">(</span><span class="va">mvdaten_beispiel_mvwizr</span>, stationscode <span class="op">=</span> <span class="st">"SA51"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mvwizr_files/figure-html/unnamed-chunk-10-1.png" width="960"></p>
+<p><img src="mvwizr_files/figure-html/unnamed-chunk-14-1.png" width="960"></p>
 <p>Einige Plotfunktionen, die für Mischproben konzipiert sind,
 akzeptieren auch Stichproben (siehe Hilfetexte der Funktionen).</p>
 </div>

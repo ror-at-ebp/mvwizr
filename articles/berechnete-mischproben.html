@@ -186,7 +186,7 @@ herausgefiltert werden, wenn man alle 3.5-Tage-Proben im Dataframe
 behalten will:</li>
 </ol>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mv_ohne_bsap</span> <span class="op">&lt;-</span> <span class="va">mv_df_alle</span> <span class="op">|&gt;</span> </span>
+<code class="sourceCode R"><span><span class="va">mv_ohne_bsap</span> <span class="op">&lt;-</span> <span class="va">mv_df_alle</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">PROBEARTID</span> <span class="op">!=</span> <span class="st">"bSaP"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">mv_ohne_bsap</span><span class="op">)</span></span>
@@ -199,8 +199,8 @@ behalten will:</li>
 verglichen werden können:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mv_ohne_bsap</span>, stationscode <span class="op">=</span> <span class="st">"101099"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="berechnete-mischproben_files/figure-html/unnamed-chunk-6-1.png" width="700">
-Es ist klar sichtbar, dass die Konzentrationsspitzen im Datensatz mit
+<p><img src="berechnete-mischproben_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p>Es ist klar sichtbar, dass die Konzentrationsspitzen im Datensatz mit
 den berechneten Mischproben stark rausgeglättet worden sind:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf</a></span><span class="op">(</span><span class="va">mv_mit_bsap</span>, stationscode <span class="op">=</span> <span class="st">"101099"</span><span class="op">)</span></span></code></pre></div>
