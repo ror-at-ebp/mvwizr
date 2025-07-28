@@ -10,6 +10,7 @@ Authors@R: c(
     person("Thomas", "Felder", email = "thomas.felder@ebp.ch", role = "ctb"),
     person("Kanton Bern, AWA", role = c("cph", "fnd")))
 Description: Tools um Mikroverunreinigungsdaten aus Schweizer Gewässern gemäss den Bestimmungen der Gewässerschutzverordnung (GSchV) darzustellen.
+Language: de
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
