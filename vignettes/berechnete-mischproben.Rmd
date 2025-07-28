@@ -63,7 +63,7 @@ nrow(mv_mit_bsap)
 4. Alternativ können alle berechneten Proben über das Attribut auch herausgefiltert werden, wenn man alle 3.5-Tage-Proben im Dataframe behalten will:
 
 ```{r}
-mv_ohne_bsap <- mv_df_alle |> 
+mv_ohne_bsap <- mv_df_alle |>
   dplyr::filter(.data$PROBEARTID != "bSaP")
 
 nrow(mv_ohne_bsap)
@@ -76,6 +76,7 @@ Der Vorteil dieses Vorgehens ist, dass die Datensätze nun einfach verglichen we
 ```{r}
 plot_misch_verlauf(mv_ohne_bsap, stationscode = "101099")
 ```
+
 Es ist klar sichtbar, dass die Konzentrationsspitzen im Datensatz mit den berechneten Mischproben stark rausgeglättet worden sind:
 
 ```{r}
