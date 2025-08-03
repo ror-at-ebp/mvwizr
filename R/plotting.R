@@ -948,6 +948,10 @@ plot_misch_ue_qk <- function(rq_ue_daten,
     # Polychrome setzt standardmässig Namen für die Farben, die wir nicht wollen
     names(farben_substanzen) <- NULL
 
+    # Bug fix, weil Polychrome mindestens 5 Farben liefert (getestet mit Polychrome v1.5.4)
+    if (anz_farben < 5) {
+      farben_substanzen <- farben_substanzen[1:anz_farben]
+    }
     # Nur Substanzen, die in der GSchV einen Wert haben, sollen schraffiert werden.
     substanzen <- rq_ue_summary |>
       dplyr::distinct(.data$ID_Substanz, .data$BAFU_Bez_DE, .data$BAFU_Bez_DE_fct, .data$Ue) |>
