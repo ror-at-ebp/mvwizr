@@ -1,3 +1,9 @@
+# mvwizr 1.2.1
+
+## Behobene Fehler
+
+- Polychrome (getestet mit v1.5.4) liefert immer mindestens 5 Farben, was in `plot_misch_ue_qk(..., detailliert = TRUE)` zu einem Fehler führt, wenn weniger als 5 Substanzen im Datensatz vorhanden sind.
+
 # mvwizr 1.2.0
 
 ## Neue Features
