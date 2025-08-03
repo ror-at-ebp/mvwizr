@@ -27,17 +27,11 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y locales
-          sudo locale-gen de_CH.utf8
-
-      - uses: actions/checkout@v4
-
-      - name: SetLocale
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update && sudo apt-get install tzdata locales -y && sudo locale-gen de_CH.UTF-8 fr_CH.UTF-8
-          sudo localectl set-locale LANG="de_CH.UTF-8"
+          sudo locale-gen de_CH.utf8 fr_CH.UTF-8
           export LANG="de_CH.UTF-8"
           sudo update-locale
+
+      - uses: actions/checkout@v4
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -51,7 +45,7 @@ jobs:
           needs: website
 
       - name: Build site
-        run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
+        run: pkgdown::build_site_github_pages(new_process = TRUE, install = FALSE)
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀

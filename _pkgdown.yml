@@ -1,4 +1,7 @@
 url: https://ror-at-ebp.github.io/mvwizr/
+
+lang: de
+
 template:
   bootstrap: 5
-lang: de
+
