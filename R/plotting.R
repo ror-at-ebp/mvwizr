@@ -185,8 +185,7 @@ plot_misch_verlauf <- function(mv_daten,
         .data$Tage,
         .data$BEGINNPROBENAHME,
         .data$ENDEPROBENAHME,
-        {{ plot_parametergruppe }
-        } # rlang indirection, siehe https://dplyr.tidyverse.org/articles/programming.html
+        {{ plot_parametergruppe }} # rlang indirection, siehe https://dplyr.tidyverse.org/articles/programming.html
       ) |>
       dplyr::summarise(WERT_NUM = sum(.data$WERT_NUM)) |>
       dplyr::mutate(gruppe_ymax = cumsum(.data$WERT_NUM), gruppe_ymin = .data$gruppe_ymax - .data$WERT_NUM) |>
@@ -955,7 +954,7 @@ plot_misch_ue_qk <- function(rq_ue_daten,
     # Nur Substanzen, die in der GSchV einen Wert haben, sollen schraffiert werden.
     substanzen <- rq_ue_summary |>
       dplyr::distinct(.data$ID_Substanz, .data$BAFU_Bez_DE, .data$BAFU_Bez_DE_fct, .data$Ue) |>
-      dplyr::mutate(Farbe = .env$farben_substanzen, Muster = dplyr::if_else(.data$Ue == "gschv", "stripe", NA_character_))
+      dplyr::mutate(Farbe = .env$farben_substanzen, Muster = dplyr::if_else(.data$Ue == "gschv", "stripe", "none"))
 
     muster <- substanzen$Muster
     names(muster) <- substanzen$BAFU_Bez_DE_fct
