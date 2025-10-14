@@ -24,7 +24,7 @@ plot_misch_oekotox_uebersicht(
 \item \code{"kurzzeitig"}: Berücksichtigt nur Stoffe mit einem spezifischen akuten Grenzwert in der GSchV. Berücksichtigt alle Proben (ausser Stichproben) und verwendet das AQK zur Beurteilung.
 }}
 
-\item{optin_mischtox_S}{Logisch (Vorgabe: \code{FALSE}). Ab v1.2 unterstützt mvwizr auch die Anzeige der Akkumulation / Secondary toxicity (\code{S_chron}). Falls \code{TRUE}, wird eine vierte Zeile bei den Mischtoxizitäten angezeigt, falls sie in den Daten vorhanden ist. Falls \code{FALSE}, wird sie nicht angezeigt.}
+\item{optin_mischtox_S}{Logisch (Vorgabe: \code{FALSE}). Ab v1.2 unterstützt mvwizr auch die Anzeige der Bioakkumulation / Secondary toxicity (\code{S_chron}). Falls \code{TRUE}, wird eine vierte Zeile bei den Mischtoxizitäten angezeigt, falls sie in den Daten vorhanden ist. Falls \code{FALSE}, wird sie nicht angezeigt.}
 }
 \value{
 ggplot2 Plot-Objekt

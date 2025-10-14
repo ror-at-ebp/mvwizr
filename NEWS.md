@@ -1,3 +1,10 @@
+# mvwizr 1.3.0
+
+## Behobene Fehler & Änderungen
+
+- Neu wird der Mischungstoxizitätstyp "Akkumulation" "Bioakkumulation" genannt.
+- Die Paketwebseite enthält nun eine deutschsprachige Navigation.
+
 # mvwizr 1.2.1
 
 ## Behobene Fehler

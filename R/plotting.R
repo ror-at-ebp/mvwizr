@@ -185,8 +185,7 @@ plot_misch_verlauf <- function(mv_daten,
         .data$Tage,
         .data$BEGINNPROBENAHME,
         .data$ENDEPROBENAHME,
-        {{ plot_parametergruppe }
-        } # rlang indirection, siehe https://dplyr.tidyverse.org/articles/programming.html
+        {{ plot_parametergruppe }} # rlang indirection, siehe https://dplyr.tidyverse.org/articles/programming.html
       ) |>
       dplyr::summarise(WERT_NUM = sum(.data$WERT_NUM)) |>
       dplyr::mutate(gruppe_ymax = cumsum(.data$WERT_NUM), gruppe_ymin = .data$gruppe_ymax - .data$WERT_NUM) |>
@@ -955,7 +954,7 @@ plot_misch_ue_qk <- function(rq_ue_daten,
     # Nur Substanzen, die in der GSchV einen Wert haben, sollen schraffiert werden.
     substanzen <- rq_ue_summary |>
       dplyr::distinct(.data$ID_Substanz, .data$BAFU_Bez_DE, .data$BAFU_Bez_DE_fct, .data$Ue) |>
-      dplyr::mutate(Farbe = .env$farben_substanzen, Muster = dplyr::if_else(.data$Ue == "gschv", "stripe", NA_character_))
+      dplyr::mutate(Farbe = .env$farben_substanzen, Muster = dplyr::if_else(.data$Ue == "gschv", "stripe", "none"))
 
     muster <- substanzen$Muster
     names(muster) <- substanzen$BAFU_Bez_DE_fct
@@ -1121,8 +1120,8 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
     dplyr::filter(.data$Kriterium %in% .env$switchKriterium)
 
   # Falls nicht explizit gewünscht wird, dass wir secondary toxicity auch bewerten, werden diese Resultate ausgeblendet, damit keine Änderung gegenüber v1.1.0 entsteht. Falls alle Daten NA sind (=keine Stoffe mit S_chron gemessen), filtern wir die Variable auch raus
-  if (!optin_mischtox_S || all(is.na(mixtox_data[mixtox_data$Ziel == "Akkumulation", "RQ"]))) {
-    mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Akkumulation")
+  if (!optin_mischtox_S || all(is.na(mixtox_data[mixtox_data$Ziel == "Bioakkumulation", "RQ"]))) {
+    mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Bioakkumulation")
   }
 
   # Mischtoxizitätsplot analog oben
@@ -1208,7 +1207,7 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
 #'   \item `"kurzzeitig"`: Berücksichtigt nur Stoffe mit einem spezifischen akuten Grenzwert in der GSchV. Berücksichtigt alle Proben (ausser Stichproben) und verwendet das AQK zur Beurteilung.
 #' }
 #' @param plot_zusammenfassung Entweder `NULL` (Vorgabe), "stichproben" oder "mischproben". Falls einer der letzeren beiden, wird pro Jahr und nicht pro Monat aggregiert (entweder nur für Stichproben oder nur für Mischproben). Für Stichproben muss der `modus` auf "kurzzeitig" gesetzt werden.
-#' @param optin_mischtox_S Logisch (Vorgabe: `FALSE`). Ab v1.2 unterstützt mvwizr auch die Anzeige der Akkumulation / Secondary toxicity (`S_chron`). Falls `TRUE`, wird eine vierte Zeile bei den Mischtoxizitäten angezeigt, falls sie in den Daten vorhanden ist. Falls `FALSE`, wird sie nicht angezeigt.
+#' @param optin_mischtox_S Logisch (Vorgabe: `FALSE`). Ab v1.2 unterstützt mvwizr auch die Anzeige der Bioakkumulation / Secondary toxicity (`S_chron`). Falls `TRUE`, wird eine vierte Zeile bei den Mischtoxizitäten angezeigt, falls sie in den Daten vorhanden ist. Falls `FALSE`, wird sie nicht angezeigt.
 #'
 #' @return ggplot2 Plot-Objekt
 #' @export
@@ -1217,7 +1216,7 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
 #' # Ausführlicher Verlauf für andauernde Belastungen
 #' plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd")
 #'
-#' # Ausführlicher Verlauf für andauernde Belastungen mit vierter Zeile für Akkumulation
+#' # Ausführlicher Verlauf für andauernde Belastungen mit vierter Zeile für Bioakkumulation
 #' plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd", optin_mischtox_S = TRUE)
 #'
 #' # Ausführlicher Verlauf für kurzzeitige Belastungen
@@ -1293,7 +1292,7 @@ plot_misch_mixtox_verlauf <- function(rq_ue_daten,
 
   # Falls nicht explizit gewünscht wird, dass wir secondary toxicity auch bewerten, werden diese Resultate ausgeblendet, damit keine Änderung gegenüber v1.1.0 entsteht
   if (!optin_mischtox_S) {
-    mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Akkumulation")
+    mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Bioakkumulation")
   }
 
   farbskala_tox <- farbskala_bewertung_ecotox()
@@ -1428,7 +1427,7 @@ plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
 
   # Falls nicht explizit gewünscht wird, dass wir secondary toxicity auch bewerten, werden diese Resultate ausgeblendet, damit keine Änderung gegenüber v1.1.0 entsteht
   if (!optin_mischtox_S) {
-    mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Akkumulation")
+    mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Bioakkumulation")
   }
 
   farbskala_tox <- farbskala_bewertung_ecotox()
