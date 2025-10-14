@@ -23,7 +23,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Install locale
+      - name: Set locale to German
         run: |
           sudo apt update
           sudo apt install -y locales
@@ -45,8 +45,10 @@ jobs:
           needs: website
 
       - name: Build site
-        run: pkgdown::build_site_github_pages(new_process = TRUE, install = FALSE)
+        run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}
+        env:
+          LANG: de_CH.UTF-8
 
       - name: Deploy to GitHub pages 🚀
         if: github.event_name != 'pull_request'
