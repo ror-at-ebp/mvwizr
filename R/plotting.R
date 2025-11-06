@@ -828,6 +828,7 @@ plot_misch_ue_summe <- function(rq_ue_daten,
 #' @inheritParams plot_misch_mixtox_verlauf
 #' @param qk Qualitätskriterium, für welches geplottet werden soll. Mögliche Werte: "chronisch" (Vorgabe) oder "akut".
 #' @param detailliert Logisch (Vorgabe: `FALSE`). Soll der detaillierte VSA-Plot mit Aufspaltung nach Substanzen erstellt werden?
+#' @param pattern_key_scale Skalierungsfaktor (Vorgabe: 1), der angibt, wie das Muster in den Legendeneinträgen skaliert werden soll (nur für `detailliert = TRUE`). Diesen Wert reduzieren, falls ein Muster im Plot gezeigt wird, aber nicht in der Legende.
 #'
 #' @return ggplot2 Plot-Objekt
 #' @export
@@ -849,7 +850,8 @@ plot_misch_ue_qk <- function(rq_ue_daten,
                              stationscode = NULL,
                              jahr = NULL,
                              qk = c("chronisch", "akut"),
-                             detailliert = FALSE) {
+                             detailliert = FALSE,
+                             pattern_key_scale = 1) {
   qk <- match.arg(qk)
   rq_ue_daten <- dplyr::filter(rq_ue_daten, !is.na(.data$ENDEPROBENAHME))
 
@@ -974,6 +976,7 @@ plot_misch_ue_qk <- function(rq_ue_daten,
           fill = .data$BAFU_Bez_DE_fct
         ),
         pattern_fill = NA,
+        pattern_key_scale_factor = pattern_key_scale,
         color = "black"
       ) +
       ggplot2::scale_x_continuous("", breaks = jahre_daten) +

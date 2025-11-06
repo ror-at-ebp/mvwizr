@@ -1,3 +1,9 @@
+# mvwizr 1.3.1
+
+## Behobene Fehler & Änderungen
+
+- Neu verfügt die Funktion `plot_misch_ue_qk(..., detailliert = TRUE)` über den zusätzlichen Parameter `pattern_key_scale`. Damit kann die Grösse der Schraffierung in der Legende angepasst werden. Falls in der Legende keine Schraffierung angezeigt wird, sollte dieser Wert reduziert werden (Vorgabe: 1).
+
 # mvwizr 1.3.0
 
 ## Behobene Fehler & Änderungen
