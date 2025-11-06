@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mvwizr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Navigation ein-/ausschalten">
@@ -49,7 +49,8 @@
 <span>  stationscode <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  jahr <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  qk <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"chronisch"</span>, <span class="st">"akut"</span><span class="op">)</span>,</span>
-<span>  detailliert <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  detailliert <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  pattern_key_scale <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -75,6 +76,10 @@
 
 <dt id="arg-detailliert">detailliert<a class="anchor" aria-label="anchor" href="#arg-detailliert"></a></dt>
 <dd><p>Logisch (Vorgabe: <code>FALSE</code>). Soll der detaillierte VSA-Plot mit Aufspaltung nach Substanzen erstellt werden?</p></dd>
+
+
+<dt id="arg-pattern-key-scale">pattern_key_scale<a class="anchor" aria-label="anchor" href="#arg-pattern-key-scale"></a></dt>
+<dd><p>Skalierungsfaktor (Vorgabe: 1), der angibt, wie das Muster in den Legendeneinträgen skaliert werden soll (nur für <code>detailliert = TRUE</code>). Diesen Wert reduzieren, falls ein Muster im Plot gezeigt wird, aber nicht in der Legende.</p></dd>
 
 </dl></div>
     <div class="section level2">
