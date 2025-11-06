@@ -9,7 +9,8 @@ plot_misch_ue_qk(
   stationscode = NULL,
   jahr = NULL,
   qk = c("chronisch", "akut"),
-  detailliert = FALSE
+  detailliert = FALSE,
+  pattern_key_scale = 1
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ plot_misch_ue_qk(
 \item{qk}{Qualitätskriterium, für welches geplottet werden soll. Mögliche Werte: "chronisch" (Vorgabe) oder "akut".}
 
 \item{detailliert}{Logisch (Vorgabe: \code{FALSE}). Soll der detaillierte VSA-Plot mit Aufspaltung nach Substanzen erstellt werden?}
+
+\item{pattern_key_scale}{Skalierungsfaktor (Vorgabe: 1), der angibt, wie das Muster in den Legendeneinträgen skaliert werden soll (nur für \code{detailliert = TRUE}). Diesen Wert reduzieren, falls ein Muster im Plot gezeigt wird, aber nicht in der Legende.}
 }
 \value{
 ggplot2 Plot-Objekt
