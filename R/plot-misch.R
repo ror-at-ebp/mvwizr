@@ -77,10 +77,12 @@ plot_misch_verlauf <- function(mv_daten,
                                jahr = NULL,
                                id_substanz = NULL,
                                zulassungstyp = "[BP]",
-                               plot_typ = "barplot",
+                               plot_typ = c("barplot", "treppen", "kombiniert", "striche", "barplot_gruppen"),
                                plot_bg = TRUE,
                                bg_typ = "minmax",
                                plot_parametergruppe = "") {
+  plot_typ <- match.arg(plot_typ)
+
   # Falls NULL, verwenden wir die gebundelten Regulierungs-Informationen
   regulierungen <- regulierungen %||% mvwizr::regulierungen_mvwizr
 
@@ -149,17 +151,10 @@ plot_misch_verlauf <- function(mv_daten,
     }
   }
 
-  plot_limits <- c(lubridate::as_datetime(paste0(min(
-    lubridate::year(mv_daten$BEGINNPROBENAHME)
-  ), "-01-01")), NA)
-
-  # Striche auf x-Achse/Datum: vom unteren Plotlimit bis Ende Jahr der letzten Probe in 2Mt-schritten. NB: ENDEPROBENAHME liegt ggf. weiter hinten, wird aber je nach Wert für expansion() dennoch dargestellt.
-  date_breaks <- seq(plot_limits[1], lubridate::as_datetime(paste0(max(
-    lubridate::year(mv_daten$BEGINNPROBENAHME)
-  ), "-12-31")), by = "2 months")
-
-  # Vertikale Linien Ende Jahr für leichtere Lesbarkeit
-  markierungen_jahre <- lubridate::as_datetime(paste0(unique(mv_daten$Jahr), "-12-31"))
+  date_axis <- setup_date_axis(mv_daten)
+  plot_limits <- date_axis$limits
+  date_breaks <- date_axis$breaks
+  markierungen_jahre <- date_axis$markierungen
 
   # Aufsummierung für Summenplots: 1. Filtern nach Zulassungstyp (nicht nötig bei einzelnen/mehreren Substanzen, weil dort Auswahl via ID_Substanz)
   # 2. Gruppieren und aufsummieren der Konzentrationen pro Station und spezifische Probe.
@@ -942,10 +937,10 @@ plot_misch_ue_qk <- function(rq_ue_daten,
     anz_farben <- length(unique(rq_ue_summary$ID_Substanz))
 
     # Die Erstellung der Farbpalette ist probabilistisch - aber für die Snapshot-Test muss immer exakt die gleiche Farbpalette verwendet werden in jedem Durchgang
-    set.seed(1537062)
-    farben_substanzen <- Polychrome::createPalette(anz_farben, c("#FF0000", "#00FF00", "#0000FF"), range = c(30, 80))
-    # Zurücksetzen des random seed für allfällige andere Funktionen, die den RNG verwenden.
-    rm(.Random.seed, envir = .GlobalEnv)
+    # withr::with_seed() scoped den RNG-State, so dass keine globale Zustandsänderung entsteht
+    farben_substanzen <- withr::with_seed(1537062, {
+      Polychrome::createPalette(anz_farben, c("#FF0000", "#00FF00", "#0000FF"), range = c(30, 80))
+    })
     # Polychrome setzt standardmässig Namen für die Farben, die wir nicht wollen
     names(farben_substanzen) <- NULL
 
@@ -1022,22 +1017,15 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
                                           optin_mischtox_S = FALSE) {
   modus <- match.arg(modus)
   # Je nach Modus definieren wir gewisse Variablen resp. Symbole unterschiedlich
-  switch(modus,
-    "andauernd" = {
-      switchRQ <- dplyr::sym("RQ_CQK")
-      switchBeurteilung <- dplyr::sym("Beurteilung_CQK")
-      switchKriterium <- "CQK"
-      # Bei andauernden Belastungen berücksichtigen wir nur Proben mit >=10 Tage Dauer
-      rq_ue_daten <- dplyr::filter(rq_ue_daten, .data$Tage >= 10)
-      suffix_plot <- " - chronisches Qualit\u00e4tskriterium"
-    },
-    "kurzzeitig" = {
-      switchRQ <- dplyr::sym("RQ_AQK")
-      switchBeurteilung <- dplyr::sym("Beurteilung_AQK")
-      switchKriterium <- "AQK"
-      suffix_plot <- " - akutes Qualit\u00e4tskriterium"
-    }
-  )
+  modus_cfg <- get_modus_config(modus)
+  switchRQ <- modus_cfg$switchRQ
+  switchBeurteilung <- modus_cfg$switchBeurteilung
+  switchKriterium <- modus_cfg$switchKriterium
+  suffix_plot <- modus_cfg$suffix_plot
+  # Bei andauernden Belastungen berücksichtigen wir nur Proben mit >=10 Tage Dauer
+  if (modus == "andauernd") {
+    rq_ue_daten <- dplyr::filter(rq_ue_daten, .data$Tage >= 10)
+  }
 
   # Der Plot ist immer nur für eine Station und ein bestimmtes Jahr gedacht
   rq_data <- rq_ue_daten |>
@@ -1277,14 +1265,8 @@ plot_misch_mixtox_verlauf <- function(rq_ue_daten,
   rq_data <- rq_ue_daten |>
     dplyr::filter(.data$CODE %in% .env$stationscode, .data$Jahr %in% .env$jahr)
 
-  switch(modus,
-    "andauernd" = {
-      switchKriterium <- "CQK"
-    },
-    "kurzzeitig" = {
-      switchKriterium <- "AQK"
-    }
-  )
+  modus_cfg <- get_modus_config(modus)
+  switchKriterium <- modus_cfg$switchKriterium
 
   mixtox_data <- berechne_mixtox(rq_data) |>
     dplyr::filter(.data$Kriterium %in% .env$switchKriterium)
@@ -1412,14 +1394,8 @@ plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
     cli::cli_abort("Keine Daten f\u00fcr Station {stationscode} vorhanden.", class = "mvwizr_error_empty_dataset")
   }
 
-  switch(modus,
-    "andauernd" = {
-      switchKriterium <- "CQK"
-    },
-    "kurzzeitig" = {
-      switchKriterium <- "AQK"
-    }
-  )
+  modus_cfg <- get_modus_config(modus)
+  switchKriterium <- modus_cfg$switchKriterium
 
   mixtox_data <- berechne_mixtox(rq_data) |>
     dplyr::filter(.data$Kriterium %in% .env$switchKriterium)
@@ -1462,203 +1438,3 @@ plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
   pobj
 }
 
-# Stichproben plotten ####
-
-#' Stationsübersicht Stichproben
-#'
-#' Diese Übersichtsfunktion plottet sämtliche Substanzen in allen Stichproben in einem als Raster über die Zeit und benutzt eine logarithmische Farbskala um relevante Substanzen und Veränderungen hervorzuheben.
-#'
-#' @inheritParams plot_misch_verlauf
-#'
-#' @return ggplot2 Plot-Objekt
-#' @export
-#'
-#' @examples
-#' # Stichprobenübersichten für zwei Stationen
-#' plot_stich_uebersicht(mvdaten_beispiel_mvwizr, stationscode = "SA51")
-#' plot_stich_uebersicht(mvdaten_beispiel_mvwizr, stationscode = "KI52")
-plot_stich_uebersicht <- function(mv_daten,
-                                  stationscode,
-                                  jahr = NULL) {
-  if (is.null(jahr)) {
-    jahr <- unique(lubridate::year(mv_daten$BEGINNPROBENAHME))
-  }
-
-  stichproben <- mv_daten |>
-    dplyr::filter(is.na(.data$ENDEPROBENAHME), !is.na(.data$ID_Substanz), .data$PROBEARTID == "S", .data$CODE %in% .env$stationscode, .data$WERT_NUM > 0, lubridate::year(.data$BEGINNPROBENAHME) %in% jahr) |>
-    dplyr::mutate(BAFU_Bez_DE_fct = forcats::fct(.data$BAFU_Bez_DE, levels = stringr::str_sort(unique(.data$BAFU_Bez_DE), locale = get_lang())))
-
-  if (nrow(stichproben) == 0) {
-    cli::cli_abort("Keine Stichproben in Datensatz f\u00fcr Station {stationscode} gefunden.", class = "mvwizr_error_empty_dataset")
-  }
-
-  stationsname <- unique(stichproben$STANDORT)
-
-  stichprobe_uebersicht_pobj <- ggplot2::ggplot(stichproben, ggplot2::aes(x = .data$BEGINNPROBENAHME, y = .data$BAFU_Bez_DE_fct, fill = .data$WERT_NUM)) +
-    ggplot2::geom_tile() +
-    # Log-Transformation für binned Skala
-    ggplot2::scale_fill_viridis_b("Konz.\n \u00b5g/l", trans = scales::log_trans(base = 10)) +
-    ggplot2::scale_x_datetime(
-      "",
-      breaks = "2 months",
-      date_minor_breaks = "1 month",
-      labels = lagged_labels_jahr,
-    ) +
-    # Reihenfolge der einträge auf y-Achse umkehren (z->a)
-    ggplot2::scale_y_discrete(limits = rev) +
-    ggplot2::theme(
-      legend.position = "bottom",
-      # genügend Abstand zwischen Legendeneinträgen für Text
-      legend.key.width = ggplot2::unit(2, "cm"),
-      panel.background = ggplot2::element_rect(fill = "white"),
-      panel.grid.major.x = ggplot2::element_line(colour = "grey80"),
-      panel.grid.major.y = ggplot2::element_line(colour = "grey80"),
-      panel.grid.minor.x = ggplot2::element_blank(),
-      panel.grid.minor.y = ggplot2::element_blank(),
-      panel.border = ggplot2::element_rect(colour = "black", fill = NA),
-      strip.background = ggplot2::element_rect(fill = "white", colour = "black"),
-      axis.title = ggplot2::element_blank(),
-      axis.text.y = ggtext::element_markdown(colour = "black")
-    ) +
-    ggplot2::ggtitle(sprintf("\u00dcbersicht \u00fcber Stichproben f\u00fcr Station %s", stationsname))
-
-  stichprobe_uebersicht_pobj
-}
-
-#' Stichproben Konzentrationsverlauf
-#'
-#' @inheritParams plot_misch_verlauf
-#' @param id_substanz Substanz(en), die geplottet werden sollen. Falls `NULL` werden sämtliche Substanzen geplottet.
-#'
-#' @return ggplot2 Plot-Objekt
-#' @export
-#'
-#' @examples
-#' # Plotten aller Substanzen für alle Stationen - sehr unübersichtlich
-#' pobj <- plot_stich_verlauf(mvdaten_beispiel_mvwizr)
-#'
-#' # Allerdings eignet sich die Darstellung für die interaktive Analyse mit Plotly.
-#' if (rlang::is_installed("plotly")) plotly::ggplotly(pobj)
-plot_stich_verlauf <- function(mv_daten,
-                               stationscode = NULL,
-                               jahr = NULL,
-                               id_substanz = NULL) {
-  if (!is.null(stationscode)) {
-    mv_daten <- dplyr::filter(mv_daten, .data$CODE %in% .env$stationscode)
-  }
-
-  if (!is.null(jahr)) {
-    mv_daten <- dplyr::filter(mv_daten, lubridate::year(.data$BEGINNPROBENAHME) %in% .env$jahr)
-  }
-
-  if (!is.null(id_substanz)) {
-    mv_daten <- dplyr::filter(mv_daten, .data$ID_Substanz %in% .env$id_substanz)
-  }
-
-  stichproben <- dplyr::filter(mv_daten, is.na(.data$ENDEPROBENAHME), !is.na(.data$ID_Substanz), .data$PROBEARTID == "S")
-
-  # Substanzen auswählen, bei denen mindestens einmal etwas gemessen wurde
-  substanzen_ueber0 <- stichproben |>
-    dplyr::group_by(.data$STANDORT, .data$ID_Substanz) |>
-    dplyr::summarise(ueber0 = sum(.data$WERT_NUM)) |>
-    dplyr::filter(.data$ueber0 > 0) |>
-    dplyr::mutate(ueber0 = TRUE)
-
-  stichproben <- stichproben |>
-    dplyr::left_join(substanzen_ueber0, by = c("STANDORT", "ID_Substanz")) |>
-    dplyr::filter(.data$ueber0) |>
-    dplyr::mutate(BAFU_Bez_DE_fct = forcats::fct(.data$BAFU_Bez_DE, levels = stringr::str_sort(unique(.data$BAFU_Bez_DE), locale = get_lang())))
-
-  if (nrow(stichproben) == 0) {
-    cli::cli_abort("Keine Stichproben in Datensatz f\u00fcr Station {stationscode} gefunden.", class = "mvwizr_error_empty_dataset")
-  }
-
-  ggplot2::ggplot(stichproben, ggplot2::aes(x = .data$BEGINNPROBENAHME, y = .data$WERT_NUM, colour = .data$BAFU_Bez_DE_fct)) +
-    ggplot2::facet_grid(.data$STANDORT ~ ., scales = "free_y") +
-    ggplot2::geom_point() +
-    ggplot2::geom_line() +
-    ggplot2::scale_x_datetime(
-      "",
-      breaks = "2 months",
-      date_minor_breaks = "1 month",
-      labels = lagged_labels_jahr,
-    ) +
-    ggplot2::scale_y_continuous("Konz.\n \u00b5g/l") +
-    plot_theme_proto() +
-    ggplot2::theme(
-      legend.title = ggplot2::element_blank(),
-      axis.title = ggplot2::element_blank()
-    ) +
-    ggplot2::ggtitle("Stichproben: Konzentrationsverlauf")
-}
-
-#' Zusammenfassung von Mischungstoxizitäten für Stichproben plotten
-#'
-#' Hinweis: Hierbei handelt es sich nur um einen Wrapper um `plot_misch_mixtox_verlauf` für dieselben Plots aber mit Stichproben.
-#'
-#' @inheritParams plot_misch_mixtox_verlauf
-#'
-#' @return ggplot2 Plot-Objekt
-#' @export
-#'
-#' @examples
-#' plot_stich_mixtox_zf(rq_ue_beispiel_mvwizr)
-plot_stich_mixtox_zf <- function(rq_ue_daten,
-                                 stationscode = NULL,
-                                 jahr = NULL) {
-  plot_misch_mixtox_verlauf(rq_ue_daten,
-    stationscode = stationscode,
-    jahr = jahr,
-    modus = "kurzzeitig",
-    plot_zusammenfassung = "stichproben"
-  )
-}
-
-# Interne Funktionen ####
-
-#' Jahreslabels für ggplot2
-#' Erstelle Labels für ggplot2 mit Jahr bei erstem Monat pro Jahr auf Achse.
-#'
-#' Hinweis: Interne, nicht exportierte Funktion.
-#'
-#' @param x Breaks von ggplot2 geom
-#'
-#' @return Labels für ggplot2
-#' @noRd
-lagged_labels_jahr <- function(x) {
-  dplyr::if_else(is.na(dplyr::lag(x)) | !lubridate::year(dplyr::lag(x)) == lubridate::year(x),
-    paste(lubridate::month(x, label = TRUE, locale = get_ch_locale()), "\n", lubridate::year(x)),
-    paste(lubridate::month(x, label = TRUE, locale = get_ch_locale()))
-  )
-}
-
-#' Proto-ggplot2-theme
-#' Basistheme für mvwizr-Plots
-#'
-#' Hinweis: Interne, nicht exportierte Funktion.
-#'
-#' @return ggplot2 theme-Layer
-#' @noRd
-plot_theme_proto <- function() {
-  ggplot2::theme(
-    legend.position = "bottom",
-    panel.background = ggplot2::element_rect(fill = "white"),
-    panel.grid.major.x = ggplot2::element_line(colour = "grey80"),
-    panel.grid.major.y = ggplot2::element_line(colour = "grey80"),
-    panel.grid.minor.x = ggplot2::element_blank(),
-    panel.grid.minor.y = ggplot2::element_blank(),
-    panel.border = ggplot2::element_rect(colour = "black", fill = NA),
-    strip.background = ggplot2::element_rect(fill = "white", colour = "black"),
-  )
-}
-
-#' Ökotox-Farbskala
-#' Farbskala für die Beurteilung gemäss Modulstufenkonzept.
-#'
-#' Hinweis: Interne, nicht exportierte Funktion.
-#'
-#' @return Benannter Vektor mit Farben
-#' @noRd
-farbskala_bewertung_ecotox <- function() {
-  c("sehr gut" = "dodgerblue", "gut" = "chartreuse", "m\u00e4ssig" = "gold", "unbefriedigend" = "darkorange", "schlecht" = "firebrick1", "nicht bewertet" = "grey")
-}

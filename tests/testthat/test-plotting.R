@@ -269,3 +269,47 @@ test_that("plot_stich_verlauf liefert ggplot", {
   test <- plot_stich_verlauf(mvdaten_beispiel_mvwizr)
   expect_s3_class(test, class = "ggplot")
 })
+
+# Fehlerbedingungen Tests ####
+
+## plot_misch_verlauf() Fehler ####
+
+test_that("plot_misch_verlauf stoppt bei nicht-existenter Station", {
+  expect_error(
+    plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, stationscode = "INEXISTENT"),
+    class = "mvwizr_error_empty_dataset"
+  )
+})
+
+test_that("plot_misch_verlauf stoppt bei ungültigem plot_typ", {
+  expect_error(
+    plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, stationscode = "URT010", plot_typ = "ungueltig")
+  )
+})
+
+## plot_misch_ue() Fehler ####
+
+test_that("plot_misch_ue stoppt bei nicht-existenter Station", {
+  expect_error(
+    plot_misch_ue(rq_ue_beispiel_mvwizr, stationscode = "INEXISTENT", plot_typ = "andauernd", jahr = 2019),
+    class = "mvwizr_error_empty_dataset"
+  )
+})
+
+## plot_misch_mixtox_haeufigkeit() Fehler ####
+
+test_that("plot_misch_mixtox_haeufigkeit stoppt bei nicht-existenter Station", {
+  expect_error(
+    plot_misch_mixtox_haeufigkeit(rq_ue_beispiel_mvwizr, stationscode = "INEXISTENT", modus = "andauernd"),
+    class = "mvwizr_error_empty_dataset"
+  )
+})
+
+## plot_stich_uebersicht() Fehler ####
+
+test_that("plot_stich_uebersicht stoppt bei Station ohne Stichproben", {
+  expect_error(
+    plot_stich_uebersicht(mvdaten_beispiel_mvwizr, stationscode = "INEXISTENT"),
+    class = "mvwizr_error_empty_dataset"
+  )
+})

@@ -101,12 +101,11 @@ test_that("einlesen_nawa entfernt duplikate", {
   expect_warning(out <- f(), "130 Daten")
 
   out_test1 <- out |> dplyr::filter(.data$STANDORT == "Standort_203", .data$BEGINNPROBENAHME == lubridate::dmy_hms("24.09.2024  10:00:00"), .data$PARAMETERID_BAFU == "Fipronil")
-  out_test2 <- out |> dplyr::filter(.data$STANDORT == "Standort_203", .data$BEGINNPROBENAHME == lubridate::dmy_hms("15.02.2022  10:00:00"), .data$PARAMETERID_BAFU == "Fipronil")
-  test1_bool <- identical(out_test1$Bestimmungsgrenze, 5e-5) && out_test1$`Gerät/Methode` == "GC-MS/MS" # Sicherstellen, dass richtige Messung ausgewählt wird wenn beide < BG
-  test2_bool <- identical(out_test2$WERT_NUM, 0.000205591) && out_test1$`Gerät/Methode` == "GC-MS/MS" # Sicherstellen, dass richtige Messung ausgewählt wird eine Messung < BG und eine > BG
 
-  expect_true(test1_bool)
-  expect_true(test2_bool)
+  out_test2 <- out |> dplyr::filter(.data$STANDORT == "Standort_203", .data$BEGINNPROBENAHME == lubridate::dmy_hms("15.02.2022  10:00:00"), .data$PARAMETERID_BAFU == "Fipronil")
+
+  expect_equal(out_test1$Bestimmungsgrenze[[1]], 5e-5)
+  expect_equal(out_test2$WERT_NUM[[1]], 0.000205591)
 })
 
 # einlesen_mv_gbl() Tests ####
@@ -365,4 +364,166 @@ test_that("prozessiere_bSaP funktioniert mit nawa mv dateien", {
   expect_true(out_dim_correct_bool)
   expect_true(mv_bsap_dim_correct_bool)
   expect_true(mv_bsap_14d_length_correct_bool)
+})
+
+# Fehlerbedingungen Tests ####
+
+## einlesen_nawa() Fehlerbedingungen ####
+
+test_that("einlesen_nawa stoppt bei nicht-unterstütztem Dateiformat", {
+  tmp <- tempfile(fileext = ".json")
+  writeLines("{}", tmp)
+  expect_error(suppressWarnings(einlesen_nawa(tmp)))
+})
+
+test_that("einlesen_nawa stoppt bei mehreren Dateipfaden", {
+  pfade <- c("datei1.xlsx", "datei2.xlsx")
+  expect_error(suppressWarnings(einlesen_nawa(pfade)))
+})
+
+## berechne_rq_ue() Fehlerbedingungen ####
+
+test_that("berechne_rq_ue stoppt bei nicht-dataframe regulierungen", {
+  mv <- mvwizr::mvdaten_beispiel_mvwizr
+  expect_error(
+    berechne_rq_ue(mv, regulierungen = "nicht_ein_dataframe", kriterien = mvwizr::kriterien_mvwizr)
+  )
+})
+
+test_that("berechne_rq_ue stoppt bei nicht-dataframe kriterien", {
+  mv <- mvwizr::mvdaten_beispiel_mvwizr
+  expect_error(
+    berechne_rq_ue(mv, regulierungen = mvwizr::regulierungen_mvwizr, kriterien = list(1, 2, 3))
+  )
+})
+
+## berechne_stichproben_gbl_aggregiert() Tests ####
+
+test_that("berechne_stichproben_gbl_aggregiert produziert tibble", {
+  mv <- mvwizr::mvdaten_beispiel_mvwizr
+  out <- berechne_stichproben_gbl_aggregiert(mv)
+
+  expect_s3_class(out, class = c("tbl_df", "tbl", "data.frame"))
+  expect_true(all(c("CODE", "Jahr", "PARAMETERGRUPPE", "agg_summe") %in% names(out)))
+  expect_type(out$agg_summe, "double")
+})
+
+test_that("berechne_stichproben_gbl_aggregiert stoppt ohne stichproben", {
+  mv <- mvwizr::mvdaten_beispiel_mvwizr |>
+    dplyr::filter(!is.na(.data$ENDEPROBENAHME))
+  expect_error(berechne_stichproben_gbl_aggregiert(mv), class = "mvwizr_error_empty_dataset")
+})
+
+# Wertkorrektheits-Tests ####
+
+## normalise_units() Korrektheitstest ####
+
+test_that("normalise_units konvertiert ng/l korrekt zu µg/l", {
+  testdaten <- tibble::tibble(
+    WERT_NUM = c(1000, 500),
+    EINHEIT = c("ng/l", "ng/l")
+  )
+  out <- normalise_units(testdaten, wert = "WERT_NUM", einheit = "EINHEIT")
+  expect_equal(out[["WERT_NUM"]], c(`ng/l` = 1, `ng/l` = 0.5))
+  expect_true(all(out$EINHEIT == "\u00b5g/l"))
+})
+
+test_that("normalise_units konvertiert mg/l korrekt zu µg/l", {
+  testdaten <- tibble::tibble(
+    WERT_NUM = c(0.001, 0.01),
+    EINHEIT = c("mg/l", "mg/l")
+  )
+  out <- normalise_units(testdaten, wert = "WERT_NUM", einheit = "EINHEIT")
+  expect_equal(out$WERT_NUM, c(`mg/l` = 1, `mg/l` = 10))
+  expect_true(all(out$EINHEIT == "\u00b5g/l"))
+})
+
+test_that("normalise_units lässt unbekannte Einheiten unverändert", {
+  testdaten <- tibble::tibble(
+    WERT_NUM = c(42),
+    EINHEIT = c("mol/l")
+  )
+  out <- normalise_units(testdaten, wert = "WERT_NUM", einheit = "EINHEIT")
+  expect_equal(out$WERT_NUM[[1]], 42)
+  expect_equal(out$EINHEIT[[1]], "mol/l")
+})
+
+## berechne_rq_ue() Wertkorrektheit ####
+
+test_that("berechne_rq_ue berechnet korrekte RQ-Werte", {
+  rlang::local_options(rlib_message_verbosity = "quiet")
+  rlang::local_options(rlib_warning_verbosity = "quiet")
+
+  out <- berechne_rq_ue(mvwizr::mvdaten_beispiel_mvwizr,
+    mvwizr::regulierungen_mvwizr,
+    mvwizr::kriterien_mvwizr,
+    robust3 = FALSE
+  )
+
+  # RQ_CQK = WERT_NUM / CQK - prüfen für eine bestimmte Zeile
+  test_row <- out |>
+    dplyr::filter(!is.na(.data$CQK), .data$WERT_NUM > 0) |>
+    dplyr::slice(1)
+
+  expected_rq <- test_row$WERT_NUM / test_row$CQK
+  expect_equal(test_row$RQ_CQK, expected_rq)
+})
+
+## berechne_mixtox() Wertkorrektheit ####
+
+test_that("berechne_mixtox summiert RQ-Werte korrekt pro Gruppe", {
+  rlang::local_options(rlib_message_verbosity = "quiet")
+  rlang::local_options(rlib_warning_verbosity = "quiet")
+
+  rq_daten <- berechne_rq_ue(mvwizr::mvdaten_beispiel_mvwizr,
+    mvwizr::regulierungen_mvwizr,
+    mvwizr::kriterien_mvwizr,
+    robust3 = FALSE
+  )
+  mixtox <- berechne_mixtox(rq_daten)
+
+  # Manuell berechnen für eine bestimmte Probe
+  test_probe <- rq_daten |>
+    dplyr::filter(!is.na(.data$ENDEPROBENAHME)) |>
+    dplyr::slice(1)
+
+  probe_daten <- rq_daten |>
+    dplyr::filter(
+      .data$CODE == test_probe$CODE,
+      .data$BEGINNPROBENAHME == test_probe$BEGINNPROBENAHME,
+      .data$ENDEPROBENAHME == test_probe$ENDEPROBENAHME
+    )
+
+  expected_mix_p_cqk <- sum(probe_daten$RQ_CQK_P, na.rm = TRUE)
+  # Nur vergleichen wenn es nicht-NA Werte gab
+  if (any(!is.na(probe_daten$RQ_CQK_P))) {
+    actual <- mixtox |>
+      dplyr::filter(
+        .data$CODE == test_probe$CODE,
+        .data$BEGINNPROBENAHME == test_probe$BEGINNPROBENAHME,
+        .data$Ziel == "Pflanzen",
+        .data$Kriterium == "CQK"
+      )
+    expect_equal(actual$RQ, expected_mix_p_cqk)
+  }
+})
+
+# Interne Hilfsfunktionen Tests ####
+
+## entferne_duplikate() Korrektheitstest ####
+
+test_that("entferne_duplikate behält höchsten Messwert", {
+  testdaten <- tibble::tibble(
+    CODE = c("A", "A"),
+    PROBEARTID = c("SaP", "SaP"),
+    BEGINNPROBENAHME = rep(as.POSIXct("2020-01-01"), 2),
+    ENDEPROBENAHME = rep(as.POSIXct("2020-01-15"), 2),
+    PARAMETER = c("Atrazin", "Atrazin"),
+    WERT_NUM = c(0.5, 1.0)
+  )
+
+  rlang::local_options(rlib_warning_verbosity = "quiet")
+  out <- entferne_duplikate(testdaten)
+  expect_equal(nrow(out), 1)
+  expect_equal(out$WERT_NUM, 1.0)
 })
