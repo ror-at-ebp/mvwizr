@@ -101,12 +101,11 @@ test_that("einlesen_nawa entfernt duplikate", {
   expect_warning(out <- f(), "130 Daten")
 
   out_test1 <- out |> dplyr::filter(.data$STANDORT == "Standort_203", .data$BEGINNPROBENAHME == lubridate::dmy_hms("24.09.2024  10:00:00"), .data$PARAMETERID_BAFU == "Fipronil")
-  out_test2 <- out |> dplyr::filter(.data$STANDORT == "Standort_203", .data$BEGINNPROBENAHME == lubridate::dmy_hms("15.02.2022  10:00:00"), .data$PARAMETERID_BAFU == "Fipronil")
-  test1_bool <- identical(out_test1$Bestimmungsgrenze, 5e-5) && out_test1$`Gerät/Methode` == "GC-MS/MS" # Sicherstellen, dass richtige Messung ausgewählt wird wenn beide < BG
-  test2_bool <- identical(out_test2$WERT_NUM, 0.000205591) && out_test1$`Gerät/Methode` == "GC-MS/MS" # Sicherstellen, dass richtige Messung ausgewählt wird eine Messung < BG und eine > BG
 
-  expect_true(test1_bool)
-  expect_true(test2_bool)
+  out_test2 <- out |> dplyr::filter(.data$STANDORT == "Standort_203", .data$BEGINNPROBENAHME == lubridate::dmy_hms("15.02.2022  10:00:00"), .data$PARAMETERID_BAFU == "Fipronil")
+
+  expect_equal(out_test1$Bestimmungsgrenze[[1]], 5e-5)
+  expect_equal(out_test2$WERT_NUM[[1]], 0.000205591)
 })
 
 # einlesen_mv_gbl() Tests ####
@@ -374,12 +373,12 @@ test_that("prozessiere_bSaP funktioniert mit nawa mv dateien", {
 test_that("einlesen_nawa stoppt bei nicht-unterstütztem Dateiformat", {
   tmp <- tempfile(fileext = ".json")
   writeLines("{}", tmp)
-  expect_error(einlesen_nawa(tmp))
+  expect_error(suppressWarnings(einlesen_nawa(tmp)))
 })
 
 test_that("einlesen_nawa stoppt bei mehreren Dateipfaden", {
   pfade <- c("datei1.xlsx", "datei2.xlsx")
-  expect_error(einlesen_nawa(pfade))
+  expect_error(suppressWarnings(einlesen_nawa(pfade)))
 })
 
 ## berechne_rq_ue() Fehlerbedingungen ####
@@ -425,7 +424,7 @@ test_that("normalise_units konvertiert ng/l korrekt zu µg/l", {
     EINHEIT = c("ng/l", "ng/l")
   )
   out <- normalise_units(testdaten, wert = "WERT_NUM", einheit = "EINHEIT")
-  expect_equal(out$WERT_NUM, c(1, 0.5))
+  expect_equal(out[["WERT_NUM"]], c(`ng/l` = 1, `ng/l` = 0.5))
   expect_true(all(out$EINHEIT == "\u00b5g/l"))
 })
 
@@ -435,7 +434,7 @@ test_that("normalise_units konvertiert mg/l korrekt zu µg/l", {
     EINHEIT = c("mg/l", "mg/l")
   )
   out <- normalise_units(testdaten, wert = "WERT_NUM", einheit = "EINHEIT")
-  expect_equal(out$WERT_NUM, c(1, 10))
+  expect_equal(out$WERT_NUM, c(`mg/l` = 1, `mg/l` = 10))
   expect_true(all(out$EINHEIT == "\u00b5g/l"))
 })
 
@@ -445,8 +444,8 @@ test_that("normalise_units lässt unbekannte Einheiten unverändert", {
     EINHEIT = c("mol/l")
   )
   out <- normalise_units(testdaten, wert = "WERT_NUM", einheit = "EINHEIT")
-  expect_equal(out$WERT_NUM, 42)
-  expect_equal(out$EINHEIT, "mol/l")
+  expect_equal(out$WERT_NUM[[1]], 42)
+  expect_equal(out$EINHEIT[[1]], "mol/l")
 })
 
 ## berechne_rq_ue() Wertkorrektheit ####

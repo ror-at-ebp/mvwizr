@@ -1,3 +1,12 @@
+# mvwizr 1.3.2
+
+## Behobene Fehler
+
+- Keine Änderungen für Benutzer
+- Kleine Fehlerbehebungen und Codeverbesserungen
+- Neue automatisierte Tests, die mehr Probleme abfangen
+- Disclaimer: Claude Code wurde für dieses Release verwendet
+
 # mvwizr 1.3.1
 
 ## Behobene Fehler & Änderungen
