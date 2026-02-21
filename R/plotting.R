@@ -77,10 +77,12 @@ plot_misch_verlauf <- function(mv_daten,
                                jahr = NULL,
                                id_substanz = NULL,
                                zulassungstyp = "[BP]",
-                               plot_typ = "barplot",
+                               plot_typ = c("barplot", "treppen", "kombiniert", "striche", "barplot_gruppen"),
                                plot_bg = TRUE,
                                bg_typ = "minmax",
                                plot_parametergruppe = "") {
+  plot_typ <- match.arg(plot_typ)
+
   # Falls NULL, verwenden wir die gebundelten Regulierungs-Informationen
   regulierungen <- regulierungen %||% mvwizr::regulierungen_mvwizr
 
@@ -942,10 +944,10 @@ plot_misch_ue_qk <- function(rq_ue_daten,
     anz_farben <- length(unique(rq_ue_summary$ID_Substanz))
 
     # Die Erstellung der Farbpalette ist probabilistisch - aber für die Snapshot-Test muss immer exakt die gleiche Farbpalette verwendet werden in jedem Durchgang
-    set.seed(1537062)
-    farben_substanzen <- Polychrome::createPalette(anz_farben, c("#FF0000", "#00FF00", "#0000FF"), range = c(30, 80))
-    # Zurücksetzen des random seed für allfällige andere Funktionen, die den RNG verwenden.
-    rm(.Random.seed, envir = .GlobalEnv)
+    # withr::with_seed() scoped den RNG-State, so dass keine globale Zustandsänderung entsteht
+    farben_substanzen <- withr::with_seed(1537062, {
+      Polychrome::createPalette(anz_farben, c("#FF0000", "#00FF00", "#0000FF"), range = c(30, 80))
+    })
     # Polychrome setzt standardmässig Namen für die Farben, die wir nicht wollen
     names(farben_substanzen) <- NULL
 

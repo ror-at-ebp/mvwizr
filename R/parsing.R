@@ -482,7 +482,7 @@ einlesen_nawa <- function(nawa_mv,
     lang <- "DE"
     parameter <- "pBAFU_ID"
     mv_data <- sanitise_nawa_input(mv_data)
-    mv_data <- rename_nawa_fields(nawa_mv, parameter = parameter, lang = lang)
+    mv_data <- rename_nawa_fields(mv_data, parameter = parameter, lang = lang)
   }
 
   mv_data <- mv_data |>
@@ -511,10 +511,8 @@ einlesen_nawa <- function(nawa_mv,
     einheit = "EINHEIT",
     zieleinheit = "\u00b5g/l"
   )
-  if (!is.data.frame(nawa_mv)) {
-    dateiname <- nawa_mv
-  }
-  mv_data <- entferne_duplikate(mv_data, var_bg = "Bestimmungsgrenze", dateiname = NULL)
+  dateiname <- if (!is.data.frame(nawa_mv)) nawa_mv else NULL
+  mv_data <- entferne_duplikate(mv_data, var_bg = "Bestimmungsgrenze", dateiname = dateiname)
 
   # Bestimmungsgrenzen werden aus allen eingelesenen Daten bestimmt => je länger Messreihe in Eingabedaten, desto grösser Unterschied zwischen min. und max. BG!
   cli::cli_alert_info("Max./min. Bestimmungsgrenzen der MV-Daten bestimmen...")
