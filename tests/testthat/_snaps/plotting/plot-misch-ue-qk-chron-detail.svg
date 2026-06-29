@@ -371,9 +371,11 @@
 <rect x='5.48' y='136.77' width='110.03' height='322.00' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='142.25' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='142.25' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #FB9400;' />
+<polygon points='28.20,143.31 28.20,148.54 11.00,158.46 11.00,153.24 28.20,143.31 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: square; fill: none;' />
 <rect x='10.96' y='142.25' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <rect x='10.96' y='159.53' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='159.53' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #F70D16;' />
+<polygon points='28.20,160.59 28.20,165.82 11.00,175.74 11.00,170.52 28.20,160.59 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: square; fill: none;' />
 <rect x='10.96' y='159.53' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <rect x='10.96' y='176.81' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='176.81' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #1C8F63;' />
@@ -383,12 +385,15 @@
 <rect x='10.96' y='194.09' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <rect x='10.96' y='211.37' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='211.37' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #00E322;' />
+<polygon points='28.20,212.43 28.20,217.66 11.00,227.58 11.00,222.36 28.20,212.43 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: square; fill: none;' />
 <rect x='10.96' y='211.37' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <rect x='10.96' y='228.65' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='228.65' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #0D0DFA;' />
+<polygon points='28.20,229.71 28.20,234.94 11.00,244.86 11.00,239.64 28.20,229.71 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: square; fill: none;' />
 <rect x='10.96' y='228.65' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <rect x='10.96' y='245.93' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='245.93' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #C7C622;' />
+<polygon points='28.20,246.99 28.20,252.22 11.00,262.14 11.00,256.92 28.20,246.99 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: square; fill: none;' />
 <rect x='10.96' y='245.93' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <rect x='10.96' y='263.21' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='263.21' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #FF94E8;' />
@@ -398,15 +403,18 @@
 <rect x='10.96' y='280.49' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <rect x='10.96' y='297.77' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='297.77' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #E8B4BD;' />
+<polygon points='28.20,298.83 28.20,304.06 11.00,313.98 11.00,308.76 28.20,298.83 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: square; fill: none;' />
 <rect x='10.96' y='297.77' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <rect x='10.96' y='315.05' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='315.05' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #C81C6E;' />
 <rect x='10.96' y='315.05' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <rect x='10.96' y='332.33' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='332.33' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #BBC3EE;' />
+<polygon points='28.20,333.39 28.20,338.62 11.00,348.54 11.00,343.32 28.20,333.39 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: square; fill: none;' />
 <rect x='10.96' y='332.33' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <rect x='10.96' y='349.61' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='349.61' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #FE1CE9;' />
+<polygon points='28.20,350.67 28.20,355.90 11.00,365.82 11.00,360.60 28.20,350.67 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: square; fill: none;' />
 <rect x='10.96' y='349.61' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <rect x='10.96' y='366.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='366.89' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #533D87;' />
@@ -416,12 +424,15 @@
 <rect x='10.96' y='384.17' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <rect x='10.96' y='401.45' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='401.45' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #FC6358;' />
+<polygon points='28.20,402.51 28.20,407.74 11.00,417.66 11.00,412.44 28.20,402.51 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: square; fill: none;' />
 <rect x='10.96' y='401.45' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <rect x='10.96' y='418.73' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='418.73' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #00D5FF;' />
+<polygon points='28.20,419.79 28.20,425.02 11.00,434.94 11.00,429.72 28.20,419.79 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: square; fill: none;' />
 <rect x='10.96' y='418.73' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <rect x='10.96' y='436.01' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='10.96' y='436.01' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none; stroke-linecap: square; stroke-linejoin: miter; fill: #719BFD;' />
+<polygon points='28.20,437.07 28.20,442.30 11.00,452.22 11.00,447.00 28.20,437.07 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: square; fill: none;' />
 <rect x='10.96' y='436.01' width='17.28' height='17.28' style='stroke-width: 0.38; stroke-linecap: square; stroke-linejoin: miter;' />
 <text x='33.72' y='153.91' style='font-size: 8.80px; font-family: sans;' textLength='50.38px' lengthAdjust='spacingAndGlyphs'>Azithromycin</text>
 <text x='33.72' y='171.19' style='font-size: 8.80px; font-family: sans;' textLength='46.96px' lengthAdjust='spacingAndGlyphs'>Chlorpyrifos</text>

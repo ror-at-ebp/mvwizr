@@ -1,7 +1,7 @@
 Package: mvwizr
 Type: Package
 Title: Mikroverunreinigungen in Schweizer Gewässern darstellen
-Version: 1.3.2
+Version: 1.3.3
 Authors@R: c(
     person("Remo", "Röthlin", email = "remo.roethlin@ebp.ch", role = "cre"),
     person("Veronica", "Bozzini", role = "ctb"),
@@ -48,3 +48,4 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
 URL: https://ror-at-ebp.github.io/mvwizr/
+Config/roxygen2/version: 8.0.0
