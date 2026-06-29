@@ -19,3 +19,4 @@
 ^_DONOTCOMMIT_$
 ^RELEASE_RUN\.md$
 ^codecov\.yml$
+^\.claude$
