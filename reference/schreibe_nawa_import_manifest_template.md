@@ -41,7 +41,7 @@ nawa_mv_pfade <- system.file("extdata", c(
 schreibe_nawa_import_manifest_template(tempfile(fileext = ".xlsx"),
   mv_datei_pfade = nawa_mv_pfade
 )
-#> ℹ Schreibe Import-Manifest für NAWA-MV-Daten in /tmp/RtmpW2C1pK/file208859e76b85.xlsx
+#> ℹ Schreibe Import-Manifest für NAWA-MV-Daten in /tmp/RtmpAz9FUS/file1fb034626621.xlsx
 #> ℹ Folgende Dateien werden dem Manifest hinzugefügt:
 #> • /home/runner/work/_temp/Library/mvwizr/extdata/NAWA_Bsp_1.xlsx
 #> • /home/runner/work/_temp/Library/mvwizr/extdata/NAWA_Bsp_2.xlsx
