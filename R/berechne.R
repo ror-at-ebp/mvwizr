@@ -56,7 +56,7 @@ berechne_rq_ue <- function(mv_daten, regulierungen = NULL, kriterien = NULL, rob
         .data$RQ_CQK >= 0.1 & .data$RQ_CQK < 1 ~ "gut",
         .data$RQ_CQK >= 1 & .data$RQ_CQK < 2 ~ "m\u00e4ssig",
         .data$RQ_CQK >= 2 & .data$RQ_CQK < 10 ~ "unbefriedigend",
-        .data$RQ_CQK > 10 ~ "schlecht",
+        .data$RQ_CQK >= 10 ~ "schlecht",
         .data$RQ_CQK < 0 ~ "fehler!"
       ),
       Beurteilung_AQK = dplyr::case_when(
@@ -64,7 +64,7 @@ berechne_rq_ue <- function(mv_daten, regulierungen = NULL, kriterien = NULL, rob
         .data$RQ_AQK >= 0.1 & .data$RQ_AQK < 1 ~ "gut",
         .data$RQ_AQK >= 1 & .data$RQ_AQK < 2 ~ "m\u00e4ssig",
         .data$RQ_AQK >= 2 & .data$RQ_AQK < 10 ~ "unbefriedigend",
-        .data$RQ_AQK > 10 ~ "schlecht",
+        .data$RQ_AQK >= 10 ~ "schlecht",
         .data$RQ_AQK < 0 ~ "fehler!"
       ),
       # Terminologie: Ue_anhaltend und Ue_kurzzeitig betrifft Überschreitungen der Werte in der GSchV, während Ue_AQK und Ue_CQK alle Überschreitungen der QK umfassen
@@ -117,7 +117,7 @@ berechne_mixtox <- function(rq_data) {
         .data$RQ >= 0.1 & .data$RQ < 1 ~ "gut",
         .data$RQ >= 1 & .data$RQ < 2 ~ "m\u00e4ssig",
         .data$RQ >= 2 & .data$RQ < 10 ~ "unbefriedigend",
-        .data$RQ > 10 ~ "schlecht",
+        .data$RQ >= 10 ~ "schlecht",
         .data$RQ < 0 ~ "fehler!",
         is.na(.data$RQ) ~ "nicht bewertet"
       ), Beurteilung = forcats::fct(.data$Beurteilung, levels = c("sehr gut", "gut", "m\u00e4ssig", "unbefriedigend", "schlecht", "nicht bewertet"))
