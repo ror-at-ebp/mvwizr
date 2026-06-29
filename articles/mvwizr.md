@@ -10,8 +10,9 @@ Paket zu verfolgen und auf neue Versionen zu aktualisieren, um von
 Fehlerbehebungen und neuen Funktionen zu profitieren.
 
 ``` r
+
 library(mvwizr)
-#> mvwizr geladen: v1.3.2
+#> mvwizr geladen: v1.3.3
 ```
 
 ## Daten einlesen und Verarbeiten
@@ -36,6 +37,7 @@ auf µg/l normalisiert.
 Beispiel:
 
 ``` r
+
 nawa_mv_pfad <- system.file("extdata", "NAWA_ohne_bSaP_Bsp.xlsx", package = "mvwizr")
 
 # Falls kein Pfad zu VSA- und BAFU-Tabellen angegeben wird, verwendet das Paket die gebundelte Version.
@@ -67,6 +69,7 @@ Qualitätskriterien Ökotoxzentrum - alle anderen Messungen werden
 herausgefiltert! Beispiel:
 
 ``` r
+
 rq_ue_df_bsp <- berechne_rq_ue(mv_df_bsp)
 
 nrow(rq_ue_df_bsp)
@@ -93,6 +96,7 @@ Bestimmungsgrenzen (falls vorhanden) plotten. Dafür gibt es verschiedene
 Darstellungsarten; z.B. mittels Barplot:
 
 ``` r
+
 # Standardmässig mit minimaler und maximaler Bestimmungsgrenze geplottet
 plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, stationscode = "URT010", plot_typ = "barplot", id_substanz = 71)
 ```
@@ -100,6 +104,7 @@ plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, stationscode =
 ![](mvwizr_files/figure-html/unnamed-chunk-4-1.png)
 
 ``` r
+
 # Plot mit effektiver Bestimmungsgrenze
 plot_misch_verlauf(mv_df_bsp, stationscode = "101099", plot_typ = "barplot", id_substanz = 71, bg_typ = "effektiv")
 ```
@@ -112,6 +117,7 @@ sichergestellt werden, dass es keine überlappenden Intervalle gibt, da
 eine Visualisierung mit Linien sonst nicht möglich ist:
 
 ``` r
+
 plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, stationscode = "URT010", plot_typ = "treppen", zulassungstyp = "[BP]")
 ```
 
@@ -123,6 +129,7 @@ Variable für die Kategorie angegeben werden muss (hier
 “PARAMETERGRUPPE”):
 
 ``` r
+
 plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, "URT010",
   plot_typ = "barplot_gruppen",
   zulassungstyp = "Alle", plot_parametergruppe = "PARAMETERGRUPPE"
@@ -142,6 +149,7 @@ Probendauer \>= 10 Tage) für die Station “URT010” in den Jahren 2019 bis
 2020 ausgewertet.
 
 ``` r
+
 plot_misch_ue(rq_ue_beispiel_mvwizr, stationscode = "URT010", plot_typ = "andauernd", jahr = c(2019, 2020))
 #> Warning: Removed 1 row containing missing values or values outside the scale range
 #> (`geom_vline()`).
@@ -156,6 +164,7 @@ möglich; im Folgenden eine Zeitreihe für die Überschreitung von akuten
 Qualitätskriterien:
 
 ``` r
+
 plot_misch_ue_qk(rq_ue_beispiel_mvwizr, qk = "akut", detailliert = FALSE)
 ```
 
@@ -169,6 +178,7 @@ ist die Stationsübersicht Ökotoxikologie für andauernde Belastungen
 abgebildet.
 
 ``` r
+
 plot_misch_oekotox_uebersicht(rq_ue_beispiel_mvwizr, stationscode = "URT010", jahr = 2020)
 ```
 
@@ -176,6 +186,7 @@ plot_misch_oekotox_uebersicht(rq_ue_beispiel_mvwizr, stationscode = "URT010", ja
 Mischungstoxizitäten kann auch einzeln visualisiert werden:
 
 ``` r
+
 plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd")
 ```
 
@@ -186,6 +197,7 @@ toxicity) möglich (bei allen Plot-Funktionen mit Anzeige der
 Mischungstoxizität):
 
 ``` r
+
 plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr, modus = "andauernd", optin_mischtox_S = TRUE)
 ```
 
@@ -196,6 +208,7 @@ verschiedenen Ökotox-Bewertungen möglich (folgend für kurzzeitige
 Verunreinigungen für die Station URT010):
 
 ``` r
+
 plot_misch_mixtox_haeufigkeit(rq_ue_beispiel_mvwizr, stationscode = "URT010", modus = "kurzzeitig")
 ```
 
@@ -207,6 +220,7 @@ Stichproben können mittels Raster-Darstellung pro Station dargestellt
 werden, um rasch explorativ wichtige Substanzen zu identifizieren:
 
 ``` r
+
 plot_stich_uebersicht(mvdaten_beispiel_mvwizr, stationscode = "SA51")
 ```
 

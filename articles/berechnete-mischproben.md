@@ -1,8 +1,9 @@
 # Berechnete Mischproben
 
 ``` r
+
 library(mvwizr)
-#> mvwizr geladen: v1.3.2
+#> mvwizr geladen: v1.3.3
 ```
 
 ## Einleitung
@@ -48,6 +49,7 @@ können.
     eingelesen werden (damit die UID-Nummerierung stimmt). Beispiel:
 
 ``` r
+
 mv_bsap_pfade <- system.file("extdata", c(
   "NAWA_ohne_bSaP_Bsp.xlsx",
   "NAWA_mit_bSaP_Bsp.csv"
@@ -65,6 +67,7 @@ mv_bsap_pfade <- system.file("extdata", c(
     sonstigen Fehlern, die sich manuell beheben lassen.
 
 ``` r
+
 mv_df_alle <- batch_einlesen_nawa(mv_bsap_pfade) |>
   # Wir setzen bSaP nur dort, wo die Daten aus der Datei mit den berechneten Mischproben stammen
   dplyr::mutate(PROBEARTID = dplyr::if_else(.data$filename ==
@@ -112,6 +115,7 @@ mv_df_alle <- batch_einlesen_nawa(mv_bsap_pfade) |>
     werden:
 
 ``` r
+
 mv_mit_bsap <- prozessiere_bSaP(mv_df_alle, bSaP_identifier = "PROBEARTID") |>
   dplyr::mutate(Dauer = difftime(.data$ENDEPROBENAHME,
     .data$BEGINNPROBENAHME,
@@ -127,6 +131,7 @@ nrow(mv_mit_bsap)
     behalten will:
 
 ``` r
+
 mv_ohne_bsap <- mv_df_alle |>
   dplyr::filter(.data$PROBEARTID != "bSaP")
 
@@ -140,6 +145,7 @@ Der Vorteil dieses Vorgehens ist, dass die Datensätze nun einfach
 verglichen werden können:
 
 ``` r
+
 plot_misch_verlauf(mv_ohne_bsap, stationscode = "101099")
 ```
 
@@ -149,6 +155,7 @@ Es ist klar sichtbar, dass die Konzentrationsspitzen im Datensatz mit
 den berechneten Mischproben stark rausgeglättet worden sind:
 
 ``` r
+
 plot_misch_verlauf(mv_mit_bsap, stationscode = "101099")
 ```
 

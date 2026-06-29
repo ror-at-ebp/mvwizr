@@ -30,6 +30,7 @@ Falls dies alles erfüllt ist, dann hier weiterfahren:
 2.  Gebundelte Daten im Package aktualisieren:
 
 ``` r
+
 source("data-raw/mvwizr_alle_daten.R")
 ```
 
@@ -43,15 +44,17 @@ source("data-raw/mvwizr_alle_daten.R")
 6.  Dann das `README.Rmd` rendern:
 
 ``` r
+
 devtools::build_readme()
 ```
 
 7.  Falls keine Probleme auftauchen, den `R CMD CHECK` lokal laufen
     lassen: In RStudio Build -\> Check Package
 
-8.  Paket-Version erhöhen (in der Regel “minor”[¹](#fn1))
+8.  Paket-Version erhöhen (in der Regel “minor”[^1])
 
 ``` r
+
 usethis::use_version(which = "minor")
 ```
 
@@ -64,9 +67,7 @@ usethis::use_version(which = "minor")
 11. Nach dem Merge mit main wird automatisch die Paket-Webseite
     aktualisiert.
 
-------------------------------------------------------------------------
-
-1.  Semantic versioning gemäss dem Buch [R
+[^1]: Semantic versioning gemäss dem Buch [R
     Packages](https://r-pkgs.org/lifecycle.html#sec-lifecycle-release-type).
     Für rückwärtskompatible Änderungen “minor” oder bei kleinen
     Änderungen “patch”. Auf developer branches “dev” (z.B. 1.1.0.9000).

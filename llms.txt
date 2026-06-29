@@ -25,6 +25,7 @@ Installation auf einem lokalen Rechner (Windows/macOS/Linux) folgende
 Kommandos ausführen:
 
 ``` r
+
 install.packages("pak") # falls noch nicht installiert
 pak::pkg_install("ror-at-ebp/mvwizr")
 ```
@@ -67,6 +68,7 @@ Nach der Installation kann mvwizr in Scripts oder in der Konsole
 verwendet werden, indem das Paket geladen wird:
 
 ``` r
+
 library(mvwizr)
 ```
 
@@ -205,6 +207,7 @@ Die Rückgaben der Plot-Funktionen sind `ggplot2`- oder
 `patchwork`-Objekte, die weiter bearbeitet werden können, z.B.:
 
 ``` r
+
 plot1 <- plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, stationscode = "URT010", plot_typ = "barplot", id_substanz = 71,plot_bg = FALSE)
 plot1 + ylim(0,0.02)
 ```

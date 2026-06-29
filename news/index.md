@@ -1,5 +1,13 @@
 # Änderungsprotokoll
 
+## mvwizr 1.3.3
+
+### Behobene Fehler & Änderungen
+
+- Fehlerbehebung: Falls der RQ-Wert genau 10 betrug, wurde keine
+  Beurteilung erstellt durch die Funktionen `berechne_rq_ue` und
+  `berechne_mixtox`.
+
 ## mvwizr 1.3.2
 
 ### Behobene Fehler

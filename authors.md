@@ -17,13 +17,13 @@
 ## Zitationsvorschlag
 
 Röthlin R (2026). *mvwizr: Mikroverunreinigungen in Schweizer Gewässern
-darstellen*. R package version 1.3.2,
+darstellen*. R package version 1.3.3,
 <https://ror-at-ebp.github.io/mvwizr/>.
 
     @Manual{,
       title = {mvwizr: Mikroverunreinigungen in Schweizer Gewässern darstellen},
       author = {Remo Röthlin},
       year = {2026},
-      note = {R package version 1.3.2},
+      note = {R package version 1.3.3},
       url = {https://ror-at-ebp.github.io/mvwizr/},
     }

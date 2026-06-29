@@ -56,6 +56,7 @@ ggplot2 Plot-Objekt
 ## Beispiele
 
 ``` r
+
 plot_misch_oekotox_uebersicht(rq_ue_beispiel_mvwizr, "URT010", 2020)
 
 
