@@ -20,7 +20,7 @@ plot_misch_oekotox_uebersicht(
 \item{jahr}{Jahr, für welches der Überschreitungsplot erstellt werden soll.}
 
 \item{modus}{\itemize{
-\item \code{"andauernd"}: Berücksichtigt nur Stoffe mit einem spezifischen andauernden Grenzwert in der GSchV. Nur Proben mit einer Dauer von >= 10 Tagen werden verwendet und unter Verwendung des CQK beurteilt.
+\item \code{"andauernd"}: Berücksichtigt nur Stoffe mit einem spezifischen andauernden Grenzwert in der GSchV. Verwendet werden Zweiwochenmischkonzentrationen (Proben ab 13 Tagen direkt; Proben von 10 bis unter 13 Tagen werden zeitproportional über 14 Tage hochgerechnet, wobei die unbeprobte Zeit als Konzentration 0 angenommen wird). Die Beurteilung erfolgt anhand des CQK.
 \item \code{"kurzzeitig"}: Berücksichtigt nur Stoffe mit einem spezifischen akuten Grenzwert in der GSchV. Berücksichtigt alle Proben (ausser Stichproben) und verwendet das AQK zur Beurteilung.
 }}
 

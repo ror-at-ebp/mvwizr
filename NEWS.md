@@ -1,3 +1,12 @@
+# mvwizr 1.4.0
+
+## Neue Features & Änderungen
+
+- **Zweiwochenmischkonzentration für andauernde Verunreinigungen (Anh. 5.1 GSchV-Empfehlung):** Die Beurteilung andauernder Verunreinigungen (chronisches Qualitätskriterium CQK) erfolgt auf Basis von Zweiwochenmischkonzentrationen. Neu gelten erst Proben ab 13 Tagen als vollwertige Zweiwochenmischprobe (Toleranzbereich 13-14 Tage; zuvor ab 10 Tage). Proben von 10 bis unter 13 Tagen werden zeitproportional über 14 Tage (336 h) hochgerechnet, wobei die Konzentration in der unbeprobten Zeit auf 0 gesetzt wird. Proben unter 10 Tagen können chronisch nicht mehr beurteilt werden. Die frühere Schwelle von >= 10 Tagen wird damit durch >= 13 Tage (mit Hochrechnung für 10-13 Tage) ersetzt. Die akute Beurteilung (AQK) bleibt unverändert.
+- **Mischungstoxizität "nicht bewertet" als Datenlücke:** In der Stationsübersicht Ökotox (`plot_misch_oekotox_uebersicht`) und im Mischtox-Verlauf (`plot_misch_mixtox_verlauf`) werden nicht bewertbare Ziele (z.B. sekundäre Ökotoxizität ohne gemessenes PFOS) nicht mehr grau dargestellt, sondern als Datenlücke ausgelassen. "nicht bewertet" erscheint nicht mehr als Legendeneintrag.
+- **Häufigkeitsverteilung neu als Anzahl Wochen:** `plot_misch_mixtox_haeufigkeit` zeigt statt relativer Anteile (Prozent) neu die Anzahl bewerteter Wochen pro Jahr. Bei durchgehender Bewertung erreichen die Balken das Jahresmaximum; nicht bewertete Zeiträume ergeben kürzere Balken.
+- Der Output von `berechne_rq_ue()` enthält neu die Spalten `WERT_NUM_CQK`, `Faktor_CQK` und `Tage_CQK`.
+
 # mvwizr 1.3.3
 
 ## Behobene Fehler & Änderungen

@@ -460,13 +460,60 @@ test_that("berechne_rq_ue berechnet korrekte RQ-Werte", {
     robust3 = FALSE
   )
 
-  # RQ_CQK = WERT_NUM / CQK - prüfen für eine bestimmte Zeile
+  # Vollwertige Zweiwochenproben (>= 13 Tage): RQ_CQK = WERT_NUM / CQK (Faktor 1)
   test_row <- out |>
-    dplyr::filter(!is.na(.data$CQK), .data$WERT_NUM > 0) |>
+    dplyr::filter(!is.na(.data$CQK), .data$WERT_NUM > 0, .data$Tage_num >= 13) |>
     dplyr::slice(1)
 
   expected_rq <- test_row$WERT_NUM / test_row$CQK
   expect_equal(test_row$RQ_CQK, expected_rq)
+
+  # RQ_AQK basiert immer auf der Rohkonzentration
+  test_row_aqk <- out |>
+    dplyr::filter(!is.na(.data$AQK), .data$WERT_NUM > 0) |>
+    dplyr::slice(1)
+
+  expect_equal(test_row_aqk$RQ_AQK, test_row_aqk$WERT_NUM / test_row_aqk$AQK)
+})
+
+test_that("berechne_rq_ue rechnet 10-13-Tage-Proben auf Zweiwochenmischkonzentration hoch", {
+  rlang::local_options(rlib_message_verbosity = "quiet")
+  rlang::local_options(rlib_warning_verbosity = "quiet")
+
+  out <- berechne_rq_ue(mvwizr::mvdaten_beispiel_mvwizr,
+    mvwizr::regulierungen_mvwizr,
+    mvwizr::kriterien_mvwizr,
+    robust3 = FALSE
+  )
+
+  # Proben von 10 bis unter 13 Tagen: zeitproportional über 14 Tage (336 h), Rest = 0 => Faktor Tage/14
+  row_hoch <- out |>
+    dplyr::filter(!is.na(.data$CQK), .data$WERT_NUM > 0, .data$Tage_num >= 10, .data$Tage_num < 13) |>
+    dplyr::slice(1)
+
+  expect_equal(nrow(row_hoch), 1)
+  expect_equal(row_hoch$Faktor_CQK, row_hoch$Tage_num / 14)
+  expect_equal(row_hoch$WERT_NUM_CQK, row_hoch$WERT_NUM * row_hoch$Tage_num / 14)
+  expect_equal(row_hoch$RQ_CQK, (row_hoch$WERT_NUM * row_hoch$Tage_num / 14) / row_hoch$CQK)
+  # Hochgerechnete Proben repräsentieren eine volle Zweiwochenprobe (14 Tage)
+  expect_equal(row_hoch$Tage_CQK, 14)
+
+  # Proben unter 10 Tagen: keine chronische Beurteilung möglich (RQ_CQK = NA)
+  row_kurz <- out |>
+    dplyr::filter(.data$Tage_num < 10, .data$WERT_NUM > 0) |>
+    dplyr::slice(1)
+
+  expect_equal(nrow(row_kurz), 1)
+  expect_true(is.na(row_kurz$Faktor_CQK))
+  expect_true(is.na(row_kurz$RQ_CQK))
+
+  # Akute Beurteilung bleibt für kurze Proben unverändert auf der Rohkonzentration
+  row_kurz_aqk <- out |>
+    dplyr::filter(.data$Tage_num < 10, .data$WERT_NUM > 0, !is.na(.data$AQK)) |>
+    dplyr::slice(1)
+
+  expect_equal(nrow(row_kurz_aqk), 1)
+  expect_equal(row_kurz_aqk$RQ_AQK, row_kurz_aqk$WERT_NUM / row_kurz_aqk$AQK)
 })
 
 ## berechne_mixtox() Wertkorrektheit ####

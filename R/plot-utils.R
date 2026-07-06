@@ -100,3 +100,15 @@ plot_theme_proto <- function() {
 farbskala_bewertung_ecotox <- function() {
   c("sehr gut" = "dodgerblue", "gut" = "chartreuse", "m\u00e4ssig" = "gold", "unbefriedigend" = "darkorange", "schlecht" = "firebrick1", "nicht bewertet" = "grey")
 }
+
+#' Bewertungsstufen f\u00fcr die Legende (ohne "nicht bewertet")
+#' Gibt die f\u00fcnf Modulstufen-Bewertungen zur\u00fcck, die in der Legende erscheinen sollen. "nicht bewertet"
+#' wird ausgeschlossen, da nicht bewertete Ziele als Datenl\u00fccke nicht dargestellt werden.
+#'
+#' Hinweis: Interne, nicht exportierte Funktion.
+#'
+#' @return Character-Vektor mit Bewertungsstufen
+#' @noRd
+farbskala_bewertung_ecotox_stufen <- function() {
+  setdiff(names(farbskala_bewertung_ecotox()), "nicht bewertet")
+}
