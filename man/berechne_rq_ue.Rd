@@ -21,8 +21,17 @@ berechne_rq_ue(
 \item{robust3}{Logisch (Vorgabe: \code{TRUE}). Warnen, wenn QK mit Robustheit 3 überschritten sind (nicht in Daten enthalten)?}
 }
 \value{
-Dataframe mit MV-Daten, ergänzt mit Risikoquotienten
+Dataframe mit MV-Daten, ergänzt mit Risikoquotienten. Enthält u.a. \code{WERT_NUM_CQK} (Zweiwochenmischkonzentration), \code{Faktor_CQK} (Hochrechnungsfaktor) und \code{Tage_CQK} (effektive Probendauer für die chronische Beurteilung).
 }
 \description{
-Risikoquotienten (RQ) für Einzelstoffe berechnen
+Berechnet Risikoquotienten für das akute (AQK) und das chronische (CQK) Qualitätskriterium.
+}
+\details{
+Für die chronische Beurteilung (andauernde Verunreinigung) wird eine Zweiwochenmischkonzentration
+verwendet: Proben ab 13 Tagen gelten als vollwertige Zweiwochenprobe (Toleranzbereich 13-14 Tage) und
+werden direkt verwendet. Proben von 10 bis unter 13 Tagen werden zeitproportional über 14 Tage (336 h)
+gemittelt, wobei die Konzentration in der unbeprobten Zeit auf 0 gesetzt wird (Faktor Tage/14). Proben
+unter 10 Tagen können nicht chronisch beurteilt werden (\code{RQ_CQK} = \code{NA}). Die akute Beurteilung (\code{RQ_AQK})
+basiert unverändert auf der Rohkonzentration. Grundlage: Anhang 5.1 der Empfehlung zur Beurteilung von
+Spurenstoffen (Anhang 2 GSchV).
 }

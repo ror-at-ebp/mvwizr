@@ -2,12 +2,22 @@
 
 #' Risikoquotienten (RQ) für Einzelstoffe berechnen
 #'
+#' Berechnet Risikoquotienten für das akute (AQK) und das chronische (CQK) Qualitätskriterium.
+#'
+#' Für die chronische Beurteilung (andauernde Verunreinigung) wird eine Zweiwochenmischkonzentration
+#' verwendet: Proben ab 13 Tagen gelten als vollwertige Zweiwochenprobe (Toleranzbereich 13-14 Tage) und
+#' werden direkt verwendet. Proben von 10 bis unter 13 Tagen werden zeitproportional über 14 Tage (336 h)
+#' gemittelt, wobei die Konzentration in der unbeprobten Zeit auf 0 gesetzt wird (Faktor Tage/14). Proben
+#' unter 10 Tagen können nicht chronisch beurteilt werden (`RQ_CQK` = `NA`). Die akute Beurteilung (`RQ_AQK`)
+#' basiert unverändert auf der Rohkonzentration. Grundlage: Anhang 5.1 der Empfehlung zur Beurteilung von
+#' Spurenstoffen (Anhang 2 GSchV).
+#'
 #' @param mv_daten Normalisierte MV-Daten
 #' @param regulierungen Regulierungsdaten (dataframe)
 #' @param kriterien Qualitätskriterien (dataframe)
 #' @param robust3 Logisch (Vorgabe: `TRUE`). Warnen, wenn QK mit Robustheit 3 überschritten sind (nicht in Daten enthalten)?
 #'
-#' @return Dataframe mit MV-Daten, ergänzt mit Risikoquotienten
+#' @return Dataframe mit MV-Daten, ergänzt mit Risikoquotienten. Enthält u.a. `WERT_NUM_CQK` (Zweiwochenmischkonzentration), `Faktor_CQK` (Hochrechnungsfaktor) und `Tage_CQK` (effektive Probendauer für die chronische Beurteilung).
 #' @export
 berechne_rq_ue <- function(mv_daten, regulierungen = NULL, kriterien = NULL, robust3 = TRUE) {
   # Falls regulierungen oder kriterien nicht angegeben werden, verwenden wir den Standardwert (= die mit dem Paket gebundelten Daten)
@@ -34,7 +44,25 @@ berechne_rq_ue <- function(mv_daten, regulierungen = NULL, kriterien = NULL, rob
   joined_data <- mv_daten |>
     dplyr::mutate(
       Jahr = lubridate::year(.data$BEGINNPROBENAHME),
-      Tage = difftime(.data$ENDEPROBENAHME, .data$BEGINNPROBENAHME, units = "days")
+      Tage = difftime(.data$ENDEPROBENAHME, .data$BEGINNPROBENAHME, units = "days"),
+      Tage_num = as.numeric(.data$Tage, units = "days"),
+      # Zweiwochenmischkonzentration für die Beurteilung andauernder Verunreinigungen (CQK):
+      # Proben ab 13 Tagen gelten als vollwertige Zweiwochenprobe und werden direkt verwendet
+      # (Toleranzbereich 13-14 Tage). Proben von 10 bis unter 13 Tagen werden zeitproportional
+      # über 14 Tage (336 h) gemittelt, wobei die Konzentration in der unbeprobten Zeit auf 0
+      # gesetzt wird (=> Faktor Tage/14). Proben unter 10 Tagen können nicht chronisch beurteilt
+      # werden (Faktor NA). Grundlage: Anhang 5.1 der Empfehlung zur Beurteilung von Spurenstoffen
+      # (Anhang 2 GSchV).
+      Faktor_CQK = dplyr::case_when(
+        .data$Tage_num >= 13 ~ 1,
+        .data$Tage_num >= 10 ~ .data$Tage_num / 14,
+        TRUE ~ NA_real_
+      ),
+      # Konzentration für die chronische Beurteilung (verdünnt bei 10-13-Tage-Proben, sonst unverändert)
+      WERT_NUM_CQK = .data$WERT_NUM * .data$Faktor_CQK,
+      # Effektive Probendauer für die chronische Beurteilung: hochgerechnete 10-13-Tage-Proben
+      # repräsentieren eine volle Zweiwochenprobe (14 Tage), damit sie den >= 13-Tage-Filter passieren.
+      Tage_CQK = dplyr::if_else(.data$Tage_num >= 10 & .data$Tage_num < 13, 14, .data$Tage_num)
     ) |>
     dplyr::left_join(kriterien, by = "ID_Substanz") |>
     dplyr::left_join(regulierungen, by = "ID_Substanz")
@@ -42,7 +70,8 @@ berechne_rq_ue <- function(mv_daten, regulierungen = NULL, kriterien = NULL, rob
   # Für die Mischtoxizitäten können wir die RQ einfach mit einer 1 oder 0 multiplizieren, je nachdem, ob es einen Beitrag zur Mischtox gibt.
   rq_ue_data <- joined_data |>
     dplyr::mutate(
-      RQ_CQK = .data$WERT_NUM / .data$CQK,
+      # RQ_CQK basiert auf der (ggf. hochgerechneten) Zweiwochenmischkonzentration, RQ_AQK auf der Rohkonzentration.
+      RQ_CQK = .data$WERT_NUM_CQK / .data$CQK,
       RQ_AQK = .data$WERT_NUM / .data$AQK,
       RQ_CQK_P = .data$RQ_CQK * .data$P_chron,
       RQ_CQK_I = .data$RQ_CQK * .data$I_chron,
@@ -69,12 +98,14 @@ berechne_rq_ue <- function(mv_daten, regulierungen = NULL, kriterien = NULL, rob
       ),
       # Terminologie: Ue_anhaltend und Ue_kurzzeitig betrifft Überschreitungen der Werte in der GSchV, während Ue_AQK und Ue_CQK alle Überschreitungen der QK umfassen
       dplyr::across(dplyr::starts_with("Beurteilung"), \(x) forcats::fct(x, levels = c("sehr gut", "gut", "m\u00e4ssig", "unbefriedigend", "schlecht"))),
-      Ue_anhaltend = dplyr::if_else(.data$GSCHV == 1, .data$WERT_NUM > .data$CQK & .data$Tage >= 10, NA),
+      # Andauernde/chronische Überschreitungen basieren auf der Zweiwochenmischkonzentration (WERT_NUM_CQK).
+      # Für Proben < 10 Tage ist WERT_NUM_CQK NA => keine chronische Beurteilung möglich (Ue = NA).
+      Ue_anhaltend = dplyr::if_else(.data$GSCHV == 1, .data$WERT_NUM_CQK > .data$CQK, NA),
       Ue_kurzzeitig = dplyr::if_else(.data$GSCHV == 1, .data$WERT_NUM > .data$AQK, NA),
       Ue_spezifisch = dplyr::if_else(.data$GSCHV == 1, .data$Ue_anhaltend | .data$Ue_kurzzeitig, NA),
       Ue_generisch = dplyr::if_else(.data$GSCHV == 2, .data$WERT_NUM > 0.1, NA),
       Ue_AQK = .data$WERT_NUM > .data$AQK,
-      Ue_CQK = .data$WERT_NUM > .data$CQK & .data$Tage >= 10
+      Ue_CQK = .data$WERT_NUM_CQK > .data$CQK
     )
 
   # Prüfen, ob es Überschreitungen bei Substanzen mit QK Robustheit 3 (unzuverlässiger Wert) gibt => als Warnung, dass diese Werte nicht in den Resultaten enthalten sind.
@@ -98,7 +129,7 @@ berechne_rq_ue <- function(mv_daten, regulierungen = NULL, kriterien = NULL, rob
 #' @export
 berechne_mixtox <- function(rq_data) {
   mixtox_data <- rq_data |>
-    dplyr::group_by(.data$CODE, .data$STANDORT, .data$BEGINNPROBENAHME, .data$ENDEPROBENAHME, .data$Jahr, .data$Tage) |>
+    dplyr::group_by(.data$CODE, .data$STANDORT, .data$BEGINNPROBENAHME, .data$ENDEPROBENAHME, .data$Jahr, .data$Tage, .data$Tage_CQK) |>
     dplyr::summarise(
       Mix_Pflanzen_CQK = dplyr::if_else(any(!is.na(.data$RQ_CQK_P)), sum(.data$RQ_CQK_P, na.rm = TRUE), NA_real_),
       Mix_Invertebraten_CQK = dplyr::if_else(any(!is.na(.data$RQ_CQK_I)), sum(.data$RQ_CQK_I, na.rm = TRUE), NA_real_),

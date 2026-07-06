@@ -17,7 +17,7 @@ plot_misch_ue_summe(rq_ue_daten, stationscode = NULL, jahr = NULL)
 ggplot2 Plot-Objekt
 }
 \description{
-Zeigt die andauernden Überschreitungen pro Jahr und Station. Dafür werden nur Proben mit einer Messdauer >= 10 Tage berücksichtigt.
+Zeigt die andauernden Überschreitungen pro Jahr und Station. Berücksichtigt werden Zweiwochenmischkonzentrationen (Proben ab 13 Tagen bzw. auf 14 Tage hochgerechnete 10-13-Tage-Proben).
 }
 \examples{
 plot_misch_ue_summe(rq_ue_beispiel_mvwizr)

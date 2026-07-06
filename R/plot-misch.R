@@ -502,7 +502,7 @@ plot_misch_verlauf <- function(mv_daten,
 #' @inheritParams plot_misch_mixtox_verlauf
 #' @param plot_typ Legt fest, für welche Art von Überschreitungen eine Auswertung vorgenommen werden soll. Mögliche Werte:
 #' \itemize{
-#'   \item `"andauernd"`: Berücksichtigt nur Stoffe mit einem spezifischen andauernden Grenzwert in der GSchV. Nur Proben mit einer Dauer von >= 10 Tagen werden verwendet und unter Verwendung des CQK beurteilt.
+#'   \item `"andauernd"`: Berücksichtigt nur Stoffe mit einem spezifischen andauernden Grenzwert in der GSchV. Verwendet werden Zweiwochenmischkonzentrationen (Proben ab 13 Tagen direkt; Proben von 10 bis unter 13 Tagen werden zeitproportional über 14 Tage hochgerechnet, wobei die unbeprobte Zeit als Konzentration 0 angenommen wird). Die Beurteilung erfolgt anhand des CQK.
 #'   \item `"kurzzeitig"`: Berücksichtigt nur Stoffe mit einem spezifischen akuten Grenzwert in der GSchV. Berücksichtigt alle Proben (ausser Stichproben) und verwendet das AQK zur Beurteilung.
 #'   \item `"allgemein"`:  Berücksichtigt nur Stoffe, für die kein ökotoxikologisch begründeter Wert in der GSchV vorliegt. Beurteilung mittels allgemeinem Grenzwert (0.1 µg/l)
 #' }
@@ -527,7 +527,7 @@ plot_misch_ue <- function(rq_ue_daten,
   plot_typ <- match.arg(plot_typ)
   rq_ue_daten <- rq_ue_daten |>
     dplyr::filter(.data$CODE %in% .env$stationscode, .data$GSCHV %in% c(1, 2), !is.na(.data$ENDEPROBENAHME)) |>
-    dplyr::select(dplyr::all_of(c("CODE", "STANDORT", "BEGINNPROBENAHME", "ENDEPROBENAHME", "ID_Substanz", "BAFU_Bez_DE", "Jahr", "Tage", "GSCHV", "AQK", "CQK")), dplyr::any_of("BG_max"), dplyr::starts_with("Ue"))
+    dplyr::select(dplyr::all_of(c("CODE", "STANDORT", "BEGINNPROBENAHME", "ENDEPROBENAHME", "ID_Substanz", "BAFU_Bez_DE", "Jahr", "Tage", "Tage_CQK", "GSCHV", "AQK", "CQK")), dplyr::any_of("BG_max"), dplyr::starts_with("Ue"))
 
   # Verwende benutzerdefinierte Subklasse für Condition-Objekt für präzisere Tests
   if (nrow(rq_ue_daten) == 0) {
@@ -557,9 +557,9 @@ plot_misch_ue <- function(rq_ue_daten,
   Ue_pro_Substanz <- rq_ue_daten_station |>
     dplyr::group_by(.data$BAFU_Bez_DE) |>
     dplyr::summarise(
-      AnyUe_anh = any(.data$Ue_anhaltend),
-      AnyUe_kurz = any(.data$Ue_kurzzeitig),
-      AnyUe_allg = any(.data$Ue_generisch)
+      AnyUe_anh = any(.data$Ue_anhaltend, na.rm = TRUE),
+      AnyUe_kurz = any(.data$Ue_kurzzeitig, na.rm = TRUE),
+      AnyUe_allg = any(.data$Ue_generisch, na.rm = TRUE)
     ) |>
     dplyr::ungroup()
 
@@ -568,9 +568,10 @@ plot_misch_ue <- function(rq_ue_daten,
     "andauernd" = {
       AnyUe <- dplyr::sym("AnyUe_anh")
       Ue_GSchV_fill <- dplyr::sym("Ue_anhaltend")
-      # Für andauernde Überschreitungen berücksichtigen wir nur Proben >= 10 Tage
+      # Für andauernde Überschreitungen berücksichtigen wir nur Proben, aus denen eine Zweiwochenmischkonzentration
+      # gebildet werden kann (>= 13 Tage bzw. hochgerechnete 10-13-Tage-Proben mit effektiv 14 Tagen).
       mv_daten_Ue <- rq_ue_daten_station |> dplyr::filter(
-        .data$Tage >= 10,
+        .data$Tage_CQK >= 13,
         .data$GSCHV == 1,
         !is.na(.data$Ue_anhaltend)
       )
@@ -765,7 +766,7 @@ plot_misch_ue <- function(rq_ue_daten,
 
 #' Aufsummierte andauernde GSchV-Überschreitungen plotten
 #'
-#' Zeigt die andauernden Überschreitungen pro Jahr und Station. Dafür werden nur Proben mit einer Messdauer >= 10 Tage berücksichtigt.
+#' Zeigt die andauernden Überschreitungen pro Jahr und Station. Berücksichtigt werden Zweiwochenmischkonzentrationen (Proben ab 13 Tagen bzw. auf 14 Tage hochgerechnete 10-13-Tage-Proben).
 #'
 #' @inheritParams plot_misch_mixtox_verlauf
 #'
@@ -793,7 +794,7 @@ plot_misch_ue_summe <- function(rq_ue_daten,
 
   # Nach Überschreitungen filtern, danach Anz. Ue pro gruppe zählen; gemäss Besprechung mit Irene Wittmer hier nur anhaltende Ue
   plot_data <- rq_ue_daten |>
-    dplyr::filter(.data$CODE %in% .env$stationscode, .data$Jahr %in% .env$jahr, (.data$Ue_anhaltend | .data$Ue_generisch), .data$Tage >= 10) |>
+    dplyr::filter(.data$CODE %in% .env$stationscode, .data$Jahr %in% .env$jahr, (.data$Ue_anhaltend | .data$Ue_generisch), .data$Tage_CQK >= 13) |>
     dplyr::group_by(.data$STANDORT, .data$Jahr) |>
     dplyr::summarise(Anz_spez = sum(.data$Ue_anhaltend, na.rm = TRUE), Anz_gen = sum(.data$Ue_generisch, na.rm = TRUE)) |>
     tidyr::pivot_longer(c("Anz_spez", "Anz_gen"), names_to = "Art_Ue", values_to = "Anzahl")
@@ -867,8 +868,8 @@ plot_misch_ue_qk <- function(rq_ue_daten,
       Ue_QK <- dplyr::sym("Ue_CQK")
       Ue_GSchV <- dplyr::sym("Ue_anhaltend")
       plot_legend_label <- "CQK"
-      # Für chronisches QK Proben mit >= 10 Tage
-      rq_ue_daten <- dplyr::filter(rq_ue_daten, .data$Tage >= 10, .data$Ue_CQK)
+      # Für chronisches QK nur Proben mit gültiger Zweiwochenmischkonzentration (effektiv >= 13 Tage)
+      rq_ue_daten <- dplyr::filter(rq_ue_daten, .data$Tage_CQK >= 13, .data$Ue_CQK)
     },
     "akut" = {
       Ue_QK <- dplyr::sym("Ue_AQK")
@@ -1022,9 +1023,9 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
   switchBeurteilung <- modus_cfg$switchBeurteilung
   switchKriterium <- modus_cfg$switchKriterium
   suffix_plot <- modus_cfg$suffix_plot
-  # Bei andauernden Belastungen berücksichtigen wir nur Proben mit >=10 Tage Dauer
+  # Bei andauernden Belastungen berücksichtigen wir nur Proben mit gültiger Zweiwochenmischkonzentration (effektiv >= 13 Tage)
   if (modus == "andauernd") {
-    rq_ue_daten <- dplyr::filter(rq_ue_daten, .data$Tage >= 10)
+    rq_ue_daten <- dplyr::filter(rq_ue_daten, .data$Tage_CQK >= 13)
   }
 
   # Der Plot ist immer nur für eine Station und ein bestimmtes Jahr gedacht
@@ -1040,6 +1041,8 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
 
   # Farbskala gemäss Modul-Stufen-Konzept als globale Funktion hinterlegt
   farbskala_tox <- farbskala_bewertung_ecotox()
+  # Legenden-Stufen ohne "nicht bewertet" (nicht bewertete Ziele werden als Datenlücke nicht dargestellt)
+  farbskala_stufen <- farbskala_bewertung_ecotox_stufen()
 
   # Substanz-Bezeichnung als Faktor um entlang kontinuierlicher y-Skala anordnen zu können. RQ und Beurteilung wird je nach Modus unterschiedlich gesetzt (Verweis auf Symbole oben). Zur Notation siehe: https://dplyr.tidyverse.org/articles/programming.html
   # NB: Reihenfolge geändert (d.h. zuerst Einträge ohne Risikoquotienten, dann erst Faktoren erstellen), weil sonst teilweise Lücken auf y-Achse (in denen Fällen, in denen eine Substanz im Filterschritt rausfliegt)
@@ -1115,6 +1118,9 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
     mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Bioakkumulation")
   }
 
+  # Nicht bewertbare Ziele/Proben (fehlendes QK / kein Beitrag) werden nicht dargestellt (Datenlücke, kein Legendeneintrag)
+  mixtox_data <- dplyr::filter(mixtox_data, !is.na(.data$RQ))
+
   # Mischtoxizitätsplot analog oben
   mixtox_pobj <- ggplot2::ggplot(mixtox_data) +
     ggplot2::geom_rect(ggplot2::aes(xmin = .data$BEGINNPROBENAHME, xmax = .data$ENDEPROBENAHME, ymin = .data$Ziel_num - 0.5, ymax = .data$Ziel_num + 0.5, fill = .data$Beurteilung), colour = "white", linewidth = 0.1, show.legend = TRUE) +
@@ -1124,7 +1130,7 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
       expand = c(0, 0)
     ) +
     ggplot2::scale_y_continuous(breaks = mixtox_data$Ziel_num, labels = mixtox_data$Ziel, expand = c(0, 0)) +
-    ggplot2::scale_fill_manual(values = farbskala_tox, drop = FALSE) +
+    ggplot2::scale_fill_manual(values = farbskala_tox, breaks = farbskala_stufen, drop = FALSE) +
     ggplot2::ggtitle("Beurteilung Mischungstoxizit\u00e4t") +
     plot_theme_proto() +
     ggplot2::theme(
@@ -1194,7 +1200,7 @@ plot_misch_oekotox_uebersicht <- function(rq_ue_daten,
 #' @param jahr Jahr, für welches der Überschreitungsplot erstellt werden soll.
 #' @param modus
 #' \itemize{
-#'   \item `"andauernd"`: Berücksichtigt nur Stoffe mit einem spezifischen andauernden Grenzwert in der GSchV. Nur Proben mit einer Dauer von >= 10 Tagen werden verwendet und unter Verwendung des CQK beurteilt.
+#'   \item `"andauernd"`: Berücksichtigt nur Stoffe mit einem spezifischen andauernden Grenzwert in der GSchV. Verwendet werden Zweiwochenmischkonzentrationen (Proben ab 13 Tagen direkt; Proben von 10 bis unter 13 Tagen werden zeitproportional über 14 Tage hochgerechnet, wobei die unbeprobte Zeit als Konzentration 0 angenommen wird). Die Beurteilung erfolgt anhand des CQK.
 #'   \item `"kurzzeitig"`: Berücksichtigt nur Stoffe mit einem spezifischen akuten Grenzwert in der GSchV. Berücksichtigt alle Proben (ausser Stichproben) und verwendet das AQK zur Beurteilung.
 #' }
 #' @param plot_zusammenfassung Entweder `NULL` (Vorgabe), "stichproben" oder "mischproben". Falls einer der letzeren beiden, wird pro Jahr und nicht pro Monat aggregiert (entweder nur für Stichproben oder nur für Mischproben). Für Stichproben muss der `modus` auf "kurzzeitig" gesetzt werden.
@@ -1272,13 +1278,16 @@ plot_misch_mixtox_verlauf <- function(rq_ue_daten,
     dplyr::filter(.data$Kriterium %in% .env$switchKriterium)
 
   if (modus == "andauernd") {
-    mixtox_data <- dplyr::filter(mixtox_data, .data$Tage >= 10)
+    mixtox_data <- dplyr::filter(mixtox_data, .data$Tage_CQK >= 13)
   }
 
   # Falls nicht explizit gewünscht wird, dass wir secondary toxicity auch bewerten, werden diese Resultate ausgeblendet, damit keine Änderung gegenüber v1.1.0 entsteht
   if (!optin_mischtox_S) {
     mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Bioakkumulation")
   }
+
+  # Nicht bewertbare Ziele (fehlendes QK / kein Beitrag) werden nicht dargestellt (Datenlücke)
+  mixtox_data <- dplyr::filter(mixtox_data, !is.na(.data$RQ))
 
   farbskala_tox <- farbskala_bewertung_ecotox()
 
@@ -1363,7 +1372,7 @@ plot_misch_mixtox_verlauf <- function(rq_ue_daten,
 
 #' Zeitreihe Häufigkeitsverteilung Mischungstoxizität
 #'
-#' Zeigt die Häufigkeitsverteilung der Beurteilung der Mischungstoxizität über die Zeit für eine Station.
+#' Zeigt die Verteilung der Beurteilung der Mischungstoxizität über die Zeit für eine Station. Auf der y-Achse wird die Anzahl bewerteter Wochen pro Jahr gezeigt (aufsummierte Probendauer je Beurteilung). Bei durchgehender Bewertung erreichen die Balken das Jahresmaximum (~52 Wochen); nicht bewertete Zeiträume erscheinen als kürzere Balken.
 #'
 #' @inheritParams plot_misch_mixtox_verlauf
 #'
@@ -1401,7 +1410,7 @@ plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
     dplyr::filter(.data$Kriterium %in% .env$switchKriterium)
 
   if (modus == "andauernd") {
-    mixtox_data <- dplyr::filter(mixtox_data, .data$Tage >= 10)
+    mixtox_data <- dplyr::filter(mixtox_data, .data$Tage_CQK >= 13)
   }
 
   # Falls nicht explizit gewünscht wird, dass wir secondary toxicity auch bewerten, werden diese Resultate ausgeblendet, damit keine Änderung gegenüber v1.1.0 entsteht
@@ -1409,25 +1418,30 @@ plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
     mixtox_data <- dplyr::filter(mixtox_data, .data$Ziel != "Bioakkumulation")
   }
 
+  # Nicht bewertbare Ziele/Proben werden nicht mitgezählt (keine Balken, kein Legendeneintrag)
+  mixtox_data <- dplyr::filter(mixtox_data, !is.na(.data$RQ))
+
   farbskala_tox <- farbskala_bewertung_ecotox()
+  # Legenden-Stufen ohne "nicht bewertet"
+  farbskala_stufen <- farbskala_bewertung_ecotox_stufen()
 
   stationsname <- unique(mixtox_data$STANDORT)
 
-  pobj <- ggplot2::ggplot(mixtox_data, ggplot2::aes(x = .data$Jahr, fill = .data$Beurteilung)) +
-    # geom_bar berechnet automatisch die Anteile der Beurteilungen. Mit position = fill werden relative Anteile auf 100% geplottet
-    ggplot2::geom_bar(position = "fill", show.legend = TRUE) +
+  # Anzahl Wochen pro Probe (Probendauer / 7); wird als Gewicht aufsummiert
+  mixtox_data <- dplyr::mutate(mixtox_data, Wochen = as.numeric(.data$Tage, units = "days") / 7)
+
+  pobj <- ggplot2::ggplot(mixtox_data, ggplot2::aes(x = .data$Jahr, fill = .data$Beurteilung, weight = .data$Wochen)) +
+    # geom_bar summiert mit weight die Anzahl Wochen pro Beurteilung (gestapelt). Bei durchgehender
+    # Bewertung erreichen die Balken das Jahresmaximum (~52 Wochen); nicht bewertete Zeitr\u00e4ume fehlen.
+    ggplot2::geom_bar(show.legend = TRUE) +
     ggplot2::facet_wrap(~Ziel, scales = "free_y") +
     ggplot2::scale_x_continuous(
       "",
       breaks = unique(mixtox_data$Jahr),
       expand = c(0, 0)
     ) +
-    ggplot2::scale_y_continuous("H\u00e4ufigkeit (Prozent)",
-      breaks = seq(0, 1, by = 0.1),
-      # Darstellung als Prozent (100) anstelle Anteil (1)
-      labels = scales::percent(seq(0, 1, by = 0.1))
-    ) +
-    ggplot2::scale_fill_manual(values = farbskala_tox, drop = FALSE) +
+    ggplot2::scale_y_continuous("Anzahl Wochen", expand = ggplot2::expansion(mult = c(0, 0.05))) +
+    ggplot2::scale_fill_manual(values = farbskala_tox, breaks = farbskala_stufen, drop = FALSE) +
     ggplot2::ggtitle(sprintf("Verteilung Mischungstoxizit\u00e4t (Station: %s)", stationsname)) +
     plot_theme_proto() +
     ggplot2::theme(
@@ -1437,4 +1451,3 @@ plot_misch_mixtox_haeufigkeit <- function(rq_ue_daten,
 
   pobj
 }
-
