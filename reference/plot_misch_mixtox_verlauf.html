@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mvwizr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Navigation ein-/ausschalten">
@@ -71,7 +71,7 @@
 
 
 <dt id="arg-modus">modus<a class="anchor" aria-label="anchor" href="#arg-modus"></a></dt>
-<dd><ul><li><p><code>"andauernd"</code>: Berücksichtigt nur Stoffe mit einem spezifischen andauernden Grenzwert in der GSchV. Nur Proben mit einer Dauer von &gt;= 10 Tagen werden verwendet und unter Verwendung des CQK beurteilt.</p></li>
+<dd><ul><li><p><code>"andauernd"</code>: Berücksichtigt nur Stoffe mit einem spezifischen andauernden Grenzwert in der GSchV. Verwendet werden Zweiwochenmischkonzentrationen (Proben ab 13 Tagen direkt; Proben von 10 bis unter 13 Tagen werden zeitproportional über 14 Tage hochgerechnet, wobei die unbeprobte Zeit als Konzentration 0 angenommen wird). Die Beurteilung erfolgt anhand des CQK.</p></li>
 <li><p><code>"kurzzeitig"</code>: Berücksichtigt nur Stoffe mit einem spezifischen akuten Grenzwert in der GSchV. Berücksichtigt alle Proben (ausser Stichproben) und verwendet das AQK zur Beurteilung.</p></li>
 </ul></dd>
 
@@ -122,8 +122,6 @@
 <span class="r-in"><span>  modus <span class="op">=</span> <span class="st">"kurzzeitig"</span>,</span></span>
 <span class="r-in"><span>  plot_zusammenfassung <span class="op">=</span> <span class="st">"stichproben"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 10 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_text()`).</span>
 <span class="r-plt img"><img src="plot_misch_mixtox_verlauf-6.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>

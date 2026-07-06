@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mvwizr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Navigation ein-/ausschalten">
@@ -37,6 +37,19 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.4.0" id="mvwizr-140">mvwizr 1.4.0<a class="anchor" aria-label="anchor" href="#mvwizr-140"></a></h2>
+<div class="section level3">
+<h3 id="neue-features--änderungen-1-4-0">Neue Features &amp; Änderungen<a class="anchor" aria-label="anchor" href="#neue-features--%C3%A4nderungen-1-4-0"></a></h3>
+<ul><li>
+<strong>Zweiwochenmischkonzentration für andauernde Verunreinigungen (Anh. 5.1 GSchV-Empfehlung):</strong> Die Beurteilung andauernder Verunreinigungen (chronisches Qualitätskriterium CQK) erfolgt auf Basis von Zweiwochenmischkonzentrationen. Neu gelten erst Proben ab 13 Tagen als vollwertige Zweiwochenmischprobe (Toleranzbereich 13-14 Tage; zuvor ab 10 Tage). Proben von 10 bis unter 13 Tagen werden zeitproportional über 14 Tage (336 h) hochgerechnet, wobei die Konzentration in der unbeprobten Zeit auf 0 gesetzt wird. Proben unter 10 Tagen können chronisch nicht mehr beurteilt werden. Die frühere Schwelle von &gt;= 10 Tagen wird damit durch &gt;= 13 Tage (mit Hochrechnung für 10-13 Tage) ersetzt. Die akute Beurteilung (AQK) bleibt unverändert.</li>
+<li>
+<strong>Mischungstoxizität “nicht bewertet” als Datenlücke:</strong> In der Stationsübersicht Ökotox (<code>plot_misch_oekotox_uebersicht</code>) und im Mischtox-Verlauf (<code>plot_misch_mixtox_verlauf</code>) werden nicht bewertbare Ziele (z.B. sekundäre Ökotoxizität ohne gemessenes PFOS) nicht mehr grau dargestellt, sondern als Datenlücke ausgelassen. “nicht bewertet” erscheint nicht mehr als Legendeneintrag.</li>
+<li>
+<strong>Häufigkeitsverteilung neu als Anzahl Wochen:</strong> <code>plot_misch_mixtox_haeufigkeit</code> zeigt statt relativer Anteile (Prozent) neu die Anzahl bewerteter Wochen pro Jahr. Bei durchgehender Bewertung erreichen die Balken das Jahresmaximum; nicht bewertete Zeiträume ergeben kürzere Balken.</li>
+<li>Der Output von <code><a href="../reference/berechne_rq_ue.html">berechne_rq_ue()</a></code> enthält neu die Spalten <code>WERT_NUM_CQK</code>, <code>Faktor_CQK</code> und <code>Tage_CQK</code>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.3.3" id="mvwizr-133">mvwizr 1.3.3<a class="anchor" aria-label="anchor" href="#mvwizr-133"></a></h2>
 <div class="section level3">

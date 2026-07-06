@@ -32,6 +32,4 @@ ggplot2 Plot-Objekt
 
 ``` r
 plot_stich_mixtox_zf(rq_ue_beispiel_mvwizr)
-#> Warning: Removed 10 rows containing missing values or values outside the scale range
-#> (`geom_text()`).
 ```

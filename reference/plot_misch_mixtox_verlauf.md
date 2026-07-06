@@ -34,9 +34,11 @@ plot_misch_mixtox_verlauf(
 - modus:
 
   - `"andauernd"`: Berücksichtigt nur Stoffe mit einem spezifischen
-    andauernden Grenzwert in der GSchV. Nur Proben mit einer Dauer von
-    \>= 10 Tagen werden verwendet und unter Verwendung des CQK
-    beurteilt.
+    andauernden Grenzwert in der GSchV. Verwendet werden
+    Zweiwochenmischkonzentrationen (Proben ab 13 Tagen direkt; Proben
+    von 10 bis unter 13 Tagen werden zeitproportional über 14 Tage
+    hochgerechnet, wobei die unbeprobte Zeit als Konzentration 0
+    angenommen wird). Die Beurteilung erfolgt anhand des CQK.
 
   - `"kurzzeitig"`: Berücksichtigt nur Stoffe mit einem spezifischen
     akuten Grenzwert in der GSchV. Berücksichtigt alle Proben (ausser
@@ -95,6 +97,4 @@ plot_misch_mixtox_verlauf(rq_ue_beispiel_mvwizr,
   modus = "kurzzeitig",
   plot_zusammenfassung = "stichproben"
 )
-#> Warning: Removed 10 rows containing missing values or values outside the scale range
-#> (`geom_text()`).
 ```

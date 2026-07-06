@@ -12,7 +12,7 @@ Fehlerbehebungen und neuen Funktionen zu profitieren.
 ``` r
 
 library(mvwizr)
-#> mvwizr geladen: v1.3.3
+#> mvwizr geladen: v1.4.0
 ```
 
 ## Daten einlesen und Verarbeiten
@@ -143,10 +143,12 @@ plot_misch_verlauf(mvdaten_beispiel_mvwizr, regulierungen_mvwizr, "URT010",
 #### Überschreitungsgrafiken
 
 mvwizr bietet auch verschiedene Grafiken an, um (kurzzeitige oder
-andauernde) Überschreitungen der GSchV-Grenzwerte zu visualisieren. Im
-folgenden Beispiel werden andauernde Überschreitungen pro Substanz (d.h.
-Probendauer \>= 10 Tage) für die Station “URT010” in den Jahren 2019 bis
-2020 ausgewertet.
+andauernde) Überschreitungen der GSchV-Grenzwerte zu visualisieren.
+Andauernde Überschreitungen werden anhand von
+Zweiwochenmischkonzentrationen beurteilt (Proben ab 13 Tagen bzw. auf 14
+Tage hochgerechnete 10-13-Tage-Proben). Im folgenden Beispiel werden
+andauernde Überschreitungen pro Substanz für die Station “URT010” in den
+Jahren 2019 bis 2020 ausgewertet.
 
 ``` r
 
