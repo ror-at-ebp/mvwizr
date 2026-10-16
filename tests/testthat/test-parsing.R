@@ -100,9 +100,9 @@ test_that("einlesen_nawa entfernt duplikate", {
   # Es wird eine Warnung ausgegeben, dass 130 Duplikate gefunden wurden - wir wollen diese Warnung verifizieren
   expect_warning(out <- f(), "130 Daten")
 
-  out_test1 <- out |> dplyr::filter(.data$STANDORT == "Standort_203", .data$BEGINNPROBENAHME == lubridate::dmy_hms("24.09.2024  10:00:00"), .data$PARAMETERID_BAFU == "Fipronil")
+  out_test1 <- out |> dplyr::filter(.data$STANDORT == "Standort_203", .data$BEGINNPROBENAHME == lubridate::dmy_hms("24.09.2024  10:00:00", tz = "Europe/Zurich"), .data$PARAMETERID_BAFU == "Fipronil")
 
-  out_test2 <- out |> dplyr::filter(.data$STANDORT == "Standort_203", .data$BEGINNPROBENAHME == lubridate::dmy_hms("15.02.2022  10:00:00"), .data$PARAMETERID_BAFU == "Fipronil")
+  out_test2 <- out |> dplyr::filter(.data$STANDORT == "Standort_203", .data$BEGINNPROBENAHME == lubridate::dmy_hms("15.02.2022  10:00:00", tz = "Europe/Zurich"), .data$PARAMETERID_BAFU == "Fipronil")
 
   expect_equal(out_test1$Bestimmungsgrenze[[1]], 5e-5)
   expect_equal(out_test2$WERT_NUM[[1]], 0.000205591)
@@ -357,7 +357,8 @@ test_that("prozessiere_bSaP funktioniert mit nawa mv dateien", {
   mv_bsap <- prozessiere_bSaP(out, bSaP_identifier = "PROBEARTID") |> dplyr::mutate(Dauer = difftime(.data$ENDEPROBENAHME, .data$BEGINNPROBENAHME, units = "days"))
   mv_bsap_dim_correct_bool <- identical(dim(mv_bsap), c(59L, 29L))
 
-  mv_bsap_14d <- mv_bsap |> dplyr::filter(.data$Dauer == lubridate::ddays(14))
+  # Gerundet, da Proben über die Sommerzeitumstellung (Europe/Zurich) 14 Tage -/+ 1 Stunde dauern
+  mv_bsap_14d <- mv_bsap |> dplyr::filter(round(as.numeric(.data$Dauer, units = "days")) == 14)
 
   mv_bsap_14d_length_correct_bool <- identical(nrow(mv_bsap_14d), 48L)
 
@@ -573,4 +574,30 @@ test_that("entferne_duplikate behält höchsten Messwert", {
   out <- entferne_duplikate(testdaten)
   expect_equal(nrow(out), 1)
   expect_equal(out$WERT_NUM, 1.0)
+})
+
+## Zeitzonen (Issue #18) ####
+
+test_that("einlesen_nawa liefert Zeitstempel in Europe/Zurich (CSV und Excel)", {
+  rlang::local_options(rlib_message_verbosity = "quiet")
+  pfade <- system.file("extdata", c("NAWA_Bsp_2.xlsx", "NAWA_Bsp_3.csv", "NAWA_Bsp_5.csv"), package = "mvwizr")
+  for (pfad in pfade) {
+    out <- withr::with_options(
+      list(cli.default_handler = function(...) { }),
+      suppressWarnings(einlesen_nawa(pfad))
+    )
+    expect_equal(lubridate::tz(out$BEGINNPROBENAHME), "Europe/Zurich", info = basename(pfad))
+    expect_equal(lubridate::tz(out$ENDEPROBENAHME), "Europe/Zurich", info = basename(pfad))
+  }
+})
+
+test_that("einlesen_nawa behält die Uhrzeit beim Setzen der Zeitzone bei", {
+  rlang::local_options(rlib_message_verbosity = "quiet")
+  pfad <- system.file("extdata", "NAWA_Bsp_5.csv", package = "mvwizr")
+  out <- withr::with_options(
+    list(cli.default_handler = function(...) { }),
+    suppressWarnings(einlesen_nawa(pfad))
+  )
+  # Datum ohne Uhrzeit (01.01.2024) entspricht 00:00 Lokalzeit
+  expect_true(as.POSIXct("2024-01-01 00:00", tz = "Europe/Zurich") %in% out$BEGINNPROBENAHME)
 })

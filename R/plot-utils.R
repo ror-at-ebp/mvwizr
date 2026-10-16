@@ -29,7 +29,9 @@ get_modus_config <- function(modus = c("andauernd", "kurzzeitig")) {
 }
 
 #' Datums-Achsen-Setup für Zeitreihen-Plots
-#' Berechnet Plot-Limits, Date-Breaks und Jahresmarkierungen.
+#' Berechnet Plot-Limits, Date-Breaks und Jahresmarkierungen. Alle Zeitpunkte werden in der Zeitzone der
+#' Daten erstellt, damit z.B. Proben mit Beginn am 01.01. um 00:00 (Europe/Zurich) nicht vor der Achsengrenze
+#' liegen und abgeschnitten werden.
 #'
 #' Hinweis: Interne, nicht exportierte Funktion.
 #'
@@ -38,14 +40,15 @@ get_modus_config <- function(modus = c("andauernd", "kurzzeitig")) {
 #' @return Benannte Liste mit limits, breaks, markierungen
 #' @noRd
 setup_date_axis <- function(mv_daten) {
+  tz_daten <- lubridate::tz(mv_daten$BEGINNPROBENAHME)
   jahre <- lubridate::year(mv_daten$BEGINNPROBENAHME)
-  plot_limits <- c(lubridate::as_datetime(paste0(min(jahre), "-01-01")), NA)
+  plot_limits <- c(lubridate::as_datetime(paste0(min(jahre), "-01-01"), tz = tz_daten), NA)
   date_breaks <- seq(
     plot_limits[1],
-    lubridate::as_datetime(paste0(max(jahre), "-12-31")),
+    lubridate::as_datetime(paste0(max(jahre), "-12-31"), tz = tz_daten),
     by = "2 months"
   )
-  markierungen_jahre <- lubridate::as_datetime(paste0(unique(jahre), "-12-31"))
+  markierungen_jahre <- lubridate::as_datetime(paste0(unique(jahre), "-12-31"), tz = tz_daten)
 
   list(
     limits = plot_limits,

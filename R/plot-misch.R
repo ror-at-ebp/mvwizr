@@ -640,18 +640,11 @@ plot_misch_ue <- function(rq_ue_daten,
     dplyr::select(dplyr::all_of(c("ID_Substanz", "BAFU_Bez_DE", "BEZEICHNUNG_md", "Bez_fct_int", "BEGINNPROBENAHME", "ENDEPROBENAHME", "plot_ymin", "plot_ymax")), !!Ue_GSchV_fill) |>
     dplyr::distinct()
 
-  plot_limits <- c(
-    lubridate::as_datetime(paste0(min(
-      mv_daten_plot$Jahr
-    ), "-01-01")),
-    max(mv_daten_plot$ENDEPROBENAHME, na.rm = TRUE)
-  )
-
-  date_breaks <- seq(plot_limits[1], lubridate::as_datetime(paste0(max(
-    lubridate::year(mv_daten_plot$BEGINNPROBENAHME)
-  ), "-12-31")), by = "2 months")
-
-  markierungen_jahre <- lubridate::as_datetime(paste0(unique(mv_daten_plot$Jahr), "-12-31"))
+  # Achsen-Setup in der Zeitzone der Daten; obere Grenze hier explizit bis zum Ende der letzten Probe
+  date_axis <- setup_date_axis(mv_daten_plot)
+  plot_limits <- c(date_axis$limits[1], max(mv_daten_plot$ENDEPROBENAHME, na.rm = TRUE))
+  date_breaks <- date_axis$breaks
+  markierungen_jahre <- date_axis$markierungen
 
   # Teiltransparenter Wert für blaue Färbung - damit überschneidende Intervalle sichtbar werden
   main_plot <- ggplot2::ggplot() +

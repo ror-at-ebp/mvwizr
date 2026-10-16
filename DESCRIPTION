@@ -14,7 +14,6 @@ Language: de
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.3
 Imports:
     cli,
     dplyr,
@@ -48,4 +47,4 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
 URL: https://ror-at-ebp.github.io/mvwizr/
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.1

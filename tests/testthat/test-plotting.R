@@ -313,3 +313,38 @@ test_that("plot_stich_uebersicht stoppt bei Station ohne Stichproben", {
     class = "mvwizr_error_empty_dataset"
   )
 })
+
+# Zeitzonen (Issue #18) ####
+
+test_that("setup_date_axis erstellt Achsengrenzen in der Zeitzone der Daten", {
+  daten <- data.frame(BEGINNPROBENAHME = as.POSIXct(c("2025-01-01 00:00", "2025-06-01 12:00"), tz = "Europe/Zurich"))
+  achse <- setup_date_axis(daten)
+  expect_equal(lubridate::tz(achse$limits), "Europe/Zurich")
+  expect_equal(lubridate::tz(achse$breaks), "Europe/Zurich")
+  expect_equal(lubridate::tz(achse$markierungen), "Europe/Zurich")
+  expect_equal(achse$limits[1], daten$BEGINNPROBENAHME[1])
+})
+
+# Testdaten: URT010 (2019), Beginn der ersten Mischprobe auf den 01.01. um 00:00 (Europe/Zurich) gesetzt
+testdaten_jahresbeginn <- function() {
+  daten <- dplyr::filter(mvdaten_beispiel_mvwizr, .data$CODE == "URT010", lubridate::year(.data$BEGINNPROBENAHME) == 2019)
+  erste_probe <- min(daten$BEGINNPROBENAHME[!is.na(daten$ENDEPROBENAHME)])
+  dplyr::mutate(daten, BEGINNPROBENAHME = dplyr::if_else(.data$BEGINNPROBENAHME == erste_probe,
+    as.POSIXct("2019-01-01 00:00", tz = "Europe/Zurich"), .data$BEGINNPROBENAHME
+  ))
+}
+
+test_that("plot_misch_verlauf (barplot) verwirft Probe mit Beginn am 01.01. 00:00 nicht", {
+  daten <- testdaten_jahresbeginn()
+  p <- plot_misch_verlauf(daten, regulierungen_mvwizr, stationscode = "URT010", plot_typ = "barplot", jahr = 2019)
+  # Ausserhalb der Achsengrenzen liegende Balken erhalten NA als xmin (und werden beim Zeichnen ohne Warnung verworfen!)
+  balken <- ggplot2::layer_data(p, i = 2L)
+  expect_false(anyNA(balken$xmin))
+  expect_equal(nrow(balken), dplyr::n_distinct(daten$BEGINNPROBENAHME))
+})
+
+test_that("plot_misch_verlauf (barplot) mit Probe ab 01.01. 00:00 ist identisch zu snapshot", {
+  skip_on_ci()
+  test <- plot_misch_verlauf(testdaten_jahresbeginn(), regulierungen_mvwizr, stationscode = "URT010", plot_typ = "barplot", jahr = 2019)
+  vdiffr::expect_doppelganger("plot_misch_verlauf_jahresbeginn", test)
+})

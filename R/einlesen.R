@@ -407,7 +407,7 @@ einlesen_nawa <- function(nawa_mv,
     mv_data <- rename_nawa_fields(mv_data, parameter = parameter, lang = lang) |>
       dplyr::mutate(dplyr::across(
         c("BEGINNPROBENAHME", "ENDEPROBENAHME"),
-        ~ lubridate::parse_date_time(.x, orders = c("dmY", "dmYHM", "dmYHMS"))
+        ~ lubridate::parse_date_time(.x, orders = c("dmY", "dmYHM", "dmYHMS"), tz = "Europe/Zurich")
       ))
   }
 
@@ -475,6 +475,14 @@ einlesen_nawa <- function(nawa_mv,
     mv_data <- rename_nawa_fields(mv_data, parameter = parameter, lang = lang)
 
     mv_data <- check_nawa_excel_types(mv_data)
+
+    # readxl liefert Excel-Datumswerte als Uhrzeit in UTC. Die Werte sind aber Lokalzeit, daher wird die
+    # Zeitzone (ohne Verschiebung der Uhrzeit) auf Europe/Zurich gesetzt.
+    mv_data <- mv_data |>
+      dplyr::mutate(dplyr::across(
+        c("BEGINNPROBENAHME", "ENDEPROBENAHME"),
+        ~ lubridate::force_tz(.x, tzone = "Europe/Zurich")
+      ))
   }
 
   if (type == "dataframe") {
