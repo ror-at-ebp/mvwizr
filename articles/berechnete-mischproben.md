@@ -3,7 +3,7 @@
 ``` r
 
 library(mvwizr)
-#> mvwizr geladen: v1.4.0
+#> mvwizr geladen: v1.5.0
 ```
 
 ## Einleitung

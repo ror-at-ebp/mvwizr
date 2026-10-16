@@ -12,7 +12,7 @@ Fehlerbehebungen und neuen Funktionen zu profitieren.
 ``` r
 
 library(mvwizr)
-#> mvwizr geladen: v1.4.0
+#> mvwizr geladen: v1.5.0
 ```
 
 ## Daten einlesen und Verarbeiten

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mvwizr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Navigation ein-/ausschalten">
@@ -37,6 +37,17 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.5.0" id="mvwizr-150">mvwizr 1.5.0<a class="anchor" aria-label="anchor" href="#mvwizr-150"></a></h2>
+<div class="section level3">
+<h3 id="behobene-fehler--änderungen-1-5-0">Behobene Fehler &amp; Änderungen<a class="anchor" aria-label="anchor" href="#behobene-fehler--%C3%A4nderungen-1-5-0"></a></h3>
+<ul><li>Fehlerbehebung (#17): <code><a href="../reference/berechne_rq_ue.html">berechne_rq_ue()</a></code> entfernte alle Zeilen mit QK-Robustheit 3 sowie Zeilen ohne QK. Damit gingen auch generische GSchV-Überschreitungen (<code>Ue_generisch</code>, 0.1 µg/l) verloren, obwohl diese nicht vom QK abhängen. Sie fehlten unter anderem in <code><a href="../reference/plot_misch_ue.html">plot_misch_ue()</a></code> (Plot-Typ “allgemein”) und im Segment “GSchV 0.1 µg/l” von <code><a href="../reference/plot_misch_ue_summe.html">plot_misch_ue_summe()</a></code>. Neu bleiben alle Zeilen erhalten. Bei Robustheit 3 werden nur die QK-basierten Werte (<code>RQ_*</code>, <code>Beurteilung_*</code>, <code>Ue_AQK</code>, <code>Ue_CQK</code>) auf <code>NA</code> gesetzt. Der Output ist entsprechend länger, und der Beispieldatensatz <code>rq_ue_beispiel_mvwizr</code> wurde neu berechnet.</li>
+<li>Fehlerbehebung (#18): Die Datumsachse der Mischprobenplots (<code>plot_misch_verlauf</code>, <code>plot_misch_ue</code>) wurde in UTC statt in der Zeitzone der Daten (Europe/Zurich) erstellt. Proben mit Beginn am 01.01. um 00:00 lagen dadurch vor der Achsengrenze und fehlten im Plot.</li>
+<li>Fehlerbehebung: <code><a href="../reference/einlesen_nawa.html">einlesen_nawa()</a></code> (und damit <code><a href="../reference/batch_einlesen_nawa.html">batch_einlesen_nawa()</a></code>) lieferte die Zeitstempel für CSV-Dateien und Excel-Dateien mit Datumszellen in UTC statt in Europe/Zurich. Die Uhrzeiten bleiben unverändert, neu wird aber konsistent die Zeitzone Europe/Zurich gesetzt (wie bei <code><a href="../reference/einlesen_mv_gbl.html">einlesen_mv_gbl()</a></code>).</li>
+<li>Fehlerbehebung: Die Probendauer (<code>Tage</code>) wird neu als Kalenderdauer nach Uhrzeit berechnet, unabhängig von der Zeitumstellung. Bisher dauerte z.B. eine Probe vom 25.03. 08:00 bis 07.04. 08:00 in Europe/Zurich nur 12.96 statt 13 Tage. Dadurch wurden Proben von genau 13 Tagen in <code><a href="../reference/berechne_rq_ue.html">berechne_rq_ue()</a></code> hochgerechnet statt direkt verwendet, Proben von genau 10 Tagen chronisch nicht beurteilt, und in <code><a href="../reference/plot_misch_verlauf.html">plot_misch_verlauf()</a></code> (Plot-Typen “treppen” und “kombiniert”) fielen 10-Tage-Proben weg. Die Schwellen wirken nun bei Proben über die Zeitumstellung gleich wie sonst. Der Beispieldatensatz <code>rq_ue_beispiel_mvwizr</code> wurde neu berechnet (nur die Spalten <code>Tage</code>, <code>Tage_num</code> und <code>Tage_CQK</code> ändern sich).</li>
+<li>Fehlerbehebung: Auf Systemen ohne installierte Schweizer Locale (<code>de_CH</code>/<code>fr_CH</code>, z.B. Linux-Server, Docker-Container) erzeugten Plots mit Zeitachse die Warnung “OS reports request to set locale … cannot be honored” bzw. brachen bei <code>options(warn = 2)</code> ab. Die Monatsbeschriftungen weichen in diesem Fall nun ohne Warnung auf fest hinterlegte deutsche bzw. französische Abkürzungen aus. Ist die Locale vorhanden, bleibt das Verhalten unverändert.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.0" id="mvwizr-140">mvwizr 1.4.0<a class="anchor" aria-label="anchor" href="#mvwizr-140"></a></h2>
 <div class="section level3">

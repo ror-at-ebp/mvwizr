@@ -1,5 +1,58 @@
 # Änderungsprotokoll
 
+## mvwizr 1.5.0
+
+### Behobene Fehler & Änderungen
+
+- Fehlerbehebung (#17):
+  [`berechne_rq_ue()`](https://ror-at-ebp.github.io/mvwizr/reference/berechne_rq_ue.md)
+  entfernte alle Zeilen mit QK-Robustheit 3 sowie Zeilen ohne QK. Damit
+  gingen auch generische GSchV-Überschreitungen (`Ue_generisch`, 0.1
+  µg/l) verloren, obwohl diese nicht vom QK abhängen. Sie fehlten unter
+  anderem in
+  [`plot_misch_ue()`](https://ror-at-ebp.github.io/mvwizr/reference/plot_misch_ue.md)
+  (Plot-Typ “allgemein”) und im Segment “GSchV 0.1 µg/l” von
+  [`plot_misch_ue_summe()`](https://ror-at-ebp.github.io/mvwizr/reference/plot_misch_ue_summe.md).
+  Neu bleiben alle Zeilen erhalten. Bei Robustheit 3 werden nur die
+  QK-basierten Werte (`RQ_*`, `Beurteilung_*`, `Ue_AQK`, `Ue_CQK`) auf
+  `NA` gesetzt. Der Output ist entsprechend länger, und der
+  Beispieldatensatz `rq_ue_beispiel_mvwizr` wurde neu berechnet.
+- Fehlerbehebung (#18): Die Datumsachse der Mischprobenplots
+  (`plot_misch_verlauf`, `plot_misch_ue`) wurde in UTC statt in der
+  Zeitzone der Daten (Europe/Zurich) erstellt. Proben mit Beginn am
+  01.01. um 00:00 lagen dadurch vor der Achsengrenze und fehlten im
+  Plot.
+- Fehlerbehebung:
+  [`einlesen_nawa()`](https://ror-at-ebp.github.io/mvwizr/reference/einlesen_nawa.md)
+  (und damit
+  [`batch_einlesen_nawa()`](https://ror-at-ebp.github.io/mvwizr/reference/batch_einlesen_nawa.md))
+  lieferte die Zeitstempel für CSV-Dateien und Excel-Dateien mit
+  Datumszellen in UTC statt in Europe/Zurich. Die Uhrzeiten bleiben
+  unverändert, neu wird aber konsistent die Zeitzone Europe/Zurich
+  gesetzt (wie bei
+  [`einlesen_mv_gbl()`](https://ror-at-ebp.github.io/mvwizr/reference/einlesen_mv_gbl.md)).
+- Fehlerbehebung: Die Probendauer (`Tage`) wird neu als Kalenderdauer
+  nach Uhrzeit berechnet, unabhängig von der Zeitumstellung. Bisher
+  dauerte z.B. eine Probe vom 25.03. 08:00 bis 07.04. 08:00 in
+  Europe/Zurich nur 12.96 statt 13 Tage. Dadurch wurden Proben von genau
+  13 Tagen in
+  [`berechne_rq_ue()`](https://ror-at-ebp.github.io/mvwizr/reference/berechne_rq_ue.md)
+  hochgerechnet statt direkt verwendet, Proben von genau 10 Tagen
+  chronisch nicht beurteilt, und in
+  [`plot_misch_verlauf()`](https://ror-at-ebp.github.io/mvwizr/reference/plot_misch_verlauf.md)
+  (Plot-Typen “treppen” und “kombiniert”) fielen 10-Tage-Proben weg. Die
+  Schwellen wirken nun bei Proben über die Zeitumstellung gleich wie
+  sonst. Der Beispieldatensatz `rq_ue_beispiel_mvwizr` wurde neu
+  berechnet (nur die Spalten `Tage`, `Tage_num` und `Tage_CQK` ändern
+  sich).
+- Fehlerbehebung: Auf Systemen ohne installierte Schweizer Locale
+  (`de_CH`/`fr_CH`, z.B. Linux-Server, Docker-Container) erzeugten Plots
+  mit Zeitachse die Warnung “OS reports request to set locale … cannot
+  be honored” bzw. brachen bei `options(warn = 2)` ab. Die
+  Monatsbeschriftungen weichen in diesem Fall nun ohne Warnung auf fest
+  hinterlegte deutsche bzw. französische Abkürzungen aus. Ist die Locale
+  vorhanden, bleibt das Verhalten unverändert.
+
 ## mvwizr 1.4.0
 
 ### Neue Features & Änderungen
