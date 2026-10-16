@@ -463,7 +463,7 @@ test_that("berechne_rq_ue berechnet korrekte RQ-Werte", {
 
   # Vollwertige Zweiwochenproben (>= 13 Tage): RQ_CQK = WERT_NUM / CQK (Faktor 1)
   test_row <- out |>
-    dplyr::filter(!is.na(.data$CQK), .data$WERT_NUM > 0, .data$Tage_num >= 13) |>
+    dplyr::filter(!is.na(.data$CQK), .data$`Robustheit QK` %in% c(1, 2), .data$WERT_NUM > 0, .data$Tage_num >= 13) |>
     dplyr::slice(1)
 
   expected_rq <- test_row$WERT_NUM / test_row$CQK
@@ -471,7 +471,7 @@ test_that("berechne_rq_ue berechnet korrekte RQ-Werte", {
 
   # RQ_AQK basiert immer auf der Rohkonzentration
   test_row_aqk <- out |>
-    dplyr::filter(!is.na(.data$AQK), .data$WERT_NUM > 0) |>
+    dplyr::filter(!is.na(.data$AQK), .data$`Robustheit QK` %in% c(1, 2), .data$WERT_NUM > 0) |>
     dplyr::slice(1)
 
   expect_equal(test_row_aqk$RQ_AQK, test_row_aqk$WERT_NUM / test_row_aqk$AQK)
@@ -489,7 +489,7 @@ test_that("berechne_rq_ue rechnet 10-13-Tage-Proben auf Zweiwochenmischkonzentra
 
   # Proben von 10 bis unter 13 Tagen: zeitproportional über 14 Tage (336 h), Rest = 0 => Faktor Tage/14
   row_hoch <- out |>
-    dplyr::filter(!is.na(.data$CQK), .data$WERT_NUM > 0, .data$Tage_num >= 10, .data$Tage_num < 13) |>
+    dplyr::filter(!is.na(.data$CQK), .data$`Robustheit QK` %in% c(1, 2), .data$WERT_NUM > 0, .data$Tage_num >= 10, .data$Tage_num < 13) |>
     dplyr::slice(1)
 
   expect_equal(nrow(row_hoch), 1)
@@ -510,11 +510,74 @@ test_that("berechne_rq_ue rechnet 10-13-Tage-Proben auf Zweiwochenmischkonzentra
 
   # Akute Beurteilung bleibt für kurze Proben unverändert auf der Rohkonzentration
   row_kurz_aqk <- out |>
-    dplyr::filter(.data$Tage_num < 10, .data$WERT_NUM > 0, !is.na(.data$AQK)) |>
+    dplyr::filter(.data$Tage_num < 10, .data$WERT_NUM > 0, !is.na(.data$AQK), .data$`Robustheit QK` %in% c(1, 2)) |>
     dplyr::slice(1)
 
   expect_equal(nrow(row_kurz_aqk), 1)
   expect_equal(row_kurz_aqk$RQ_AQK, row_kurz_aqk$WERT_NUM / row_kurz_aqk$AQK)
+})
+
+test_that("berechne_rq_ue behält generische Überschreitungen bei Robustheit 3 und ohne QK (#17)", {
+  # Drei GSchV-2-Stoffe mit je 0.5 µg/l (> 0.1 µg/l, aber unter dem QK): Robustheit 1, Robustheit 3 und ohne QK
+  mv <- tibble::tibble(
+    CODE = "TST001", STANDORT = "Teststation",
+    BEGINNPROBENAHME = as.POSIXct("2025-05-01", tz = "Europe/Zurich"),
+    ENDEPROBENAHME = as.POSIXct("2025-05-15", tz = "Europe/Zurich"),
+    ID_Substanz = c(1L, 2L, 3L),
+    PARAMETERID_BAFU = c("A", "B", "C"),
+    WERT_NUM = c(0.5, 0.5, 0.5)
+  )
+  kriterien <- tibble::tibble(
+    ID_Substanz = c(1L, 2L),
+    P_chron = 1L, I_chron = NA_integer_, V_chron = NA_integer_, S_chron = NA_real_,
+    P_akut = 1L, I_akut = NA_integer_, V_akut = NA_integer_,
+    `Robustheit QK` = c(1L, 3L),
+    Name = c("Stoff A", "Stoff B"),
+    CQK = c(1, 1), AQK = c(2, 2)
+  )
+  regulierungen <- tibble::tibble(ID_Substanz = 1:3, GSCHV = 2L)
+
+  out <- berechne_rq_ue(mv, regulierungen, kriterien, robust3 = FALSE) |>
+    dplyr::arrange(.data$ID_Substanz)
+
+  # Keine Zeile geht verloren, alle drei generischen Überschreitungen bleiben erhalten
+  expect_equal(nrow(out), 3)
+  expect_equal(out$Ue_generisch, c(TRUE, TRUE, TRUE))
+
+  # Robustheit 1: QK-basierte Werte werden berechnet
+  expect_equal(out$RQ_CQK[[1]], 0.5)
+  expect_false(out$Ue_CQK[[1]])
+
+  # Robustheit 3: QK-basierte Werte sind NA
+  expect_true(all(is.na(dplyr::select(out[2, ], dplyr::starts_with("RQ_"), dplyr::starts_with("Beurteilung_"), "Ue_AQK", "Ue_CQK"))))
+  expect_s3_class(out$Beurteilung_CQK, "factor")
+
+  # Mischtox ignoriert die NA-RQ der Robustheit-3-Zeile
+  mixtox <- berechne_mixtox(out) |>
+    dplyr::filter(.data$Ziel == "Pflanzen", .data$Kriterium == "CQK")
+  expect_equal(mixtox$RQ, 0.5)
+})
+
+test_that("berechne_rq_ue warnt weiterhin bei QK-Überschreitung mit Robustheit 3", {
+  mv <- tibble::tibble(
+    CODE = "TST001", STANDORT = "Teststation",
+    BEGINNPROBENAHME = as.POSIXct("2025-05-01", tz = "Europe/Zurich"),
+    ENDEPROBENAHME = as.POSIXct("2025-05-15", tz = "Europe/Zurich"),
+    ID_Substanz = 1L, PARAMETERID_BAFU = "A", WERT_NUM = 5
+  )
+  kriterien <- tibble::tibble(
+    ID_Substanz = 1L, P_chron = 1L, I_chron = NA_integer_, V_chron = NA_integer_, S_chron = NA_real_,
+    P_akut = 1L, I_akut = NA_integer_, V_akut = NA_integer_,
+    `Robustheit QK` = 3L, Name = "Stoff A", CQK = 1, AQK = 2
+  )
+  regulierungen <- tibble::tibble(ID_Substanz = 1L, GSCHV = 2L)
+
+  expect_warning(
+    out <- utils::capture.output(res <- berechne_rq_ue(mv, regulierungen, kriterien)),
+    class = "mvwizr_warn_ue_robust3"
+  )
+  expect_true(is.na(res$Ue_CQK))
+  expect_true(res$Ue_generisch)
 })
 
 ## berechne_mixtox() Wertkorrektheit ####

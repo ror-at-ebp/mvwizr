@@ -93,8 +93,8 @@ monat_labels <- function(x, lang = get_lang()) {
     as.character(lubridate::month(x, label = TRUE, locale = locale))
   } else {
     monate_fallback <- switch(lang,
-      fr_CH = c("janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "oct", "nov", "déc"),
-      c("Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez")
+      fr_CH = c("janv", "f\u00e9vr", "mars", "avr", "mai", "juin", "juil", "ao\u00fbt", "sept", "oct", "nov", "d\u00e9c"),
+      c("Jan", "Feb", "M\u00e4r", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez")
     )
     monate_fallback[lubridate::month(x)]
   }

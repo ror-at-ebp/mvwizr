@@ -95,7 +95,7 @@
 #'   \item{Ue_anhaltend}{Übertretung Grenzwert anhaltende Belastung? (logical)}
 #'   \item{Ue_kurzzeitig}{Übertretung Grenzwert kurzzeitige Belastung? (logical)}
 #'   \item{Ue_spezifisch}{Übertretung Grenzwert spezifische Belastungswerte (d.h. kurzzeitig oder spezifisch)? (logical)}
-#'   \item{Ue_generisch}{Übertretung generischer Grenzwert? (logical)}
+#'   \item{Ue_generisch}{Übertretung generischer Grenzwert (0.1 µg/l, unabhängig von QK und Robustheit)? (logical)}
 #'   \item{Ue_AQK}{Übertretung akutes QK (Robustheit 1,2)? (logical)}
 #'   \item{Ue_CQK}{Übertretung chronisches QK (Robustheit 1,2)? (logical)}
 #' }

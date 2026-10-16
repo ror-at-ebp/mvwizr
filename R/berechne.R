@@ -15,7 +15,11 @@
 #' @param mv_daten Normalisierte MV-Daten
 #' @param regulierungen Regulierungsdaten (dataframe)
 #' @param kriterien Qualitätskriterien (dataframe)
-#' @param robust3 Logisch (Vorgabe: `TRUE`). Warnen, wenn QK mit Robustheit 3 überschritten sind (nicht in Daten enthalten)?
+#' @param robust3 Logisch (Vorgabe: `TRUE`). Warnen, wenn QK mit Robustheit 3 überschritten sind (RQ und QK-Überschreitungen auf `NA` gesetzt)?
+#'
+#' @details QK mit Robustheit 3 werden nicht verwendet: Für diese Zeilen sind die Risikoquotienten (`RQ_*`), die
+#'   Beurteilungen (`Beurteilung_*`) sowie `Ue_AQK` und `Ue_CQK` `NA`. Die Zeilen bleiben aber erhalten, ebenso
+#'   Zeilen ohne QK, damit die vom QK unabhängige generische Beurteilung (`Ue_generisch`, 0.1 µg/l) vollständig ist.
 #'
 #' @return Dataframe mit MV-Daten, ergänzt mit Risikoquotienten. Enthält u.a. `WERT_NUM_CQK` (Zweiwochenmischkonzentration), `Faktor_CQK` (Hochrechnungsfaktor) und `Tage_CQK` (effektive Probendauer für die chronische Beurteilung).
 #' @export
@@ -108,17 +112,26 @@ berechne_rq_ue <- function(mv_daten, regulierungen = NULL, kriterien = NULL, rob
       Ue_CQK = .data$WERT_NUM_CQK > .data$CQK
     )
 
-  # Prüfen, ob es Überschreitungen bei Substanzen mit QK Robustheit 3 (unzuverlässiger Wert) gibt => als Warnung, dass diese Werte nicht in den Resultaten enthalten sind.
+  # Prüfen, ob es Überschreitungen bei Substanzen mit QK Robustheit 3 (unzuverlässiger Wert) gibt => als Warnung, dass diese QK-basierten Werte nicht in den Resultaten enthalten sind.
   Ue_robust_3 <- rq_ue_data |>
     dplyr::filter(.data$`Robustheit QK` == 3, .data$Ue_AQK | .data$Ue_CQK) |>
     dplyr::select(dplyr::all_of(c("CODE", "BEGINNPROBENAHME", "ENDEPROBENAHME", "PARAMETERID_BAFU", "WERT_NUM", "Ue_AQK", "Ue_CQK")))
 
   if (nrow(Ue_robust_3) > 0 && robust3) {
-    cli::cli_warn("Achtung: Folgende Proben \u00fcberschreiten QK mit Robustheit == 3 (nicht in Daten enthalten):", class = "mvwizr_warn_ue_robust3")
+    cli::cli_warn("Achtung: Folgende Proben \u00fcberschreiten QK mit Robustheit == 3 (RQ und QK-\u00dcberschreitungen auf NA gesetzt):", class = "mvwizr_warn_ue_robust3")
     print(Ue_robust_3)
   }
 
-  dplyr::filter(rq_ue_data, .data[["Robustheit QK"]] %in% c(1, 2))
+  # QK mit Robustheit 3 werden nicht verwendet: Nur die QK-basierten Werte (RQ, Beurteilung, Ue_AQK, Ue_CQK) werden auf NA gesetzt.
+  # Die Zeilen bleiben erhalten (auch solche ohne QK), da die generische Beurteilung (Ue_generisch, 0.1 µg/l) nicht vom QK abhängt (#17).
+  ist_robust3 <- rq_ue_data[["Robustheit QK"]] %in% 3
+  rq_ue_data |>
+    dplyr::mutate(
+      dplyr::across(
+        c(dplyr::starts_with("RQ_"), dplyr::starts_with("Beurteilung_"), dplyr::all_of(c("Ue_AQK", "Ue_CQK"))),
+        \(x) replace(x, ist_robust3, NA)
+      )
+    )
 }
 
 #' Mischtoxizitäten berechnen
