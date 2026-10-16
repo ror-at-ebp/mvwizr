@@ -118,11 +118,11 @@ plot_misch_verlauf <- function(mv_daten,
     plot_parametergruppe <- NULL
   }
 
-  # Extrahiere Jahr und Intervalldauer pro Probe (in Tagen)
+  # Extrahiere Jahr und Intervalldauer pro Probe (in Kalendertagen, unabhängig von der Zeitumstellung)
   mv_daten <- dplyr::mutate(
     mv_daten,
     Jahr = lubridate::year(.data$BEGINNPROBENAHME),
-    Tage = difftime(.data$ENDEPROBENAHME, .data$BEGINNPROBENAHME, units = "days")
+    Tage = berechne_probendauer(.data$BEGINNPROBENAHME, .data$ENDEPROBENAHME)
   )
 
   # Überprüfen, ob Eingabewert für id_substanz numerisch ist
