@@ -4,6 +4,7 @@
 
 - Fehlerbehebung (#18): Die Datumsachse der Mischprobenplots (`plot_misch_verlauf`, `plot_misch_ue`) wurde in UTC statt in der Zeitzone der Daten (Europe/Zurich) erstellt. Proben mit Beginn am 01.01. um 00:00 lagen dadurch vor der Achsengrenze und fehlten im Plot.
 - Fehlerbehebung: `einlesen_nawa()` (und damit `batch_einlesen_nawa()`) lieferte die Zeitstempel für CSV-Dateien und Excel-Dateien mit Datumszellen in UTC statt in Europe/Zurich. Die Uhrzeiten bleiben unverändert, neu wird aber konsistent die Zeitzone Europe/Zurich gesetzt (wie bei `einlesen_mv_gbl()`).
+- Fehlerbehebung: Auf Systemen ohne installierte Schweizer Locale (`de_CH`/`fr_CH`, z.B. Linux-Server, Docker-Container) erzeugten Plots mit Zeitachse die Warnung "OS reports request to set locale ... cannot be honored" bzw. brachen bei `options(warn = 2)` ab. Die Monatsbeschriftungen weichen in diesem Fall nun ohne Warnung auf fest hinterlegte deutsche bzw. französische Abkürzungen aus. Ist die Locale vorhanden, bleibt das Verhalten unverändert.
 
 # mvwizr 1.4.0
 
