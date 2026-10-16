@@ -31,7 +31,7 @@ berechne_rq_ue(
 - robust3:
 
   Logisch (Vorgabe: `TRUE`). Warnen, wenn QK mit Robustheit 3
-  überschritten sind (nicht in Daten enthalten)?
+  überschritten sind (RQ und QK-Überschreitungen auf `NA` gesetzt)?
 
 ## Rückgabewert
 
@@ -52,3 +52,9 @@ unter 10 Tagen können nicht chronisch beurteilt werden (`RQ_CQK` =
 `NA`). Die akute Beurteilung (`RQ_AQK`) basiert unverändert auf der
 Rohkonzentration. Grundlage: Anhang 5.1 der Empfehlung zur Beurteilung
 von Spurenstoffen (Anhang 2 GSchV).
+
+QK mit Robustheit 3 werden nicht verwendet: Für diese Zeilen sind die
+Risikoquotienten (`RQ_*`), die Beurteilungen (`Beurteilung_*`) sowie
+`Ue_AQK` und `Ue_CQK` `NA`. Die Zeilen bleiben aber erhalten, ebenso
+Zeilen ohne QK, damit die vom QK unabhängige generische Beurteilung
+(`Ue_generisch`, 0.1 µg/l) vollständig ist.

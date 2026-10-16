@@ -74,7 +74,8 @@ zusätzlich berechneten Variablen aufgeführt:
 
 - Ue_generisch:
 
-  Übertretung generischer Grenzwert? (logical)
+  Übertretung generischer Grenzwert (0.1 µg/l, unabhängig von QK und
+  Robustheit)? (logical)
 
 - Ue_AQK:
 
