@@ -18,7 +18,7 @@ berechne_rq_ue(
 
 \item{kriterien}{Qualitätskriterien (dataframe)}
 
-\item{robust3}{Logisch (Vorgabe: \code{TRUE}). Warnen, wenn QK mit Robustheit 3 überschritten sind (nicht in Daten enthalten)?}
+\item{robust3}{Logisch (Vorgabe: \code{TRUE}). Warnen, wenn QK mit Robustheit 3 überschritten sind (RQ und QK-Überschreitungen auf \code{NA} gesetzt)?}
 }
 \value{
 Dataframe mit MV-Daten, ergänzt mit Risikoquotienten. Enthält u.a. \code{WERT_NUM_CQK} (Zweiwochenmischkonzentration), \code{Faktor_CQK} (Hochrechnungsfaktor) und \code{Tage_CQK} (effektive Probendauer für die chronische Beurteilung).
@@ -34,4 +34,8 @@ gemittelt, wobei die Konzentration in der unbeprobten Zeit auf 0 gesetzt wird (F
 unter 10 Tagen können nicht chronisch beurteilt werden (\code{RQ_CQK} = \code{NA}). Die akute Beurteilung (\code{RQ_AQK})
 basiert unverändert auf der Rohkonzentration. Grundlage: Anhang 5.1 der Empfehlung zur Beurteilung von
 Spurenstoffen (Anhang 2 GSchV).
+
+QK mit Robustheit 3 werden nicht verwendet: Für diese Zeilen sind die Risikoquotienten (\verb{RQ_*}), die
+Beurteilungen (\verb{Beurteilung_*}) sowie \code{Ue_AQK} und \code{Ue_CQK} \code{NA}. Die Zeilen bleiben aber erhalten, ebenso
+Zeilen ohne QK, damit die vom QK unabhängige generische Beurteilung (\code{Ue_generisch}, 0.1 µg/l) vollständig ist.
 }
