@@ -354,11 +354,11 @@ test_that("prozessiere_bSaP funktioniert mit nawa mv dateien", {
 
   out <- dplyr::mutate(out, PROBEARTID = dplyr::if_else(.data$filename == "NAWA_mit_bSaP_Bsp.csv", "bSaP", .data$PROBEARTID))
 
-  mv_bsap <- prozessiere_bSaP(out, bSaP_identifier = "PROBEARTID") |> dplyr::mutate(Dauer = difftime(.data$ENDEPROBENAHME, .data$BEGINNPROBENAHME, units = "days"))
+  # Kalenderdauer: Proben über die Zeitumstellung (Europe/Zurich) dauern ebenfalls genau 14 Tage
+  mv_bsap <- prozessiere_bSaP(out, bSaP_identifier = "PROBEARTID") |> dplyr::mutate(Dauer = berechne_probendauer(.data$BEGINNPROBENAHME, .data$ENDEPROBENAHME))
   mv_bsap_dim_correct_bool <- identical(dim(mv_bsap), c(59L, 29L))
 
-  # Gerundet, da Proben über die Sommerzeitumstellung (Europe/Zurich) 14 Tage -/+ 1 Stunde dauern
-  mv_bsap_14d <- mv_bsap |> dplyr::filter(round(as.numeric(.data$Dauer, units = "days")) == 14)
+  mv_bsap_14d <- mv_bsap |> dplyr::filter(as.numeric(.data$Dauer, units = "days") == 14)
 
   mv_bsap_14d_length_correct_bool <- identical(nrow(mv_bsap_14d), 48L)
 
@@ -578,6 +578,49 @@ test_that("berechne_rq_ue warnt weiterhin bei QK-Überschreitung mit Robustheit 
   )
   expect_true(is.na(res$Ue_CQK))
   expect_true(res$Ue_generisch)
+})
+
+test_that("berechne_probendauer ist robust gegenüber der Zeitumstellung", {
+  zh <- function(x) as.POSIXct(x, tz = "Europe/Zurich")
+
+  # Sommerzeit ab 30.03.2025: 13 bzw. 10 Kalendertage, obwohl 1 Stunde weniger verstreicht
+  expect_equal(as.numeric(berechne_probendauer(zh("2025-03-25 08:00"), zh("2025-04-07 08:00")), units = "days"), 13)
+  expect_equal(as.numeric(berechne_probendauer(zh("2025-03-25 08:00"), zh("2025-04-04 08:00")), units = "days"), 10)
+  # Winterzeit ab 26.10.2025: 13 Kalendertage, obwohl 1 Stunde mehr verstreicht
+  expect_equal(as.numeric(berechne_probendauer(zh("2025-10-20 08:00"), zh("2025-11-02 08:00")), units = "days"), 13)
+  # Uhrzeit wird berücksichtigt
+  expect_equal(as.numeric(berechne_probendauer(zh("2025-03-25 08:00"), zh("2025-04-07 20:00")), units = "days"), 13.5)
+  # Ohne Ende (Stichprobe) bleibt die Dauer NA
+  expect_true(is.na(berechne_probendauer(zh("2025-03-25 08:00"), zh(NA_character_))))
+})
+
+test_that("berechne_rq_ue wendet die Tage-Schwellen über die Zeitumstellung gleich an", {
+  # 13-Tage-Probe 25.03.-07.04.2025 und 10-Tage-Probe 25.03.-04.04.2025 (Sommerzeit ab 30.03.)
+  mv <- tibble::tibble(
+    CODE = "TST001", STANDORT = "Teststation",
+    BEGINNPROBENAHME = as.POSIXct(c("2025-03-25 08:00", "2025-03-25 08:00"), tz = "Europe/Zurich"),
+    ENDEPROBENAHME = as.POSIXct(c("2025-04-07 08:00", "2025-04-04 08:00"), tz = "Europe/Zurich"),
+    ID_Substanz = 1L, PARAMETERID_BAFU = "A", WERT_NUM = 0.7
+  )
+  kriterien <- tibble::tibble(
+    ID_Substanz = 1L, P_chron = 1L, I_chron = NA_integer_, V_chron = NA_integer_, S_chron = NA_real_,
+    P_akut = 1L, I_akut = NA_integer_, V_akut = NA_integer_,
+    `Robustheit QK` = 1L, Name = "Stoff A", CQK = 1, AQK = 2
+  )
+  regulierungen <- tibble::tibble(ID_Substanz = 1L, GSCHV = 2L)
+
+  out <- berechne_rq_ue(mv, regulierungen, kriterien, robust3 = FALSE) |>
+    dplyr::arrange(dplyr::desc(.data$ENDEPROBENAHME))
+
+  expect_equal(out$Tage_num, c(13, 10))
+  # 13 Tage: vollwertige Zweiwochenprobe (keine Hochrechnung)
+  expect_equal(out$Faktor_CQK[[1]], 1)
+  expect_equal(out$Tage_CQK[[1]], 13)
+  expect_equal(out$RQ_CQK[[1]], 0.7)
+  # 10 Tage: Hochrechnung mit Faktor 10/14 statt keiner chronischen Beurteilung
+  expect_equal(out$Faktor_CQK[[2]], 10 / 14)
+  expect_equal(out$Tage_CQK[[2]], 14)
+  expect_equal(out$RQ_CQK[[2]], 0.7 * 10 / 14)
 })
 
 ## berechne_mixtox() Wertkorrektheit ####

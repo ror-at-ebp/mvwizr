@@ -48,7 +48,8 @@ berechne_rq_ue <- function(mv_daten, regulierungen = NULL, kriterien = NULL, rob
   joined_data <- mv_daten |>
     dplyr::mutate(
       Jahr = lubridate::year(.data$BEGINNPROBENAHME),
-      Tage = difftime(.data$ENDEPROBENAHME, .data$BEGINNPROBENAHME, units = "days"),
+      # Kalenderdauer, damit Proben über die Zeitumstellung die Schwellen gleich passieren wie sonst
+      Tage = berechne_probendauer(.data$BEGINNPROBENAHME, .data$ENDEPROBENAHME),
       Tage_num = as.numeric(.data$Tage, units = "days"),
       # Zweiwochenmischkonzentration für die Beurteilung andauernder Verunreinigungen (CQK):
       # Proben ab 13 Tagen gelten als vollwertige Zweiwochenprobe und werden direkt verwendet
@@ -203,4 +204,21 @@ berechne_stichproben_gbl_aggregiert <- function(mv_daten, perzentil = 90) {
     )
 
   stichproben_agg
+}
+
+#' Probendauer in Kalendertagen berechnen
+#'
+#' Berechnet die Dauer zwischen Beginn und Ende der Probenahme nach Uhrzeit (Kalenderdauer). Die Zeitstempel
+#' werden dazu mit unveränderter Uhrzeit nach UTC übertragen, so dass eine Zeitumstellung (Sommer-/Winterzeit)
+#' die Dauer nicht verändert: Eine Probe vom 25.03. 08:00 bis 07.04. 08:00 dauert genau 13 Tage, obwohl in
+#' Europe/Zurich nur 13 Tage minus 1 Stunde verstreichen. Damit wirken die Schwellen (10 bzw. 13 Tage) bei
+#' Proben über die Zeitumstellung gleich wie sonst.
+#'
+#' @param beginn POSIXct-Vektor mit Beginn der Probenahme
+#' @param ende POSIXct-Vektor mit Ende der Probenahme
+#'
+#' @return difftime-Vektor in Tagen
+#' @noRd
+berechne_probendauer <- function(beginn, ende) {
+  difftime(lubridate::force_tz(ende, "UTC"), lubridate::force_tz(beginn, "UTC"), units = "days")
 }
