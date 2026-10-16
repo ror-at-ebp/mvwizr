@@ -67,10 +67,55 @@ setup_date_axis <- function(mv_daten) {
 #' @return Labels für ggplot2
 #' @noRd
 lagged_labels_jahr <- function(x) {
+  monate <- monat_labels(x)
   dplyr::if_else(is.na(dplyr::lag(x)) | !lubridate::year(dplyr::lag(x)) == lubridate::year(x),
-    paste(lubridate::month(x, label = TRUE, locale = get_ch_locale()), "\n", lubridate::year(x)),
-    paste(lubridate::month(x, label = TRUE, locale = get_ch_locale()))
+    paste(monate, "\n", lubridate::year(x)),
+    paste(monate)
   )
+}
+
+#' Abgekürzte Monatsnamen in Landessprache
+#'
+#' Verwendet die Schweizer Locale des Systems (`get_ch_locale()`). Ist diese
+#' nicht installiert (z.B. Linux-Server, Docker, CI), wird ohne Warnung auf
+#' fest hinterlegte Abkürzungen ausgewichen.
+#'
+#' Hinweis: Interne, nicht exportierte Funktion.
+#'
+#' @param x Datumsvektor
+#' @param lang Sprache (`"de_CH"` oder `"fr_CH"`)
+#'
+#' @return Character-Vektor mit Monatsabkürzungen
+#' @noRd
+monat_labels <- function(x, lang = get_lang()) {
+  locale <- get_ch_locale(lang)
+  if (locale_verfuegbar(locale)) {
+    as.character(lubridate::month(x, label = TRUE, locale = locale))
+  } else {
+    monate_fallback <- switch(lang,
+      fr_CH = c("janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "oct", "nov", "déc"),
+      c("Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez")
+    )
+    monate_fallback[lubridate::month(x)]
+  }
+}
+
+#' Prüft, ob eine Locale auf dem System gesetzt werden kann
+#'
+#' Hinweis: Interne, nicht exportierte Funktion.
+#'
+#' @param locale Locale-String
+#'
+#' @return `TRUE` falls die Locale gesetzt werden kann, sonst `FALSE`
+#' @noRd
+locale_verfuegbar <- function(locale) {
+  if (is.null(locale)) {
+    return(FALSE)
+  }
+  alt <- Sys.getlocale("LC_TIME")
+  on.exit(Sys.setlocale("LC_TIME", alt), add = TRUE)
+  ergebnis <- suppressWarnings(Sys.setlocale("LC_TIME", locale))
+  !is.null(ergebnis) && nzchar(ergebnis)
 }
 
 #' Proto-ggplot2-theme
