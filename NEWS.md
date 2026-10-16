@@ -1,4 +1,4 @@
-# mvwizr (Entwicklungsversion)
+# mvwizr 1.5.0
 
 ## Behobene Fehler & Änderungen
 
